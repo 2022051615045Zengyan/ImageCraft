@@ -1,5 +1,6 @@
 /** MyMenu.qml
  * Written by ZengYan on 2024-6-18
+ * Modified by ZhanXuecai on 2024-6-18
  * Funtion: Menu integration
  */
 import QtQuick
@@ -13,9 +14,11 @@ Rectangle{
         id: menuBar
         //required property ListModel sharePage
         width: parent.width
+        Menu_Edit{}
         Menu_Layer{}
         Menu_Setting{}
+        Menu_Filter{}
+        Menu_View{}
         Menu_Help{}
-
     }
 }
