@@ -10,6 +10,7 @@ Menu {
     title: qsTr("图层(&L)")
     //新建
     Menu{
+        width: 300
         icon.source:"icon/noneIcon.png"
         title: "新建(&N)"
         //图层
