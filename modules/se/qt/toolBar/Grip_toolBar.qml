@@ -30,6 +30,7 @@ Item {
             id: _grip_fitScreen
             Layout.preferredWidth: parent*3
             text: "适合屏幕"
+            icon.source: "Icon/shihepingmu.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -39,6 +40,7 @@ Item {
             id: _grip_padScreen
             Layout.preferredWidth: parent*3
             text: "填充屏幕"
+            icon.source: "Icon/tianchongpingmu.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

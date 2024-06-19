@@ -33,6 +33,7 @@ Item {
             id: _frame_CounterSelection
             Layout.preferredWidth:parent.height*3
             text: qsTr("反选")
+            icon.source: "Icon/fanxuan.svg"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }

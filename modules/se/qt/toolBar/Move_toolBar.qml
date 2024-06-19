@@ -31,7 +31,8 @@ Item {
         Button {
             id: _move_left
             Layout.preferredWidth:parent.height*3
-            text: qsTr("图片居左")
+            text: qsTr("居左")
+            icon.source: "Icon/tupianjuzuo.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -39,7 +40,8 @@ Item {
         Button {
             id: _move_center
             Layout.preferredWidth:parent.height*3
-            text: qsTr("图片居中")
+            text: qsTr("居中")
+            icon.source: "Icon/tupianjuzhong.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -47,7 +49,8 @@ Item {
         Button {
             id: _move_right
             Layout.preferredWidth:parent.height*3
-            text: qsTr("图片居右")
+            text: qsTr("居右")
+            icon.source: "Icon/tupianjuyou.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -59,7 +62,8 @@ Item {
         Button {
             id: _move_top
             Layout.preferredWidth:parent.height*3
-            text: "图片居顶"
+            text: "居顶"
+            icon.source: "Icon/tupianjuding.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -68,7 +72,8 @@ Item {
         Button {
             id: _move_bottom
             Layout.preferredWidth:parent.height*3
-            text: "图片居底"
+            text: "居底"
+            icon.source: "Icon/tupianjudi.svg"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
