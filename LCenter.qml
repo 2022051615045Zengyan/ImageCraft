@@ -1,3 +1,7 @@
+/** LCenter.qml
+ * Written by Zengyan on 2024-6-19
+ * Funtion: left center window
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
