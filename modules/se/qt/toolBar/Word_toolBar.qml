@@ -42,24 +42,22 @@ Item
             Layout.minimumWidth: 0
         }
 
+        ToolSeparator{Layout.preferredHeight: parent.height}
+
         Button
         {
             id: _text_bold
             Layout.preferredWidth:parent.height*3
-            text: "加粗"
-
+            icon.source: "Icon/jiacu.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
-
-        ToolSeparator{Layout.preferredHeight: parent.height}
 
         Button
         {
             id: _text_italic
             Layout.preferredWidth:parent.height*3
-            text: "斜体"
-
+            icon.source: "Icon/qingxie.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -68,7 +66,7 @@ Item
         {
             id: _text_underline
             Layout.preferredWidth:parent.height*3
-            text: "下划线"
+            icon.source: "Icon/xiahuaxian.png"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -78,8 +76,7 @@ Item
         {
             id: _text_delete
             Layout.preferredWidth:parent.height*3
-            text: "删除线"
-
+            icon.source: "Icon/shanchuxian.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -89,24 +86,21 @@ Item
         Button {
             id: _word_left
             Layout.preferredWidth:parent.height*3
-            text: qsTr("文字居左")
-
+            icon.source: "Icon/juzuo.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
         Button {
             id: _word_center
             Layout.preferredWidth:parent.height*3
-            text: qsTr("文字居中")
-
+            icon.source: "Icon/juzhong.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
         Button {
             id: _word_right
             Layout.preferredWidth:parent.height*3
-            text: qsTr("文字居右")
-
+            icon.source: "Icon/juyou.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }

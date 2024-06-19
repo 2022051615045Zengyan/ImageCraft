@@ -17,6 +17,7 @@ Item {
             id: _cutout_cropping
             Layout.preferredWidth:parent.height*3
             text: qsTr("切除")
+            icon.source: "Icon/qiechubiankuang.svg"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
