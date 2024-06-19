@@ -16,7 +16,7 @@ Item {
 
         Button {
             id: _line_beeline
-            text: "直线"
+            icon.source: "Icon/zhixian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -38,7 +38,7 @@ Item {
 
         Button {
             id: _line_polyline
-            text: "折线"
+            icon.source: "Icon/zhexian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -64,7 +64,7 @@ Item {
 
         Button {
             id: _line_curve
-            text: "曲线"
+            icon.source: "Icon/quxian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -74,7 +74,6 @@ Item {
             id: _line_curve_size
             Layout.preferredWidth:parent.height*3
             model: ["极细","细","较细","均衡","较粗","粗","极粗"]
-
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }

@@ -19,4 +19,6 @@ Project {
     // importPaths: [ "asset_imports" ]
 
     importPaths: [ "modules" ]
+
+    mainUiFile: "modules/se/qt/toolBar/Icon/fanxuan.svg"
 }
