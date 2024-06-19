@@ -1,6 +1,6 @@
 /** Line_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Line toolBar
+ * Funtion: Line toolBar 绘制线条
  */
 import QtQuick
 import QtQuick.Controls

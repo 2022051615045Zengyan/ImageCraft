@@ -1,6 +1,6 @@
 /** Lasso_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Lasso toolBar
+ * Funtion: Lasso toolBar 复杂抠图
  */
 import QtQuick 2.15
 import QtQuick.Controls

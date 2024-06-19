@@ -1,6 +1,6 @@
 /** Word_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Word toolBar
+ * Funtion: Word toolBar 添加文字
  */
 import QtQuick
 import QtQuick.Controls

@@ -1,6 +1,6 @@
 /** Move_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Move toolBar
+ * Funtion: Move toolBar 对选中图片进行移动
  */
 import QtQuick 2.15
 import QtQuick.Controls

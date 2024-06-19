@@ -1,6 +1,6 @@
 /** Cutout_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Cutout toolBar
+ * Funtion: Cutout toolBar 图片切割
  */
 import QtQuick 2.15
 import QtQuick.Controls

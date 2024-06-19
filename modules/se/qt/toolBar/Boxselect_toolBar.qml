@@ -1,6 +1,6 @@
 /** Boxselect_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Boxselect toolBar
+ * Funtion: Boxselect toolBar 简单抠图
  */
 import QtQuick 2.15
 import QtQuick.Controls

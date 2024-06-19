@@ -1,6 +1,6 @@
 /** Eraser_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Eraser toolBar
+ * Funtion: Eraser toolBar 擦除内容
  */
 import QtQuick
 import QtQuick.Controls

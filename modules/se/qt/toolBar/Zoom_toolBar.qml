@@ -1,6 +1,6 @@
 /** Zoom_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Zoom toolBar
+ * Funtion: Zoom toolBar 对画布整体进行缩放
  */
 import QtQuick
 import QtQuick.Controls

@@ -1,6 +1,6 @@
 /** Rectangle_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Rectangle toolBar
+ * Funtion: Rectangle toolBar 绘制图形
  */
 import QtQuick
 import QtQuick.Controls

@@ -1,6 +1,6 @@
 /** Frame_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Frame toolBar
+ * Funtion: Frame toolBar 绘制框选范围，自动选中范围内的所有图片
  */
 import QtQuick 2.15
 import QtQuick.Controls

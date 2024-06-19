@@ -1,6 +1,6 @@
 /** Grip_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Grip toolBar
+ * Funtion: Grip toolBar 当画布和图片足够放大时，用抓手以移动画布
  */
 import QtQuick
 import QtQuick.Controls

@@ -1,6 +1,6 @@
 /** Straw_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Straw toolBar
+ * Funtion: Straw toolBar 提取颜色到画板
  */
 import QtQuick
 import QtQuick.Controls

@@ -1,6 +1,6 @@
 /** Brush_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
- * Funtion: Brush toolBar
+ * Funtion: Brush toolBar 自由绘制
  */
 import QtQuick
 import QtQuick.Controls
