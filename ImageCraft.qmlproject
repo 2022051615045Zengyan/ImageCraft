@@ -3,7 +3,7 @@
 import QmlProject 1.1
 
 Project {
-    mainFile: "MyMenu.qml"
+    mainFile: "ImageCraft.qml"
 
     /* Include .qml, .js, and image files from current directory and subdirectories */
     QmlFiles {
@@ -18,5 +18,5 @@ Project {
     /* List of plugin directories passed to QML runtime */
     // importPaths: [ "asset_imports" ]
 
-    mainUiFile: "Menu_Setting.qml"
+    importPaths: [ "modules" ]
 }
