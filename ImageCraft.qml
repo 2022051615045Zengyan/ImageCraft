@@ -23,12 +23,19 @@ ApplicationWindow
     menuBar: ICMenu
     {
         width: parent.width
-        id: psMenu
+        id: icMenu
     }
 
     header: ICToolBar
     {
-        id: psToolBar
+        id: icToolBar
+        width: parent.width
+    }
+
+    ICContent
+    {
+        id: icContent
+        height: parent.height - icMenu.height - icToolBar.height
         width: parent.width
     }
 }
