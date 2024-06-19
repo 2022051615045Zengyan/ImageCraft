@@ -9,7 +9,6 @@ import QtQuick.Controls
 import se.qt.menu 1.0
 import se.qt.toolBar 1.0
 
-
 ApplicationWindow
 {
     id: window

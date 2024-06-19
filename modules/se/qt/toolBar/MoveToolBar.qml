@@ -9,6 +9,7 @@ import Qt5Compat.GraphicalEffects
 Item
 {
     required property Item toolBar
+    property alias listView: _listView
     Rectangle
     {
         id: leftToolBar
@@ -79,7 +80,7 @@ Item
         }
         ListView
         {
-            id: listView
+            id: _listView
             x: 8
             y: 53
             width: 160
