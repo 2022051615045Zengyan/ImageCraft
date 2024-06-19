@@ -1,6 +1,9 @@
+/** MyToolBar.qml
+ * Written by RenTianxiang on 2024-6-19
+ * Funtion: ToolBar integration
+ */
 import QtQuick
 import QtQuick.Controls
-import Qt5Compat.GraphicalEffects
 
 Item
 {
@@ -13,5 +16,11 @@ Item
         width: parent.width
         height: 30
         anchors.left: parent.left
+    }
+
+    MoveToolBar
+    {
+        id: leftToolBar
+        toolBar: toolBar
     }
 }

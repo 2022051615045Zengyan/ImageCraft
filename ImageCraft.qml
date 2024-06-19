@@ -1,3 +1,8 @@
+/** ImageCraft.qml
+ * Written by RenTianxiang on 2024-6-19
+ * Funtion: Main Window
+ */
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -7,6 +12,7 @@ import se.qt.toolBar 1.0
 
 ApplicationWindow
 {
+    id: window
     width: 1000
     height: 500
     visible: true
