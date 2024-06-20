@@ -43,27 +43,6 @@ void Editor::openImage(const QString &path)
     emit imageChanged();
 }
 
-// void Editor::moveImage(int dx, int dy)
-// {
-//     m_position += QPoint(dx, dy);
-//     cv::Mat mat = cv::imread(std::string(m_path.toLocal8Bit()));
-//     if (mat.empty()) {
-//         qDebug() << "Failed to load image!";
-//         return;
-//     }
-
-//     cv::Mat translated;
-//     cv::Mat translationMatrix
-//         = (cv::Mat_<double>(2, 3) << 1, 0, m_position.x(), 0, 1, m_position.y()); //创建变换矩阵
-//     cv::warpAffine(mat, translated, translationMatrix, mat.size());               //平移变换
-
-//     cv::Mat rgb;
-//     cv::cvtColor(translated, rgb, cv::COLOR_BGR2RGB);
-//     m_image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
-
-//     emit imageChanged();
-// }
-
 QString Editor::path() const
 {
     return m_path;

@@ -1,6 +1,9 @@
 /** activectrl.cpp
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
+ * 
+ * Modified by RenTianxiang on 2024-6-20
+ *      Reorganized the logical structure to save and save as
  */
 #include "activectrl.h"
 #include <QMetaObject>
@@ -116,9 +119,65 @@ void ActiveCtrl::openSlot()
     addRecentFiles(imageUrl);
 
     QMetaObject::invokeMethod(m_sharePage,
-                              "addMelement",
+                              "addEelement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),
                               Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
+}
+
+void ActiveCtrl::saveAsSlot()
+{
+    QString savePath = QQmlProperty::read(m_savePathDialod, "selectedFile").toString();
+    if (savePath.isEmpty()) {
+        return;
+    } else {
+        m_savePath = savePath.mid(7);
+        QQuickItem *quickItem = qobject_cast<QQuickItem *>(m_currentLayer);
+        if (quickItem) {
+            QSharedPointer<QQuickItemGrabResult> grabResult = quickItem->grabToImage(m_size);
+            QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, [=, this]() {
+                QImage image = grabResult->image();
+                if (image.save(m_savePath)) {
+                    m_currentLayer->setProperty("isModified_", false);
+                    qDebug() << "Save success to: " << m_savePath;
+
+                    int lastIndexOfSlash = m_savePath.lastIndexOf('/') + 1;
+                    QString fileName = m_savePath.mid(lastIndexOfSlash);
+                    QString a = "pageName";
+                    QString b = "pixUrl";
+                    QMetaObject::invokeMethod(m_sharePage,
+                                              "setProperty",
+                                              Q_ARG(int, m_currentIndex),
+                                              Q_ARG(QString, a),
+                                              Q_ARG(QVariant, QVariant::fromValue(fileName)));
+
+                    QMetaObject::invokeMethod(m_sharePage,
+                                              "setProperty",
+                                              Q_ARG(int, m_currentIndex),
+                                              Q_ARG(QString, b),
+                                              Q_ARG(QVariant, QVariant::fromValue(m_savePath)));
+                } else {
+                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
+                                                             "open",
+                                                             Qt::AutoConnection);
+                }
+            });
+        } else {
+            qDebug() << m_currentEditor << " is not a QQuickItem type!!";
+        }
+    }
+}
+
+int ActiveCtrl::currentIndex() const
+{
+    return m_currentIndex;
+}
+
+void ActiveCtrl::setCurrentIndex(int newCurrentIndex)
+{
+    if (m_currentIndex == newCurrentIndex)
+        return;
+    m_currentIndex = newCurrentIndex;
+    emit currentIndexChanged();
 }
 
 void ActiveCtrl::loadRecentFiles()
@@ -228,6 +287,7 @@ void ActiveCtrl::saveAs()
         return;
     }
     m_savePathDialod->metaObject()->invokeMethod(m_savePathDialod, "open", Qt::DirectConnection);
+    connect(m_savePathDialod, SIGNAL(accepted()), this, SLOT(saveAsSlot()));
 }
 
 void ActiveCtrl::addRecentFiles(const QString &filePath)

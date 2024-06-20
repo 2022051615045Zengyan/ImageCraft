@@ -92,17 +92,6 @@ Item
         title: qsTr("Select Save Path")
         nameFilters: ["Images files (*.png *.jpg)"]
         fileMode: FileDialog.SaveFile
-
-        onAccepted:
-        {
-            var savePath = savePathDialog.selectedFile.toString()
-            var fileName = savePath.substring(savePath.lastIndexOf("/") + 1) // 获取文件名
-            ActiveCtrl.savePath = savePath.substring(7)
-            ActiveCtrl.currentLayer.isModified_ = true
-            ActiveCtrl.save()
-            sharePage.setProperty(tabBar_currentIndex, "pageName", fileName)
-            sharePage.setProperty(tabBar_currentIndex, "pixUrl", savePath)
-        }
     }
 
     failToSave: MessageDialog

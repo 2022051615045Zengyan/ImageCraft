@@ -15,6 +15,7 @@ class ToolCtrl : public QObject
 
     Q_PROPERTY(QString selectedTool READ selectedTool WRITE setSelectedTool NOTIFY
                    selectedToolChanged FINAL)
+
 public:
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;
