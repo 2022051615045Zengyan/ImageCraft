@@ -1,14 +1,18 @@
 /** ICFooter.qml
  * Written by ZengYan on 2024-6-19
  * Funtion: Setting bottom
+ * * modified by Zengyan on 2014-6-20
+ *      added getcolorfunction
  */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import ImageCraft 1.0
 Rectangle {
     id: footer
     width:parent.width
+    property alias showcolor: _showcolor
+    property alias text2: _text2
     ColumnLayout{
         spacing:2
         Text {
@@ -32,10 +36,12 @@ Rectangle {
                     Layout.preferredHeight: colorshow.height
                     Rectangle
                     {
+                        id:_showcolor
                         width:height
                         height: parent.height-10
                         color: "#ddff00"
                         anchors.centerIn: parent
+
                     }
                 }
                 Rectangle{
@@ -62,7 +68,7 @@ Rectangle {
             RowLayout{
                 spacing: 5
                 Label {
-                    id: text1
+                    id: _text1
 
                     Layout.preferredWidth:bottomshow.width/7*3
                     Layout.preferredHeight: bottomshow.height
@@ -70,28 +76,28 @@ Rectangle {
 
                 }
                 Label{
-                    id:text2
+                    id:_text2
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("x:0,y:0")
 
                 }
                 Label {
-                    id: text3
+                    id: _text3
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("400*300")
 
                 }
                 Label {
-                    id: text4
+                    id: _text4
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("32位色")
 
                 }
                 Label{
-                    id: text5
+                    id: _text5
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("100%")
@@ -99,5 +105,8 @@ Rectangle {
             }
         }
     }
-
+    Component.onCompleted: {
+        ToolCtrl.showcolor=showcolor
+        ToolCtrl.pointtext=text2
+    }
 }
