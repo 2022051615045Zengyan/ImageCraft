@@ -10,6 +10,10 @@
 #include <QSettings>
 #include "editor.h"
 
+namespace cv {
+class Mat;
+}
+
 class ActiveCtrl : public QObject
 {
     Q_OBJECT
@@ -34,6 +38,10 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
     Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged FINAL)
+    Q_PROPERTY(
+        int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
+    Q_PROPERTY(QObject* exportPathDialog READ exportPathDialog WRITE setExportPathDialog NOTIFY
+                   exportPathDialogChanged FINAL)
 public:
     explicit ActiveCtrl(QObject* parent = nullptr);
 
@@ -42,6 +50,7 @@ public:
     Q_INVOKABLE void save();
     Q_INVOKABLE void saveAs();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
+    Q_INVOKABLE void exportImage();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -76,6 +85,12 @@ public:
     QObject* sharePage() const;
     void setSharePage(QObject* newSharePage);
 
+    int currentIndex() const;
+    void setCurrentIndex(int newCurrentIndex);
+
+    QObject* exportPathDialog() const;
+    void setExportPathDialog(QObject* newExportPathDialog);
+
 signals:
 
     void dialogBoxChanged();
@@ -102,8 +117,14 @@ signals:
 
     void sharePageChanged();
 
+    void currentIndexChanged();
+
+    void exportPathDialogChanged();
+
 private slots:
     void openSlot();
+    void saveAsSlot();
+    void exportSlot();
 
 private:
     QString m_savePath;
@@ -112,6 +133,7 @@ private:
     qsizetype m_recentFileNum;
     QStringList m_recentFiles;
     QSettings m_setting;
+    int m_currentIndex;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;
@@ -121,7 +143,9 @@ private:
     QObject* m_savePathDialod = nullptr;
     QObject* m_failToSave = nullptr;
     QObject* m_sharePage = nullptr;
+    QObject* m_exportPathDialog = nullptr;
 
     void loadRecentFiles();
     void saveRecentFiles();
+    cv::Mat QImageToCvMat(const QImage& image);
 };

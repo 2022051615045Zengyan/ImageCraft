@@ -113,6 +113,7 @@ Item
                     layerModel.append({pixUrl: pixUrl_yuan})
                 }
 
+                //拖放文件区域
                 DropArea
                 {
                     anchors.fill: parent

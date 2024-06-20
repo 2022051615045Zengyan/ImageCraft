@@ -1,11 +1,17 @@
 /** activectrl.cpp
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
+ * 
+ * Modified by RenTianxiang on 2024-6-20
+ *      Reorganized the logical structure to save and save as
+ *      Added export finction
  */
 #include "activectrl.h"
+#include <QFileInfo>
 #include <QMetaObject>
 #include <QQmlProperty>
 #include <QQuickItemGrabResult>
+#include <opencv4/opencv2/opencv.hpp>
 
 ActiveCtrl::ActiveCtrl(QObject *parent)
     : QObject{parent}
@@ -116,9 +122,145 @@ void ActiveCtrl::openSlot()
     addRecentFiles(imageUrl);
 
     QMetaObject::invokeMethod(m_sharePage,
-                              "addMelement",
+                              "addEelement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),
                               Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
+    QObject::disconnect(m_openDialogBox, SIGNAL(accepted()), this, SLOT(openSlot()));
+}
+
+void ActiveCtrl::saveAsSlot()
+{
+    QString savePath = QQmlProperty::read(m_savePathDialod, "selectedFile").toString();
+    if (savePath.isEmpty()) {
+        qDebug() << "empty savePath!!!";
+    } else {
+        m_savePath = savePath.mid(7);
+        QFileInfo fileInfo(m_savePath);
+        QString ext = fileInfo.suffix().toLower();
+        std::vector<int> compression_params;
+        if (ext == "jpg" || ext == "jpeg") {
+            compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
+            compression_params.push_back(95); // JPEG质量 (1-100)
+        } else if (ext == "png") {
+            compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+            compression_params.push_back(3); // PNG压缩级别 (0-9)
+        } else if (ext == "bmp") {
+            // BMP 不需要额外的参数
+        } else {
+            // 默认保存为 PNG 格式
+            m_savePath += ".png";
+            compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+            compression_params.push_back(3);
+        }
+        QQuickItem *quickItem = qobject_cast<QQuickItem *>(m_currentLayer);
+        if (quickItem) {
+            QSharedPointer<QQuickItemGrabResult> grabResult = quickItem->grabToImage(m_size);
+            QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, [=, this]() {
+                QImage image = grabResult->image();
+                cv::Mat matImage = QImageToCvMat(image);
+                if (cv::imwrite(m_savePath.toStdString(), matImage, compression_params)) {
+                    m_currentLayer->setProperty("isModified_", false);
+                    qDebug() << "Save success to: " << m_savePath;
+
+                    int lastIndexOfSlash = m_savePath.lastIndexOf('/') + 1;
+                    QString fileName = m_savePath.mid(lastIndexOfSlash);
+                    QString a = "pageName";
+                    QString b = "pixUrl";
+                    QMetaObject::invokeMethod(m_sharePage,
+                                              "setProperty",
+                                              Q_ARG(int, m_currentIndex),
+                                              Q_ARG(QString, a),
+                                              Q_ARG(QVariant, QVariant::fromValue(fileName)));
+
+                    QMetaObject::invokeMethod(m_sharePage,
+                                              "setProperty",
+                                              Q_ARG(int, m_currentIndex),
+                                              Q_ARG(QString, b),
+                                              Q_ARG(QVariant, QVariant::fromValue(m_savePath)));
+                    addRecentFiles(savePath);
+                } else {
+                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
+                                                             "open",
+                                                             Qt::AutoConnection);
+                }
+            });
+        } else {
+            qDebug() << m_currentEditor << " is not a QQuickItem type!!";
+        }
+    }
+    disconnect(m_savePathDialod, SIGNAL(accepted()), this, SLOT(saveAsSlot()));
+}
+
+void ActiveCtrl::exportSlot()
+{
+    QString fileName = QQmlProperty::read(m_exportPathDialog, "selectedFile").toString().mid(7);
+    if (fileName.isEmpty()) {
+        qDebug() << "empty exportPath!!!";
+    } else {
+        QFileInfo fileInfo(fileName);
+        QString ext = fileInfo.suffix().toLower();
+        std::vector<int> compression_params;
+        if (ext == "jpg" || ext == "jpeg") {
+            compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
+            compression_params.push_back(95); // JPEG质量 (1-100)
+        } else if (ext == "png") {
+            compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+            compression_params.push_back(3); // PNG压缩级别 (0-9)
+        } else if (ext == "bmp") {
+            // BMP 不需要额外的参数
+        } else {
+            // 默认保存为 PNG 格式
+            fileName += ".png";
+            compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+            compression_params.push_back(3);
+        }
+
+        // 保存图像
+        QQuickItem *quickItem = qobject_cast<QQuickItem *>(m_currentLayer);
+        if (quickItem) {
+            QSharedPointer<QQuickItemGrabResult> grabResult = quickItem->grabToImage(m_size);
+            QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, [=, this]() {
+                QImage image = grabResult->image();
+                cv::Mat matImage = QImageToCvMat(image);
+                if (cv::imwrite(fileName.toStdString(), matImage, compression_params)) {
+                    m_currentLayer->setProperty("isModified_", false);
+                    qDebug() << "Save success to: " << fileName;
+                } else {
+                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
+                                                             "open",
+                                                             Qt::AutoConnection);
+                }
+            });
+        } else {
+            qDebug() << m_currentEditor << " is not a QQuickItem type!!";
+        }
+    }
+}
+
+QObject *ActiveCtrl::exportPathDialog() const
+{
+    return m_exportPathDialog;
+}
+
+void ActiveCtrl::setExportPathDialog(QObject *newExportPathDialog)
+{
+    if (m_exportPathDialog == newExportPathDialog)
+        return;
+    m_exportPathDialog = newExportPathDialog;
+    emit exportPathDialogChanged();
+}
+
+int ActiveCtrl::currentIndex() const
+{
+    return m_currentIndex;
+}
+
+void ActiveCtrl::setCurrentIndex(int newCurrentIndex)
+{
+    if (m_currentIndex == newCurrentIndex)
+        return;
+    m_currentIndex = newCurrentIndex;
+    emit currentIndexChanged();
 }
 
 void ActiveCtrl::loadRecentFiles()
@@ -228,6 +370,7 @@ void ActiveCtrl::saveAs()
         return;
     }
     m_savePathDialod->metaObject()->invokeMethod(m_savePathDialod, "open", Qt::DirectConnection);
+    connect(m_savePathDialod, SIGNAL(accepted()), this, SLOT(saveAsSlot()));
 }
 
 void ActiveCtrl::addRecentFiles(const QString &filePath)
@@ -244,4 +387,62 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 
     saveRecentFiles();
     emit recentFilesChanged();
+}
+
+void ActiveCtrl::exportImage()
+{
+    m_exportPathDialog->metaObject()->invokeMethod(m_exportPathDialog, "open", Qt::DirectConnection);
+
+    connect(m_exportPathDialog, SIGNAL(accepted()), this, SLOT(exportSlot()));
+}
+
+cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)
+{
+    cv::Mat mat;
+    switch (image.format()) {
+    case QImage::Format_ARGB32:
+    case QImage::Format_ARGB32_Premultiplied:
+        mat = cv::Mat(image.height(),
+                      image.width(),
+                      CV_8UC4,
+                      const_cast<uchar *>(image.bits()),
+                      image.bytesPerLine());
+        cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR); // 转换颜色通道顺序
+        break;
+    case QImage::Format_RGB32:
+        mat = cv::Mat(image.height(),
+                      image.width(),
+                      CV_8UC4,
+                      const_cast<uchar *>(image.bits()),
+                      image.bytesPerLine());
+        cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR); // 转换颜色通道顺序
+        break;
+    case QImage::Format_RGB888:
+        mat = cv::Mat(image.height(),
+                      image.width(),
+                      CV_8UC3,
+                      const_cast<uchar *>(image.bits()),
+                      image.bytesPerLine());
+        cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR); // 转换颜色通道顺序
+        break;
+    case QImage::Format_Grayscale8:
+        mat = cv::Mat(image.height(),
+                      image.width(),
+                      CV_8UC1,
+                      const_cast<uchar *>(image.bits()),
+                      image.bytesPerLine());
+        break;
+    case QImage::Format_RGBA8888_Premultiplied:
+        mat = cv::Mat(image.height(),
+                      image.width(),
+                      CV_8UC4,
+                      const_cast<uchar *>(image.bits()),
+                      image.bytesPerLine());
+        cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR); // 转换颜色通道顺序
+        break;
+    default:
+        qDebug() << "QImage format not supported for conversion to cv::Mat:" << image.format();
+        break;
+    }
+    return mat;
 }

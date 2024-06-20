@@ -7,9 +7,7 @@
 #pragma once
 
 #include <QColor>
-#include <QCursor>
 #include <QObject>
-#include <QPixmap>
 #include <QQmlEngine>
 #include <opencv2/opencv.hpp>
 
@@ -23,6 +21,7 @@ class ToolCtrl : public QObject
                    selectedToolChanged FINAL)
     Q_PROPERTY(QObject *showcolor READ showcolor WRITE setShowcolor NOTIFY showcolorChanged FINAL)
     Q_PROPERTY(QObject *pointtext READ pointtext WRITE setPointtext NOTIFY pointtextChanged FINAL)
+
 public:
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;

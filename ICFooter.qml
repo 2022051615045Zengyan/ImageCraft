@@ -8,21 +8,25 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import ImageCraft 1.0
+
 Rectangle {
     id: footer
     width:parent.width
     property alias showcolor: _showcolor
     property alias text2: _text2
-    ColumnLayout{
+    ColumnLayout
+    {
         spacing:2
-        Text {
+        Text
+        {
             id: texttext
             Layout.preferredWidth:footer.width
             Layout.preferredHeight: footer.height/6
             text:qsTr("色板： 默认颜色")
             // verticalAlignment: Text.AlignVCenter // 垂直居中
         }
-        MenuSeparator{
+        MenuSeparator
+        {
             id:separator
             Layout.preferredWidth: footer.width
         } //间隔符
@@ -36,12 +40,11 @@ Rectangle {
                     Layout.preferredHeight: colorshow.height
                     Rectangle
                     {
-                        id:_showcolor
+                        id: _showcolor
                         width:height
                         height: parent.height-10
                         color: "#ddff00"
                         anchors.centerIn: parent
-
                     }
                 }
                 Rectangle{
@@ -105,8 +108,12 @@ Rectangle {
             }
         }
     }
+
     Component.onCompleted: {
         ToolCtrl.showcolor=showcolor
         ToolCtrl.pointtext=text2
+
     }
 }
+
+
