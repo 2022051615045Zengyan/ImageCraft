@@ -11,7 +11,7 @@ Menu {
     //新建
     Menu{
         width: 300
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "新建(&N)"
         //图层
 
@@ -96,7 +96,7 @@ Menu {
     }
     //图层样式
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "图层样式(&Y)"
         MyMenuItem{
             text: qsTr("ay")
@@ -109,7 +109,7 @@ Menu {
     }
     //智能滤镜
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "智能滤镜"
         MyMenuItem{
             text: qsTr("a")
@@ -123,7 +123,7 @@ Menu {
     MenuSeparator{}
     //新建填充图层
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "新建填充图层(&W)"
         MyMenuItem{
             text: qsTr("纯色(&O)...")
@@ -140,7 +140,7 @@ Menu {
     }
     //新建调整图层
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "新建调整图层(&J)"
         MyMenuItem{
             text: qsTr("a")
@@ -159,7 +159,7 @@ Menu {
     MenuSeparator{}
     //图层蒙版
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "图层蒙版(&M)"
         MyMenuItem{
             text: qsTr("显示全部(&R)")
@@ -202,7 +202,7 @@ Menu {
     }
     //矢量蒙版
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "矢量蒙版(&V)"
         MyMenuItem{
             text: qsTr("显示全部(&R)")
@@ -244,7 +244,7 @@ Menu {
 
     //视频图层
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "视频图层"
         MyMenuItem{
             text: qsTr("从文件新建视频图层(&N)")
@@ -303,7 +303,7 @@ Menu {
     }
     //栅格化
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "栅格化(&Z)"
         MyMenuItem{
             text: qsTr("a")
@@ -344,7 +344,7 @@ Menu {
     MenuSeparator{}
     //排列
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "排列(&A)"
         MyMenuItem{
             text: qsTr("a")
@@ -357,7 +357,7 @@ Menu {
     }
     //合并形状
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "合并形状(&H)"
         MyMenuItem{
             text: qsTr("a")
@@ -372,7 +372,7 @@ Menu {
     MenuSeparator{}
     //对齐
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "对齐(&I)"
         MyMenuItem{
             text: qsTr("a")
@@ -385,7 +385,7 @@ Menu {
     }
     //分布
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "分布(&T)"
         MyMenuItem{
             text: qsTr("a")
@@ -434,7 +434,7 @@ Menu {
     MenuSeparator{}
     //修边
     Menu{
-        icon.source:"icon/noneIcon.png"
+        icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: "修边"
         MyMenuItem{
             text: qsTr("a")

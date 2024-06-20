@@ -41,7 +41,7 @@ Item {
             id: _choice_CounterSelection
             Layout.preferredWidth:parent.height*3
             text: qsTr("反选")
-            icon.source: "Icon/fanxuan.svg"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/fanxuan.svg"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }

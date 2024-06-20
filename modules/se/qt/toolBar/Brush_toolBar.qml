@@ -15,7 +15,7 @@ Item {
 
         Button {
             id: _brush_Paintbrush
-            icon.source: "Icon/huabi.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/huabi.png"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -54,7 +54,7 @@ Item {
         Button {
             id: _brush_Pen
             text: "钢笔"
-            icon.source: "Icon/gangbi.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/gangbi.png"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -67,7 +67,7 @@ Item {
         Button {
             id: _line_spray
             text: "喷漆"
-            icon.source: "Icon/penqi.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/penqi.png"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

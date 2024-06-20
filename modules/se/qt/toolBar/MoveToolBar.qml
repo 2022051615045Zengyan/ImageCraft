@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
+import ImageCraft 1.0
 
 Item
 {
@@ -91,85 +92,85 @@ Item
             {
                 ListElement
                 {
-                    btnIcon: "./Icon/choose.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/choose.svg"
                     name: "选择"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/frame.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/frame.svg"
                     name: "图框"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/move.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/move.svg"
                     name: "移动"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/Grip.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Grip.svg"
                     name: "抓手"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/box.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/box.svg"
                     name: "框选"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/lasso.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/lasso.svg"
                     name: "套索工具"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/tailor.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/tailor.svg"
                     name: "裁剪"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/word.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/word.svg"
                     name: "文字"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/straw.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
                     name: "吸管"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/Matrix.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Matrix.svg"
                     name: "矩阵"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/Line.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Line.svg"
                     name: "线条"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/brush.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/brush.svg"
                     name: "画笔"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/eraser.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/eraser.svg"
                     name: "橡皮擦"
                 }
 
                 ListElement
                 {
-                    btnIcon: "./Icon/zoom.svg"
+                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/zoom.svg"
                     name: "缩放"
                 }
             }
@@ -240,6 +241,7 @@ Item
                     onTapped:
                     {
                         listView.currentIndex = index
+                        ToolCtrl.selectedTool = name
                     }
                 }
 

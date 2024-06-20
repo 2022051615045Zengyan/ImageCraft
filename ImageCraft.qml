@@ -5,8 +5,8 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import se.qt.menu 1.0
-import se.qt.toolBar 1.0
+import "modules/se/qt/menu"
+import "modules/se/qt/toolBar"
 
 ApplicationWindow
 {
@@ -21,8 +21,9 @@ ApplicationWindow
 
     menuBar: ICMenu
     {
-        width: parent.width
         id: icMenu
+        width: parent.width
+        sharePage: icContent.pageModel
     }
 
     header: ICToolBar
@@ -34,11 +35,21 @@ ApplicationWindow
     ICContent
     {
         id: icContent
-        height: parent.height - icMenu.height - icToolBar.height
+        height: window.height - icMenu.height - icToolBar.height - icFooter.height
         width: parent.width
     }
 
-    footer: ICFooter{
+    footer: ICFooter
+    {
+        id: icFooter
         height: 100
+    }
+
+    DialogBox   //管理弹出对话框
+    {
+        id: dialogBox
+        objectName: "dialogBox"
+        sharePage: icContent.pageModel
+        tabBar_currentIndex: icContent.tags.currentIndex
     }
 }

@@ -13,8 +13,14 @@ MenuBar
 {
     id: menuBar
     width: parent.width
+    required property ListModel sharePage
 
-    Menu_File{}
+
+    Menu_File
+    {
+        id: file
+        sharePage: menuBar.sharePage
+    }
     Menu_Edit{}
     Menu_Layer{}
     Menu_Graphics{}

@@ -16,7 +16,7 @@ Item {
 
         Button {
             id: _line_beeline
-            icon.source: "Icon/zhixian.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/zhixian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -38,7 +38,7 @@ Item {
 
         Button {
             id: _line_polyline
-            icon.source: "Icon/zhexian.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/zhexian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -64,7 +64,7 @@ Item {
 
         Button {
             id: _line_curve
-            icon.source: "Icon/quxian.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/quxian.png"
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

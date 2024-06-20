@@ -177,14 +177,14 @@ Menu{
     MyMenuItem
     {
         text: qsTr("选区背景不透明(&D)")
-        icon.source: "icon/checkBox-false"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
         property bool ischecked: false
         enabled: false
         onTriggered:
         {
             console.log("清除")
             ischecked = !ischecked
-            icon.source = ischecked ? "icon/checkBox-true" : "icon/checkBox-false"
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
     }
 

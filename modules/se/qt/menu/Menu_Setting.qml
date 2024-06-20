@@ -10,7 +10,7 @@ Menu{
     title: qsTr("设置(&S)")
 
     Menu{
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         title: qsTr("显示工具栏")
         CheckBox {
             id: checkBox01
@@ -29,39 +29,39 @@ Menu{
     MyMenuItem{
 
         text:qsTr("显示状态栏")
-        icon.source: "icon/checkBox-false.svg"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              property bool ischecked: false
              // enabled: false
              onTriggered:
              {
 
                  ischecked = !ischecked
-                 icon.source = ischecked ? "icon/checkBox-true.svg" : "icon/checkBox-false.svg"
+                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              }
 
     }
     MyMenuItem{
         text:qsTr("显示路径")
-        icon.source: "icon/checkBox-false.svg"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              property bool ischecked: false
              // enabled: false
              onTriggered:
              {
 
                  ischecked = !ischecked
-                 icon.source = ischecked ? "icon/checkBox-true.svg" : "icon/checkBox-false.svg"
+                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              }
     }
     MyMenuItem {
         text:qsTr("绘制时使用锯齿平滑")
-        icon.source: "icon/checkBox-false.svg"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              property bool ischecked: false
              // enabled: false
              onTriggered:
              {
 
                  ischecked = !ischecked
-                 icon.source = ischecked ? "icon/checkBox-true.svg" : "icon/checkBox-false.svg"
+                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
              }
     }
     MenuSeparator{}

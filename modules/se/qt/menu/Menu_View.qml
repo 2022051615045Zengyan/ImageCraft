@@ -43,7 +43,7 @@ Menu {
 
     Menu{
         title:"缩放（&Z)"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
 
         ColumnLayout{
             Repeater{
@@ -106,14 +106,14 @@ Menu {
         {
             text: qsTr("显示网格(&G)")
             sequence: "Ctrl+G"
-            icon.source: "icon/checkBox-false"
+            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
             property bool ischecked: false
             // enabled: false
             onTriggered:
             {
                 console.log("显示网格")
                 ischecked = !ischecked
-                icon.source = ischecked ? "icon/checkBox-true" : "icon/checkBox-false"
+                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
             }
         }
 
@@ -121,14 +121,14 @@ Menu {
         {
             text: qsTr("显示总览图(&H)")
             sequence: "Ctrl+H"
-            icon.source: "icon/checkBox-false"
+            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
             property bool ischecked: false
             // enabled: false
             onTriggered:
             {
                 console.log("显示总览图")
                 ischecked = !ischecked
-                icon.source = ischecked ? "icon/checkBox-true" : "icon/checkBox-false"
+                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
             }
         }
     MenuSeparator{}
@@ -136,28 +136,28 @@ Menu {
     MyMenuItem
         {
             text: qsTr("总览图缩放显示（&M)")
-            icon.source: "icon/checkBox-false"
+            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
             property bool ischecked: false
             enabled: false
             onTriggered:
             {
                 console.log("总览图缩放显示（")
                 ischecked = !ischecked
-                icon.source = ischecked ? "icon/checkBox-true" : "icon/checkBox-false"
+                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
             }
         }
 
     MyMenuItem
         {
             text: qsTr("启用总览图矩阵(&R)")
-            icon.source: "icon/checkBox-false"
+            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
             property bool ischecked: false
             enabled: false
             onTriggered:
             {
                 console.log("启用总览图矩阵")
                 ischecked = !ischecked
-                icon.source = ischecked ? "icon/checkBox-true" : "icon/checkBox-false"
+                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
             }
         }
 

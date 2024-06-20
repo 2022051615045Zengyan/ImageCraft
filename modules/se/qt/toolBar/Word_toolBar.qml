@@ -48,7 +48,7 @@ Item
         {
             id: _text_bold
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/jiacu.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/jiacu.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -57,7 +57,7 @@ Item
         {
             id: _text_italic
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/qingxie.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/qingxie.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -66,7 +66,7 @@ Item
         {
             id: _text_underline
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/xiahuaxian.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/xiahuaxian.png"
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -76,7 +76,7 @@ Item
         {
             id: _text_delete
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/shanchuxian.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/shanchuxian.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -86,21 +86,21 @@ Item
         Button {
             id: _word_left
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/juzuo.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/juzuo.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
         Button {
             id: _word_center
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/juzhong.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/juzhong.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
         Button {
             id: _word_right
             Layout.preferredWidth:parent.height*3
-            icon.source: "Icon/juyou.png"
+            icon.source: "qrc:/modules/se/qt/toolBar/Icon/juyou.png"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }

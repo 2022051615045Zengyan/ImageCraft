@@ -41,7 +41,7 @@ Menu {
     //风格化
     Menu{
         title: "风格化"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("查找边缘")
             onTriggered: console.log("Delete action triggered");
@@ -83,7 +83,7 @@ Menu {
     //模糊
     Menu{
         title: "模糊"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("表面模糊...")
             onTriggered: console.log("Delete action triggered");
@@ -133,7 +133,7 @@ Menu {
     //扭曲
     Menu{
         title: "扭曲"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("波浪...")
             onTriggered: console.log("Delete action triggered");
@@ -175,7 +175,7 @@ Menu {
     //锐化
     Menu{
         title: "锐化"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("USM锐化...")
             onTriggered: console.log("Delete action triggered");
@@ -205,7 +205,7 @@ Menu {
     //视频
     Menu{
         title: "视频"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("NTSC颜色")
             onTriggered: console.log("Delete action triggered");
@@ -219,7 +219,7 @@ Menu {
     //像素化
     Menu{
         title: "像素化"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("彩块化")
             onTriggered: console.log("Delete action triggered");
@@ -253,7 +253,7 @@ Menu {
     //渲染
     Menu{
         title: "渲染"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("火焰...")
             onTriggered: console.log("Delete action triggered");
@@ -292,7 +292,7 @@ Menu {
     //杂色
     Menu{
         title: "杂色"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("减少杂色...")
             onTriggered: Qt.quit();
@@ -318,7 +318,7 @@ Menu {
     //其它
     Menu{
         title: "其它"
-        icon.source: "icon/noneIcon.png"
+        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
             text: qsTr("HSB/HSL")
             onTriggered: Qt.quit();

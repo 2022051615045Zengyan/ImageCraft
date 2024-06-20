@@ -4,12 +4,14 @@
  */
 import QtQuick
 import QtQuick.Controls
+import ImageCraft 1.0
 
 Menu
 {
+    id: file
     width: 250
     title: qsTr("文件(&F)")
-
+    required property ListModel sharePage
 
     MyMenuItem
     {
@@ -18,7 +20,7 @@ Menu
         icon.name: "document-new-symbolic"
         onTriggered:
         {
-            console.log("新建")
+            ActiveCtrl.newImage()
         }
     }
 
@@ -29,14 +31,51 @@ Menu
         icon.name: "document-open"
         onTriggered:
         {
-            console.log("打开")
+            ActiveCtrl.open()
         }
     }
 
     Menu
     {
+        id: recentFileMenu
         icon.name: "document-open-recent"
         title: qsTr("最近打开文件(&T)")
+        Repeater
+        {
+            model: ActiveCtrl.recentFiles
+            MyMenuItem
+            {
+                text: modelData
+                property ListModel sharePage: file.sharePage
+                onTriggered:
+                {
+                    var fileName = text.substring(text.lastIndexOf("/") + 1) // 获取文件名
+                    ActiveCtrl.addRecentFiles(text)
+                    sharePage.append({ pageName: fileName,pixUrl_yuan: text})
+                }
+
+                HoverHandler
+                {
+                    id: recentFileHover
+                }
+                Component.onCompleted:
+                {
+                    recentFileMenu.width = Math.max(text.length * 7 + 10 + height, recentFileMenu.width)
+                }
+
+                Image
+                {
+                    width: parent.height
+                    height: parent.height
+                    anchors.top: parent.top
+                    anchors.left: parent.right
+                    anchors.leftMargin: - width
+                    source: text
+                    fillMode: Image.PreserveAspectFit
+                    visible: recentFileHover.hovered
+                }
+            }
+        }
     }
 
     MyMenuItem
@@ -90,7 +129,7 @@ Menu
         icon.name: "document-save"
         onTriggered:
         {
-            console.log("保存")
+            ActiveCtrl.save()
         }
     }
 
@@ -101,7 +140,7 @@ Menu
         icon.name: "document-save-as"
         onTriggered:
         {
-            console.log("保存为")
+            ActiveCtrl.saveAs()
         }
     }
 
@@ -134,7 +173,7 @@ Menu
         icon.name: "application-exit"
         onTriggered:
         {
-            console.log("退出")
+            Qt.quit()
         }
     }
 }

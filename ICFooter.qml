@@ -95,7 +95,6 @@ Rectangle {
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("100%")
-
                 }
             }
         }

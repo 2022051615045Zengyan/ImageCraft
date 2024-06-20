@@ -10,7 +10,7 @@ MenuItem
     id: item
     property string sequence
     property string title
-    icon.source:"icon/noneIcon.png"
+    icon.source:"qrc:/modules/se/qt/menu/icon/noneIcon.png"
 
 
 

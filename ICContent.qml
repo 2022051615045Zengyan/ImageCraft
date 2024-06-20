@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import ImageCraft 1.0
 
 Item
 {
@@ -43,6 +44,7 @@ Item
                     Layout.preferredHeight: 25
                     Layout.preferredWidth: left.width
                     pageModel: content.pageModel
+                    stackL: lcenter.stackL
                 }
 
                 LCenter
@@ -74,6 +76,12 @@ Item
             Layout.fillHeight: true
             pageModel: content.pageModel
             currentIndex: tags.currentIndex
+            stackL: lcenter.stackL
         }
+    }
+
+    Component.onCompleted:
+    {
+        ActiveCtrl.sharePage = pageModel
     }
 }
