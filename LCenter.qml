@@ -140,13 +140,13 @@ Item
 
         onCurrentIndexChanged:
         {
-            var layer_ = (currentIndex !== -1 ? itemAt(currentIndex).thelayer : null)
+            var layer_ = (itemAt(currentIndex) ? itemAt(currentIndex).thelayer : null)
             ActiveCtrl.currentLayer = layer_
-            ActiveCtrl.modified = (currentIndex !== -1 ? itemAt(currentIndex).isModified : false)
+            ActiveCtrl.modified = (itemAt(currentIndex) ? itemAt(currentIndex).isModified : false)
             Qt.callLater(function()
             {
-                ActiveCtrl.size = (currentIndex !== -1 ? itemAt(currentIndex).imageSize : null)
-                var filePath = (currentIndex !== -1 ? itemAt(currentIndex).filePath : "")
+                ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
+                var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
             });
         }
@@ -157,7 +157,7 @@ Item
             ActiveCtrl.modified = (itemAt(currentIndex) ? itemAt(currentIndex).isModified : false)
             Qt.callLater(function()
             {
-                ActiveCtrl.size = (currentIndex !== -1 ? itemAt(currentIndex).imageSize : null)
+                ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
             });

@@ -78,8 +78,12 @@ qt_add_qml_module(
   activectrl.h
   QML_FILES
   EditorView.qml
-  SOURCES toolctrl.cpp toolctrl.h
-  SOURCES toolctrl.cpp toolctrl.h)
+  SOURCES
+  toolctrl.cpp
+  toolctrl.h
+  SOURCES
+  toolctrl.cpp
+  toolctrl.h)
 
 target_compile_features(appImageCraft PRIVATE cxx_std_20)
 

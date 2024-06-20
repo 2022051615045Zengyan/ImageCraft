@@ -107,7 +107,7 @@ Menu
         icon.name: "document-close"
         onTriggered:
         {
-            console.log("关闭")
+            ActiveCtrl.close()
         }
     }
 
@@ -118,7 +118,7 @@ Menu
         icon.name: "geany-close-all"
         onTriggered:
         {
-            console.log("关闭全部")
+            ActiveCtrl.closeAll()
         }
     }
 
