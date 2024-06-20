@@ -34,7 +34,7 @@ Image
         id: imageViewDragArea
         anchors.centerIn: parent
         color: "transparent"
-        z: -1
+        z: 1
         height: status === Image.Ready ? ((sourceSize.height / sourceSize.width >= parent.height / parent.width) ? parent.height :  sourceSize.height * parent.width / sourceSize.width) : parent.height
         width: status === Image.Ready ? ((sourceSize.height / sourceSize.width < parent.height / parent.width) ? parent.width : sourceSize.width * parent.height / sourceSize.height) : parent.width
         DragHandler

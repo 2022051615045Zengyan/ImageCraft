@@ -1,6 +1,7 @@
 /** activectrl.h
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
+ * Funtion: refresh and TakeAFullScreenshot
  */
 #pragma once
 
@@ -47,6 +48,8 @@ public:
     Q_INVOKABLE void close();
     Q_INVOKABLE void closeAll();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void TakeAFullScreenshot();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -112,6 +115,8 @@ signals:
 
     void currentIndexChanged();
 
+    void refreshSignal();
+
 private slots:
     void openSlot();
 
@@ -122,9 +127,11 @@ private:
     qsizetype m_recentFileNum;
     QStringList m_recentFiles;
     QSettings m_setting;
+    QScreen* m_screen;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;
+    QString m_originalImageUrl;
     int m_currentIndex;
 
     QObject* m_openDialogBox = nullptr;

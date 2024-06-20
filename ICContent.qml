@@ -1,6 +1,9 @@
 /** ICContent.qml
  * Written by RenTianxiang on 2024-6-19
  * Funtion: center window
+ *
+ * Modified by ZhanXuecai on 2024-6-20
+ * Function:removeElement,getElementImage,replaceElement
  */
 import QtQuick
 import QtQuick.Layouts
@@ -19,7 +22,7 @@ Item
     {
         id: _pageModel
 
-        function addMelement(fileName, imageUrl)
+        function addElement(fileName, imageUrl)
         {
             append({pageName: fileName, pixUrl_yuan: imageUrl});
         }

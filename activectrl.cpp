@@ -1,11 +1,17 @@
 /** activectrl.cpp
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
+ * Funtion: refresh and TakeAFullScreenshot
  */
 #include "activectrl.h"
+#include <QDesktopServices>
+#include <QGuiApplication>
 #include <QMetaObject>
+#include <QPixmap>
 #include <QQmlProperty>
 #include <QQuickItemGrabResult>
+#include <QScreen>
+#include <QStandardPaths>
 
 ActiveCtrl::ActiveCtrl(QObject *parent)
     : QObject{parent}
@@ -116,7 +122,7 @@ void ActiveCtrl::openSlot()
     addRecentFiles(imageUrl);
 
     QMetaObject::invokeMethod(m_sharePage,
-                              "addMelement",
+                              "addElement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),
                               Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
 }
@@ -288,4 +294,64 @@ void ActiveCtrl::closeAll()
     } else {
         qDebug() << "关闭全部失败!!";
     }
+}
+
+void ActiveCtrl::refresh()
+{
+    QString imageUrl;
+    QString fileName;
+
+    QVariant rv;
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "getElementImage",
+                              Q_RETURN_ARG(QVariant, rv),
+                              Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)));
+    imageUrl = rv.toString();
+
+    int lastIndexOfSlash = imageUrl.lastIndexOf('/') + 1;
+    fileName = imageUrl.mid(lastIndexOfSlash);
+
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "replaceElement",
+                              Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                              Q_ARG(QVariant, QVariant::fromValue(fileName)),
+                              Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
+
+    emit refreshSignal();
+}
+
+void ActiveCtrl::TakeAFullScreenshot()
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        qDebug() << "获取主屏幕错误";
+        return;
+    }
+    qDebug() << screen;
+    QPixmap pixmap = screen->grabWindow(0);
+
+    if (pixmap.isNull()) {
+        qDebug() << "获取失败！";
+        return;
+    }
+
+    QString tempPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    if (tempPath.isEmpty()) {
+        qDebug() << "获取临时文件路径失败";
+        return;
+    }
+    QString filePath = tempPath + "/screenshot_"
+                       + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".png";
+    if (!pixmap.save(filePath)) {
+        qDebug() << "没能成功把路径保存到:" << filePath;
+        return;
+    }
+
+    filePath = "file://" + filePath;
+    int lastIndexOfSlash = filePath.lastIndexOf('/') + 1;
+    QString fileName = filePath.mid(lastIndexOfSlash);
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "addElement",
+                              Q_ARG(QVariant, QVariant::fromValue(fileName)),
+                              Q_ARG(QVariant, QVariant::fromValue(filePath)));
 }
