@@ -1,6 +1,9 @@
 /** ICContent.qml
  * Written by RenTianxiang on 2024-6-19
  * Funtion: center window
+ *
+ * Modified by ZhanXuecai on 2024-6-20
+ * Function:removeElement,getElementImage,replaceElement
  */
 import QtQuick
 import QtQuick.Layouts
@@ -19,9 +22,25 @@ Item
     {
         id: _pageModel
 
-        function addEelement(fileName, imageUrl)
+        function addElement(fileName, imageUrl)
+
         {
             append({pageName: fileName, pixUrl_yuan: imageUrl});
+        }
+
+        function removeElement(index,deletion)
+        {
+            remove(index,deletion)
+        }
+
+        function getElementImage(index){
+            return get(index).pixUrl_yuan
+        }
+
+        function replaceElement(index,filename,imageUrl)
+        {
+            remove(index,1)
+            insert(index,{pageName:filename,pixUrl_yuan:imageUrl})
         }
     }
 

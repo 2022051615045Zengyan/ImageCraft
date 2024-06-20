@@ -1,16 +1,22 @@
 /** activectrl.cpp
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
- * 
+ * Funtion: refresh and TakeAFullScreenshot
+ *
  * Modified by RenTianxiang on 2024-6-20
- *      Reorganized the logical structure to save and save as
- *      Added export finction
+ * Reorganized the logical structure to save and save as
+ * Added export finction
  */
 #include "activectrl.h"
+#include <QDesktopServices>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QMetaObject>
+#include <QPixmap>
 #include <QQmlProperty>
 #include <QQuickItemGrabResult>
+#include <QScreen>
+#include <QStandardPaths>
 #include <opencv4/opencv2/opencv.hpp>
 
 ActiveCtrl::ActiveCtrl(QObject *parent)
@@ -122,7 +128,7 @@ void ActiveCtrl::openSlot()
     addRecentFiles(imageUrl);
 
     QMetaObject::invokeMethod(m_sharePage,
-                              "addEelement",
+                              "addElement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),
                               Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
     QObject::disconnect(m_openDialogBox, SIGNAL(accepted()), this, SLOT(openSlot()));
@@ -389,6 +395,96 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
     emit recentFilesChanged();
 }
 
+void ActiveCtrl::close()
+{
+    if (!m_sharePage) {
+        return;
+    }
+    if (m_currentIndex != -1) {
+        m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                                "removeElement",
+                                                Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                                Q_ARG(QVariant, QVariant::fromValue(1)));
+        m_currentLayer = nullptr;
+        emit currentLayerChanged();
+    } else {
+        qDebug() << "关闭失败!";
+    }
+}
+
+void ActiveCtrl::closeAll()
+{
+    if (!m_sharePage) {
+        return;
+    }
+    if (m_currentIndex != -1) {
+        m_sharePage->metaObject()->invokeMethod(m_sharePage, "clear", Qt::DirectConnection);
+        m_currentLayer = nullptr;
+        emit currentLayerChanged();
+    } else {
+        qDebug() << "关闭全部失败!!";
+    }
+}
+
+void ActiveCtrl::refresh()
+{
+    QString imageUrl;
+    QString fileName;
+
+    QVariant rv;
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "getElementImage",
+                              Q_RETURN_ARG(QVariant, rv),
+                              Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)));
+    imageUrl = rv.toString();
+
+    int lastIndexOfSlash = imageUrl.lastIndexOf('/') + 1;
+    fileName = imageUrl.mid(lastIndexOfSlash);
+
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "replaceElement",
+                              Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                              Q_ARG(QVariant, QVariant::fromValue(fileName)),
+                              Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
+
+    emit refreshSignal();
+}
+
+void ActiveCtrl::TakeAFullScreenshot()
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        qDebug() << "获取主屏幕错误";
+        return;
+    }
+    qDebug() << screen;
+    QPixmap pixmap = screen->grabWindow(0);
+
+    if (pixmap.isNull()) {
+        qDebug() << "获取失败！";
+        return;
+    }
+
+    QString tempPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    if (tempPath.isEmpty()) {
+        qDebug() << "获取临时文件路径失败";
+        return;
+    }
+    QString filePath = tempPath + "/screenshot_"
+                       + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".png";
+    if (!pixmap.save(filePath)) {
+        qDebug() << "没能成功把路径保存到:" << filePath;
+        return;
+    }
+
+    filePath = "file://" + filePath;
+    int lastIndexOfSlash = filePath.lastIndexOf('/') + 1;
+    QString fileName = filePath.mid(lastIndexOfSlash);
+    QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
+                              "addElement",
+                              Q_ARG(QVariant, QVariant::fromValue(fileName)),
+                              Q_ARG(QVariant, QVariant::fromValue(filePath)));
+}
 void ActiveCtrl::exportImage()
 {
     m_exportPathDialog->metaObject()->invokeMethod(m_exportPathDialog, "open", Qt::DirectConnection);

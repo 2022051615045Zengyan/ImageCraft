@@ -1,6 +1,9 @@
-/** editor.cpp
+/** editor.h
  * Written by Rentianxiang on 2024-6-20
  * Funtion: image editor
+ * 
+ * Modified by ZhanXuecai on2024-6-20
+ * Funtion: brush
  */
 #include "editor.h"
 #include <QBuffer>
@@ -43,6 +46,47 @@ void Editor::openImage(const QString &path)
     emit imageChanged();
 }
 
+void Editor::draw(int x, int y)
+{
+    qDebug() << m_path;
+    qDebug() << x << y;
+    cv::Mat mat = cv::imread(std::string(m_path.toLocal8Bit()));
+    //qDebug() << mat;
+    if (mat.empty()) {
+        qDebug() << "Failed to load image!";
+        return;
+    }
+    cv::Scalar color(m_brushColor.blue(), m_brushColor.green(), m_brushColor.red());
+    cv::circle(mat, cv::Point(x, y), m_brushSize, color, -1);
+
+    cv::Mat rgb;
+    cv::cvtColor(mat, rgb, cv::COLOR_BGR2RGB);
+    m_brushimage = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
+    m_image = m_brushimage.copy();
+    emit imageChanged();
+}
+
+// void Editor::moveImage(int dx, int dy)
+// {
+//     m_position += QPoint(dx, dy);
+//     cv::Mat mat = cv::imread(std::string(m_path.toLocal8Bit()));
+//     if (mat.empty()) {
+//         qDebug() << "Failed to load image!";
+//         return;
+//     }
+
+//     cv::Mat translated;
+//     cv::Mat translationMatrix
+//         = (cv::Mat_<double>(2, 3) << 1, 0, m_position.x(), 0, 1, m_position.y()); //创建变换矩阵
+//     cv::warpAffine(mat, translated, translationMatrix, mat.size());               //平移变换
+
+//     cv::Mat rgb;
+//     cv::cvtColor(translated, rgb, cv::COLOR_BGR2RGB);
+//     m_image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
+
+//     emit imageChanged();
+// }
+
 QString Editor::path() const
 {
     return m_path;
@@ -54,4 +98,30 @@ void Editor::setPath(const QString &newPath)
         return;
     m_path = newPath;
     emit pathChanged();
+}
+
+QColor Editor::brushColor() const
+{
+    return m_brushColor;
+}
+
+void Editor::setBrushColor(const QColor &newBrushColor)
+{
+    if (m_brushColor == newBrushColor)
+        return;
+    m_brushColor = newBrushColor;
+    emit brushColorChanged();
+}
+
+int Editor::brushSize() const
+{
+    return m_brushSize;
+}
+
+void Editor::setBrushSize(int newBrushSize)
+{
+    if (m_brushSize == newBrushSize)
+        return;
+    m_brushSize = newBrushSize;
+    emit brushSizeChanged();
 }

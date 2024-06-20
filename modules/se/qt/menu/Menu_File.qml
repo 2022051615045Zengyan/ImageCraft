@@ -2,8 +2,14 @@
  * Written by Rentianxiang on 2024-6-18
  * Funtion: File Menu
  *
+
+ * Modified by ZhanXuecai on 2024-6-20
+ * Function: close and closeall
+ * Function: fresh and TakeAFullScreenshot
+
  * Modified by RenTianxiang on 2024-6-20
  *      modified export action
+
  */
 import QtQuick
 import QtQuick.Controls
@@ -86,7 +92,7 @@ Menu
         text: qsTr("捕获屏幕截图")
         onTriggered:
         {
-            console.log("捕获屏幕截图")
+            ActiveCtrl.TakeAFullScreenshot()
         }
     }
 
@@ -110,7 +116,7 @@ Menu
         icon.name: "document-close"
         onTriggered:
         {
-            console.log("关闭")
+            ActiveCtrl.close()
         }
     }
 
@@ -121,7 +127,7 @@ Menu
         icon.name: "geany-close-all"
         onTriggered:
         {
-            console.log("关闭全部")
+            ActiveCtrl.closeAll()
         }
     }
 
@@ -165,6 +171,10 @@ Menu
         text: qsTr("重新加载(&D)")
         sequence: "F5"
         icon.name: "view-refresh"
+        onTriggered:
+        {
+            ActiveCtrl.refresh()
+        }
     }
 
     MenuSeparator{}

@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("ImageCraft");
 
     app.setWindowIcon(QIcon(":/icon/imagecraft.png"));
-
     QQmlApplicationEngine engine;
     QObject::connect(
         &engine,

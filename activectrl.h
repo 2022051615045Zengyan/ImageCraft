@@ -1,6 +1,7 @@
 /** activectrl.h
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
+ * Funtion: refresh and TakeAFullScreenshot
  */
 #pragma once
 
@@ -38,10 +39,10 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
     Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged FINAL)
-    Q_PROPERTY(
-        int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
+    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
     Q_PROPERTY(QObject* exportPathDialog READ exportPathDialog WRITE setExportPathDialog NOTIFY
                    exportPathDialogChanged FINAL)
+
 public:
     explicit ActiveCtrl(QObject* parent = nullptr);
 
@@ -49,7 +50,13 @@ public:
     Q_INVOKABLE void newImage();
     Q_INVOKABLE void save();
     Q_INVOKABLE void saveAs();
+    Q_INVOKABLE void close();
+    Q_INVOKABLE void closeAll();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
+
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void TakeAFullScreenshot();
+
     Q_INVOKABLE void exportImage();
 
     Editor* currentEditor() const;
@@ -119,6 +126,8 @@ signals:
 
     void currentIndexChanged();
 
+    void refreshSignal();
+
     void exportPathDialogChanged();
 
 private slots:
@@ -133,10 +142,12 @@ private:
     qsizetype m_recentFileNum;
     QStringList m_recentFiles;
     QSettings m_setting;
+    QScreen* m_screen;
     int m_currentIndex;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;
+    QString m_originalImageUrl;
 
     QObject* m_openDialogBox = nullptr;
     QObject* m_newDialogBox = nullptr;
