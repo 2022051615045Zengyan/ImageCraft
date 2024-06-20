@@ -1,6 +1,9 @@
 /** DialogBox.qml
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: manage dialogs
+ *
+ * Modified by RenTianxiang on 2024-6-20
+ *      added exportPathDialog to select exportPath
  */
 import QtQuick
 import QtQuick.Dialogs
@@ -16,6 +19,7 @@ Item
     property Dialog newImageDialog: null
     property FileDialog savePathDialog: null
     property MessageDialog failToSave: null
+    property alias exportPathDialog: _exportPathDialog
 
     openFileDialog: FileDialog
     {
@@ -90,7 +94,7 @@ Item
     {
         id: savePathDialog
         title: qsTr("Select Save Path")
-        nameFilters: ["Images files (*.png *.jpg)"]
+        nameFilters: ["PNG Files (*.png)","JPEG Files (*.jpg *.jpeg)","BMP Files (*.bmp)","All Files (*.*)"]
         fileMode: FileDialog.SaveFile
     }
 
@@ -102,11 +106,20 @@ Item
         text:"Fail to save the image!"
     }
 
+    FileDialog
+    {
+        id: _exportPathDialog
+        title: qsTr("Selext Export Path")
+        nameFilters: ["PNG Files (*.png)","JPEG Files (*.jpg *.jpeg)","BMP Files (*.bmp)","All Files (*.*)"]
+        fileMode: FileDialog.SaveFile
+    }
+
     Component.onCompleted:
     {
         ActiveCtrl.openDialogBox = openFileDialog
         ActiveCtrl.newDialogBox = newImageDialog
         ActiveCtrl.savePathDialod = savePathDialog
         ActiveCtrl.failToSave = failToSave
+        ActiveCtrl.exportPathDialog = exportPathDialog
     }
 }
