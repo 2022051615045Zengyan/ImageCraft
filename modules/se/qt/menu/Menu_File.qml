@@ -2,9 +2,14 @@
  * Written by Rentianxiang on 2024-6-18
  * Funtion: File Menu
  *
+
  * Modified by ZhanXuecai on 2024-6-20
  * Function: close and closeall
  * Function: fresh and TakeAFullScreenshot
+
+ * Modified by RenTianxiang on 2024-6-20
+ *      modified export action
+
  */
 import QtQuick
 import QtQuick.Controls
@@ -154,7 +159,7 @@ Menu
         icon.name: "document-export"
         onTriggered:
         {
-            console.log("导出")
+            ActiveCtrl.exportImage()
         }
     }
 

@@ -17,8 +17,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("cqnu.com");
     QCoreApplication::setApplicationName("ImageCraft");
 
-    app.setWindowIcon(QIcon(":/icon/IC.ico"));
-
+    app.setWindowIcon(QIcon(":/icon/imagecraft.png"));
     QQmlApplicationEngine engine;
     QObject::connect(
         &engine,

@@ -23,6 +23,7 @@ Item
         id: _pageModel
 
         function addElement(fileName, imageUrl)
+
         {
             append({pageName: fileName, pixUrl_yuan: imageUrl});
         }
@@ -63,6 +64,11 @@ Item
                     Layout.preferredWidth: left.width
                     pageModel: content.pageModel
                     stackL: lcenter.stackL
+
+                    onCurrentIndexChanged:
+                    {
+                        ActiveCtrl.currentIndex = currentIndex
+                    }
                 }
 
                 LCenter
