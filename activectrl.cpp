@@ -121,6 +121,19 @@ void ActiveCtrl::openSlot()
                               Q_ARG(QVariant, QVariant::fromValue(imageUrl)));
 }
 
+int ActiveCtrl::currentIndex() const
+{
+    return m_currentIndex;
+}
+
+void ActiveCtrl::setCurrentIndex(int newCurrentIndex)
+{
+    if (m_currentIndex == newCurrentIndex)
+        return;
+    m_currentIndex = newCurrentIndex;
+    emit currentIndexChanged();
+}
+
 void ActiveCtrl::loadRecentFiles()
 {
     m_recentFiles = m_setting.value("recentFiles").toStringList();
@@ -244,4 +257,35 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 
     saveRecentFiles();
     emit recentFilesChanged();
+}
+
+void ActiveCtrl::close()
+{
+    if (!m_sharePage) {
+        return;
+    }
+    if (m_currentIndex != -1) {
+        m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                                "removeElement",
+                                                Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                                Q_ARG(QVariant, QVariant::fromValue(1)));
+        m_currentLayer = nullptr;
+        emit currentLayerChanged();
+    } else {
+        qDebug() << "关闭失败!";
+    }
+}
+
+void ActiveCtrl::closeAll()
+{
+    if (!m_sharePage) {
+        return;
+    }
+    if (m_currentIndex != -1) {
+        m_sharePage->metaObject()->invokeMethod(m_sharePage, "clear", Qt::DirectConnection);
+        m_currentLayer = nullptr;
+        emit currentLayerChanged();
+    } else {
+        qDebug() << "关闭全部失败!!";
+    }
 }

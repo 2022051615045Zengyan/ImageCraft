@@ -23,6 +23,21 @@ Item
         {
             append({pageName: fileName, pixUrl_yuan: imageUrl});
         }
+
+        function removeElement(index,deletion)
+        {
+            remove(index,deletion)
+        }
+
+        function getElementImage(index){
+            return get(index).pixUrl_yuan
+        }
+
+        function replaceElement(index,filename,imageUrl)
+        {
+            remove(index,1)
+            insert(index,{pageName:filename,pixUrl_yuan:imageUrl})
+        }
     }
 
     RowLayout

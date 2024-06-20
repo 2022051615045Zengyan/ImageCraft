@@ -34,6 +34,9 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
     Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged FINAL)
+    Q_PROPERTY(
+        int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
+
 public:
     explicit ActiveCtrl(QObject* parent = nullptr);
 
@@ -41,6 +44,8 @@ public:
     Q_INVOKABLE void newImage();
     Q_INVOKABLE void save();
     Q_INVOKABLE void saveAs();
+    Q_INVOKABLE void close();
+    Q_INVOKABLE void closeAll();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
 
     Editor* currentEditor() const;
@@ -76,6 +81,9 @@ public:
     QObject* sharePage() const;
     void setSharePage(QObject* newSharePage);
 
+    int currentIndex() const;
+    void setCurrentIndex(int newCurrentIndex);
+
 signals:
 
     void dialogBoxChanged();
@@ -102,6 +110,8 @@ signals:
 
     void sharePageChanged();
 
+    void currentIndexChanged();
+
 private slots:
     void openSlot();
 
@@ -115,6 +125,7 @@ private:
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;
+    int m_currentIndex;
 
     QObject* m_openDialogBox = nullptr;
     QObject* m_newDialogBox = nullptr;

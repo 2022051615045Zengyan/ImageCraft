@@ -118,11 +118,17 @@ Item
                 {
                     id: tabBarHover
                 }
+
+
+
                 Component.onCompleted:
                 {
                     tabBar.currentIndex = index
                 }
             }
+        }
+        onCurrentIndexChanged: {
+            ActiveCtrl.currentIndex=currentIndex
         }
     }
 }
