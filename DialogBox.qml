@@ -15,23 +15,23 @@ Item
     id: dialogBoxs
     required property ListModel sharePage
     required property int tabBar_currentIndex
-    property FileDialog openFileDialog: null
-    property Dialog newImageDialog: null
-    property FileDialog savePathDialog: null
-    property MessageDialog failToSave: null
+    property alias openFileDialog: _openFileDialog
+    property alias newImageDialog: _newImageDialog
+    property alias savePathDialog: _savePathDialog
+    property alias failToSave: _failToSave
     property alias exportPathDialog: _exportPathDialog
 
-    openFileDialog: FileDialog
+    FileDialog
     {
-        id: openFileDialog_
+        id: _openFileDialog
         title: qsTr("Open File")
         nameFilters: ["Images files (*.png *.jpg)"]
     }
 
 
-    newImageDialog:Dialog
+    Dialog
     {
-        id:canvasDialog
+        id:_newImageDialog
         title:"选择画布"
         modal:true
         standardButtons: Dialog.Ok | Dialog.Cancel
@@ -81,7 +81,7 @@ Item
                             onTapped:
                             {
                                 dialogBoxs.sharePage.append({pageName:"untitled", pixUrl_yuan: rect.pixUrl})
-                                canvasDialog.accept()
+                                _newImageDialog.accept()
                             }
                         }
                     }
@@ -90,17 +90,17 @@ Item
         }
     }
 
-    savePathDialog: FileDialog
+    FileDialog
     {
-        id: savePathDialog
+        id: _savePathDialog
         title: qsTr("Select Save Path")
         nameFilters: ["PNG Files (*.png)","JPEG Files (*.jpg *.jpeg)","BMP Files (*.bmp)","All Files (*.*)"]
         fileMode: FileDialog.SaveFile
     }
 
-    failToSave: MessageDialog
+    MessageDialog
     {
-        id: failToSave
+        id: _failToSave
         modality: Qt.WindowModal
         buttons:MessageDialog.Ok
         text:"Fail to save the image!"

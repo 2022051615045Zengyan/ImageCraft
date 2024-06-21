@@ -1,6 +1,9 @@
 /** Tags.qml
  * Written by RenTianxiang on 2024-6-19
- * Funtion: tags:
+ * Funtion: tags
+ *
+ * Modified by RenTianxiang on 2024-6-21
+ *      Modified the modification status of the image tag
  */
 import QtQuick
 import QtQuick.Controls
@@ -24,10 +27,10 @@ Item
             model: pageModel
             TabButton
             {
+                id: tabBtn
                 property bool isHoverd: tabBarHover.hovered
                 property bool isModified: stackL.itemAt(index) ? stackL.itemAt(index).isModified : false
-                text:  isModified ? pageName + "*" : pageName
-                palette.buttonText: "black"
+                property string imageType: "qrc:/icon/img.svg"
                 height: tabBar.height
                 width: 100 + cancel_btn.width * 2
                 background: Rectangle
@@ -52,59 +55,112 @@ Item
                         }
                     }
                 }
-
-                Rectangle
+                RowLayout
                 {
-                    id: cancel_btn
-                    property bool isHoverd: cancel_btnHover.hovered
-                    z: 1
-                    width: 15
-                    height: 15
-                    radius: 15
-                    color: isHoverd ?  "lightcoral" : "transparent"
-                    anchors
+                    spacing: 2
+
+                    Item
                     {
-                        verticalCenter: parent.verticalCenter
-                        right: parent.right
-                        rightMargin: 3
-                    }
-                    Rectangle
-                    {
-                        anchors.centerIn: parent
-                        height: 8
-                        width: 1
-                        color: parent.isHoverd ? "white" : "grey"
-                        rotation: 45
-                    }
-                    Rectangle
-                    {
-                        anchors.centerIn: parent
-                        height: 8
-                        width: 1
-                        color: parent.isHoverd ? "white" : "grey"
-                        rotation: -45
+                        Layout.preferredHeight: 10
+                        Layout.preferredWidth: 2
                     }
 
-                    TapHandler
+                    Image
                     {
-                        onTapped:
+                        z: 1
+                        Layout.preferredWidth: 18
+                        Layout.preferredHeight: 18
+                        fillMode: Image.PreserveAspectFit
+                        source: tabBtn.isModified ? "qrc:/icon/save.svg" : imageType
+                    }
+
+                    Text
+                    {
+                        id: imageName
+                        Layout.preferredHeight: tabBtn.height
+                        Layout.preferredWidth: tabBtn.width - 44
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        text: pageName
+                        color: "black"
+                        elide: Text.ElideRight // 设置超出部分显示省略号
+                        verticalAlignment: Text.AlignVCenter
+
+                        HoverHandler
                         {
-                            // 延迟删除组件
-                            Qt.callLater(function()
-                            {
-                                if (pageModel.count > index)
-                                {
-                                    pageModel.remove(index, 1)
-                                }
-                            });
+                            id: imageName_hover
                         }
                     }
 
-                    HoverHandler
+                    Rectangle
                     {
-                        id: cancel_btnHover
+                        id: cancel_btn
+                        property bool isHoverd: cancel_btnHover.hovered
+                        z: 1
+                        Layout.preferredWidth: 15
+                        Layout.preferredHeight: 15
+                        radius: 15
+                        color: isHoverd ?  "lightcoral" : "transparent"
+                        Rectangle
+                        {
+                            anchors.centerIn: parent
+                            height: 8
+                            width: 1
+                            color: parent.isHoverd ? "white" : "grey"
+                            rotation: 45
+                        }
+                        Rectangle
+                        {
+                            anchors.centerIn: parent
+                            height: 8
+                            width: 1
+                            color: parent.isHoverd ? "white" : "grey"
+                            rotation: -45
+                        }
+
+                        TapHandler
+                        {
+                            onTapped:
+                            {
+                                // 延迟删除组件
+                                Qt.callLater(function()
+                                {
+                                    if (pageModel.count > index)
+                                    {
+                                        pageModel.remove(index, 1)
+                                    }
+                                });
+                            }
+                        }
+
+                        HoverHandler
+                        {
+                            id: cancel_btnHover
+                        }
                     }
                 }
+
+                Rectangle
+                {
+                    parent: imageName
+                    anchors.top: parent.bottom
+                    visible: imageName_hover.hovered
+                    width: showText.width + 6
+                    height: showText.height
+                    color: "black"
+                    Text
+                    {
+                        id: showText
+                        anchors.centerIn: parent
+                        text: pageName
+                        width: contentWidth
+                        height: contentHeight + 5
+                        color: "white"
+                    }
+                }
+
+
+
 
                 TapHandler
                 {
@@ -124,10 +180,31 @@ Item
                 Component.onCompleted:
                 {
                     tabBar.currentIndex = index
+                    var fileName = imageName.text
+                    var dotIndex = fileName.lastIndexOf('.')
+                    var suffix = ""
+                    if (dotIndex === -1 || dotIndex === fileName.length - 1)
+                    {
+                        suffix = ""
+                    }
+                    suffix = fileName.substring(dotIndex)
+                    console.log(suffix)
+
+                    if(suffix === ".png")
+                    {
+                        tabBtn.imageType = "qrc:/icon/PNG.svg"
+                    }else if(suffix === ".jpg")
+                    {
+                        tabBtn.imageType = "qrc:/icon/JPG.svg"
+                    }else if(suffix === ".jpeg")
+                    {
+                        tabBtn.imageType = "qrc:/icon/JPEG.svg"
+                    }
                 }
             }
         }
-        onCurrentIndexChanged: {
+        onCurrentIndexChanged:
+        {
             ActiveCtrl.currentIndex=currentIndex
         }
     }

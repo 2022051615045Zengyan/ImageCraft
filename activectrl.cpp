@@ -457,7 +457,6 @@ void ActiveCtrl::TakeAFullScreenshot()
         qDebug() << "获取主屏幕错误";
         return;
     }
-    qDebug() << screen;
     QPixmap pixmap = screen->grabWindow(0);
 
     if (pixmap.isNull()) {
@@ -478,8 +477,7 @@ void ActiveCtrl::TakeAFullScreenshot()
     }
 
     filePath = "file://" + filePath;
-    int lastIndexOfSlash = filePath.lastIndexOf('/') + 1;
-    QString fileName = filePath.mid(lastIndexOfSlash);
+    QString fileName = "untitled";
     QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
                               "addElement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),

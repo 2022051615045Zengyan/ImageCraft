@@ -33,6 +33,7 @@ QObject *ToolCtrl::pointtext() const
 {
     return m_pointtext;
 }
+
 //选择工具
 void ToolCtrl::setSelectedTool(const QString &newSelectedTool)
 {
@@ -43,7 +44,6 @@ void ToolCtrl::setSelectedTool(const QString &newSelectedTool)
 }
 
 //捕获图片点击点的颜色
-
 QColor ToolCtrl::getPixelColor(const QString &imagepath, int x, int y)
 {
     cv::Mat image = cv::imread(imagepath.toStdString());
@@ -62,6 +62,7 @@ QColor ToolCtrl::getPixelColor(const QString &imagepath, int x, int y)
     m_pointtext->setProperty("text", QString("x: %1 y: %2").arg(x).arg(y));
     return color;
 }
+
 //设置底部x,y值
 void ToolCtrl::setPointtext(QObject *newPointtext)
 {
