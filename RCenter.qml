@@ -1,6 +1,9 @@
 /** RCenter.qml
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Right center window
+ *
+ * Modified by ZhanXuecai on 2024-6-21
+ * Function: add addBrushLayer()
  */
 import QtQuick
 import QtQuick.Controls
@@ -122,6 +125,7 @@ Item
                             }
                         }
                     }
+
                 }
                 Component.onCompleted:
                 {

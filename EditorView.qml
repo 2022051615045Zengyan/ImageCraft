@@ -14,6 +14,7 @@ Image
 
     property Editor editor: editor1
     signal modified()
+    signal requestAddBrushLayer()
     fillMode: Image.PreserveAspectFit
 
     Editor
@@ -67,6 +68,44 @@ Image
             onPointChanged: {
                 cursor.x=point.position.x
                 cursor.y=point.position.y
+            }
+        }
+
+        MouseArea{
+            id:brushhandler
+            anchors.fill: parent
+            enabled: ToolCtrl.selectedTool === "画笔"
+            onPressed: {
+                  //requestAddBrushLayer()
+                  editor.setCurrentShape(Editor.FreeDraw)
+                  console.log(Editor.currentShape)
+                  editor.startDrawing(mouseX,mouseY)
+            }
+            onPositionChanged: {
+                editor.continueDrawing(mouseX,mouseY)
+            }
+            onReleased: {
+                console.log("已完成一次画笔操作")
+                editor.stopDrawing()
+            }
+        }
+
+        MouseArea{
+            id:recthandler
+            anchors.fill: parent
+            enabled: ToolCtrl.selectedTool === "矩阵"
+            onPressed: {
+                  //requestAddBrushLayer()
+                  editor.setCurrentShape(Editor.Rectangle)
+                 console.log(Editor.currentShape)
+                  editor.startDrawing(mouseX,mouseY)
+            }
+            onPositionChanged: {
+                editor.continueDrawing(mouseX,mouseY)
+            }
+            onReleased: {
+                console.log("已完成一次矩阵操作")
+                editor.stopDrawing()
             }
         }
 

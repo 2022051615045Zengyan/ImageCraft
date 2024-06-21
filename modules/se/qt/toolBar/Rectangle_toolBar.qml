@@ -5,9 +5,14 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 Item {
     id: rectangle
     anchors.fill: parent
+    Editor{
+        id:editor
+    }
+
     RowLayout{
         width: parent.width
         height: parent.height
@@ -91,10 +96,22 @@ Item {
             text: "形状:"
         }
 
-        RadioButton{
+        Button{
             id:_rectangle_Rect
             text:qsTr("矩阵")
-            checked: true
+            onClicked: {
+                editor.setCurrentShape(Editor.Rectangle)
+                console.log(Editor.currentShape)
+            }
+        }
+
+        Button{
+            id:_boxselect_Elliptical
+            text:qsTr("椭圆")
+            onClicked: {
+                editor.setCurrentShape(Editor.Ellipse)
+                console.log(Editor.currentShape)
+            }
         }
 
         RadioButton{
@@ -106,12 +123,6 @@ Item {
         RadioButton{
             id:_boxselect_Polygon
             text:qsTr("多边形")
-            checked: false
-        }
-
-        RadioButton{
-            id:_boxselect_Elliptical
-            text:qsTr("椭圆")
             checked: false
         }
 
