@@ -32,6 +32,7 @@ Item
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 property bool isModified: layer.isModified_
+                property bool isBrushLayer:layer.isBrushLayer_
                 property ListModel layerModel: layer.layerListModel
                 property Repeater layers: layer.layers
                 property Rectangle thelayer: layer
@@ -57,6 +58,7 @@ Item
                         property ListModel layerListModel: ListModel {}
                         property Repeater layers: layers_
                         property bool isModified_: false
+                        property bool isBrushLayer_:false
 
                         Repeater
                         {
@@ -120,6 +122,13 @@ Item
                                 {
                                     parent.isModified_ = true
                                 }
+
+                                Connections{
+                                    target: editorView
+                                    function onRequestAddBrushLayer(){
+                                        addBrushLayer()
+                                    }
+                                }
                             }
                         }
                         onHeightChanged:
@@ -155,7 +164,16 @@ Item
                             var url = dragEvent.text;
                             parent.layerModel.append({pixUrl: url});
                             thelayer.isModified_ = true
+                            thelayer.isBrushLayer_=false
                         }
+                    }
+                }
+                function addBrushLayer(){
+                    if(thelayer.isBrushLayer_===false){
+                        var pixUrl_brush ="File:///run/media/root/study/QTstudy/Ps/ImageCraft/Image/new5000x5000.png"
+                        layerModel.append({pixUrl:pixUrl_brush});
+                        thelayer.isModified_=true
+                        thelayer.isBrushLayer_=true
                     }
                 }
                 onIsModifiedChanged:

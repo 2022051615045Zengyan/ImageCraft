@@ -1,4 +1,4 @@
-/** editor.h
+/** editor.cpp
  * Written by Rentianxiang on 2024-6-20
  * Funtion: image editor
  * 
@@ -8,12 +8,16 @@
 #include "editor.h"
 #include <QBuffer>
 #include <QImageReader>
+#include <QPainter>
 #include "imageprovider.h"
 #include <opencv4/opencv2/opencv.hpp>
 #include <string>
-
 Editor::Editor(QObject *parent)
     : QObject{parent}
+    , m_brushColor(Qt::red)
+    , m_brushSize(5)
+    , m_drawing(false)
+    , m_currentShape(FreeDraw)
 {}
 
 Editor::~Editor()
@@ -48,44 +52,48 @@ void Editor::openImage(const QString &path)
 
 void Editor::draw(int x, int y)
 {
-    qDebug() << m_path;
     qDebug() << x << y;
-    cv::Mat mat = cv::imread(std::string(m_path.toLocal8Bit()));
-    //qDebug() << mat;
-    if (mat.empty()) {
-        qDebug() << "Failed to load image!";
-        return;
-    }
-    cv::Scalar color(m_brushColor.blue(), m_brushColor.green(), m_brushColor.red());
-    cv::circle(mat, cv::Point(x, y), m_brushSize, color, -1);
+    QPainter painter(&m_image);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
-    cv::Mat rgb;
-    cv::cvtColor(mat, rgb, cv::COLOR_BGR2RGB);
-    m_brushimage = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
-    m_image = m_brushimage.copy();
+    switch (m_currentShape) {
+    case FreeDraw:
+        qDebug() << m_currentShape;
+        painter.drawLine(m_lastPoint, QPoint(x, y));
+        m_lastPoint = QPoint(x, y);
+        break;
+
+    case Rectangle:
+        qDebug() << m_currentShape;
+        painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
+        break;
+
+    case Ellipse:
+        qDebug() << m_currentShape;
+        painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
+        break;
+    }
     emit imageChanged();
 }
+void Editor::startDrawing(int x, int y)
+{
+    m_drawing = true;
+    m_lastPoint = QPoint(x, y);
+    continueDrawing(x, y); // 立即在开始绘制时绘制一个点
+}
 
-// void Editor::moveImage(int dx, int dy)
-// {
-//     m_position += QPoint(dx, dy);
-//     cv::Mat mat = cv::imread(std::string(m_path.toLocal8Bit()));
-//     if (mat.empty()) {
-//         qDebug() << "Failed to load image!";
-//         return;
-//     }
+void Editor::continueDrawing(int x, int y)
+{
+    if (!m_drawing)
+        return;
+    draw(x, y);
+}
 
-//     cv::Mat translated;
-//     cv::Mat translationMatrix
-//         = (cv::Mat_<double>(2, 3) << 1, 0, m_position.x(), 0, 1, m_position.y()); //创建变换矩阵
-//     cv::warpAffine(mat, translated, translationMatrix, mat.size());               //平移变换
-
-//     cv::Mat rgb;
-//     cv::cvtColor(translated, rgb, cv::COLOR_BGR2RGB);
-//     m_image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
-
-//     emit imageChanged();
-// }
+void Editor::stopDrawing()
+{
+    m_drawing = false;
+}
 
 QString Editor::path() const
 {
@@ -124,4 +132,17 @@ void Editor::setBrushSize(int newBrushSize)
         return;
     m_brushSize = newBrushSize;
     emit brushSizeChanged();
+}
+
+Editor::Shape Editor::currentShape() const
+{
+    return m_currentShape;
+}
+
+void Editor::setCurrentShape(Shape newCurrentShape)
+{
+    if (m_currentShape == newCurrentShape)
+        return;
+    m_currentShape = newCurrentShape;
+    emit currentShapeChanged();
 }

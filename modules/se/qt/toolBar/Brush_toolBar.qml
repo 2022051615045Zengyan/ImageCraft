@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 Item {
     id: brush
     anchors.fill: parent
@@ -19,6 +20,10 @@ Item {
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            onClicked: {
+                editor.setCurrentShape(Editor.FreeDraw)
+                console.log(Editor.currentShape)
+            }
         }
 
         Label{
