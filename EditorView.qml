@@ -1,8 +1,8 @@
 /** EditorView.qml
  * Wirtten by ZengYan on 2024-6-20
  * Funtion: show image
- *modified by Zengyan
- *   added getcolor
+ * modified by Zengyan on 2024-6-20
+ *   change cursorshape setting
  */
 import QtQuick
 import QtQuick.Controls
@@ -11,9 +11,10 @@ import ImageCraft 1.0
 Image
 {
     id: imageView
-
+    property int currentscale: 9
     property Editor editor: editor1
     signal modified()
+    signal requestAddBrushLayer()
     fillMode: Image.PreserveAspectFit
 
     Editor
@@ -36,7 +37,7 @@ Image
     {
         id: imageViewDragArea
         anchors.centerIn: parent
-        property url eyedropperCursor: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
+
         color: "transparent"
         z: 1
         height: status === Image.Ready ? ((sourceSize.height / sourceSize.width >= parent.height / parent.width) ? parent.height :  sourceSize.height * parent.width / sourceSize.width) : parent.height
@@ -57,22 +58,83 @@ Image
             id:hoverhandler
             onHoveredChanged: {
                 if(hovered){
+
                     if(ToolCtrl.selectedTool === "移动"){
-                        cursorShape:Qt.SizeAllCursor
+                        cursorShape=Qt.SizeAllCursor
                     }else if(ToolCtrl.selectedTool === "吸管"){
-                        cursorShape:Qt.BlankCursor
+                        cursorShape=Qt.BlankCursor
+                    }else if(ToolCtrl.selectedTool === "抓手"){
+                        cursorShape=Qt.OpenHandCursor
+                    }else if(ToolCtrl.selectedTool === "套索工具"||
+                             ToolCtrl.selectedTool === "框选"||
+                             ToolCtrl.selectedTool === "裁剪"||
+                             ToolCtrl.selectedTool === "文字"){
+                        cursorShape=Qt.CrossCursor
                     }
-                }
+                }else
+                    cursorShape=Qt.ArrowCursor
             }
             onPointChanged: {
-                cursor.x=point.position.x
-                cursor.y=point.position.y
+                var x=point.position.x
+                var y=point.position.y
+                //转换为图片实际对应的x,y
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                strawcursor.x=point.position.x
+                strawcursor.y=point.position.y
+                ToolCtrl.getPointPositon(x,y)
+            }
+        }
+
+        MouseArea{
+            id:brushhandler
+            anchors.fill: parent
+            enabled: ToolCtrl.selectedTool === "画笔"
+            onPressed: {
+                  //requestAddBrushLayer()
+                  editor.setCurrentShape(Editor.FreeDraw)
+                  console.log(Editor.currentShape)
+                  editor.startDrawing(mouseX,mouseY)
+            }
+            onPositionChanged: {
+                editor.continueDrawing(mouseX,mouseY)
+            }
+            onReleased: {
+                console.log("已完成一次画笔操作")
+                editor.stopDrawing()
+            }
+        }
+
+        MouseArea{
+            id:recthandler
+            anchors.fill: parent
+            enabled: ToolCtrl.selectedTool === "矩阵"
+            onPressed: {
+                  //requestAddBrushLayer()
+                  editor.setCurrentShape(Editor.Rectangle)
+                 console.log(Editor.currentShape)
+                  editor.startDrawing(mouseX,mouseY)
+            }
+            onPositionChanged: {
+                editor.continueDrawing(mouseX,mouseY)
+            }
+            onReleased: {
+                console.log("已完成一次矩阵操作")
+                editor.stopDrawing()
             }
         }
 
         Image {
-            width: 10
-            height: 10
+            width: 15
+            height: 15
+            z:1
+            id: strawcursor
+            source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
+            visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
+        }
+        Image {
+            width: 15
+            height: 15
             z:1
             id: cursor
             source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
@@ -97,5 +159,11 @@ Image
                 }
             }
         }
+
     }
+    // PinchArea
+
+
+
+
 }

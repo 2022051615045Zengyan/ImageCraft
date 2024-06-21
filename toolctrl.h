@@ -2,7 +2,9 @@
  * Written by Rentianxiang on 2024-6-20
  * Funtion: control menuBar
  * modified by Zengyan on 2014-6-20
- *      added getcolorfunction
+ *      added getpiontposition
+ * modified by Zengyan on 2014-6-21
+ *      added zoomfuntion
  */
 #pragma once
 
@@ -22,18 +24,31 @@ class ToolCtrl : public QObject
     Q_PROPERTY(QObject *showcolor READ showcolor WRITE setShowcolor NOTIFY showcolorChanged FINAL)
     Q_PROPERTY(QObject *pointtext READ pointtext WRITE setPointtext NOTIFY pointtextChanged FINAL)
 
+    Q_PROPERTY(QObject *currentEditorView READ currentEditorView WRITE setCurrentEditorView NOTIFY
+                   currentEditorViewChanged FINAL)
+    Q_PROPERTY(QObject *zoom_size READ zoom_size WRITE setZoom_size NOTIFY zoom_sizeChanged FINAL)
+
 public:
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;
     void setSelectedTool(const QString &newSelectedTool);
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
+    Q_INVOKABLE void getPointPositon(int x, int y);
+    Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int currentIndex);
+    // Q_INVOKABLE QString returnScale(int Scalenumber);
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
 
     QObject *pointtext() const;
     void setPointtext(QObject *newPointtext);
+
+    QObject *currentEditorView() const;
+    void setCurrentEditorView(QObject *newCurrentEditorView);
+
+    QObject *zoom_size() const;
+    void setZoom_size(QObject *newZoom_size);
 
 signals:
     void selectedToolChanged();
@@ -42,8 +57,16 @@ signals:
 
     void pointtextChanged();
 
+    void currentEditorViewChanged();
+    void zoom_sizeChanged();
+
+private slots:
+    void on_currentEditorViewChanged();
+
 private:
     QString m_selectedTool;
     QObject *m_showcolor = nullptr;
     QObject *m_pointtext = nullptr;
+    QObject *m_currentEditorView = nullptr;
+    QObject *m_zoom_size = nullptr;
 };

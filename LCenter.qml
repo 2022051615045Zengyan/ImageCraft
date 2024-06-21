@@ -32,6 +32,7 @@ Item
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 property bool isModified: layer.isModified_
+                property bool isBrushLayer:layer.isBrushLayer_
                 property ListModel layerModel: layer.layerListModel
                 property Repeater layers: layer.layers
                 property Rectangle thelayer: layer
@@ -57,6 +58,7 @@ Item
                         property ListModel layerListModel: ListModel {}
                         property Repeater layers: layers_
                         property bool isModified_: false
+                        property bool isBrushLayer_:false
 
                         Repeater
                         {
@@ -81,7 +83,7 @@ Item
                                             parent.isModified_ = false
                                         });
                                     }
-
+                                    ToolCtrl.currentEditorView = editorView
                                     editor.openImage(pixUrl)
                                 }
                                 TapHandler
@@ -89,11 +91,43 @@ Item
                                     onTapped:
                                     {
                                         ActiveCtrl.currentEditor = layers.itemAt(index) as Editor
+                                        ToolCtrl.currentEditorView = editorView
                                     }
                                 }
+                                PinchHandler {
+                                    id: handler
+                                    target: editorView
+                                    onRotationChanged: (delta) => parent.rotation += delta // add
+                                    onScaleChanged: (delta) => {
+                                                    editorView.currentscale= editorView.currentscale*delta
+                                                    console.log("pinch:"+delta)
+                                                          // timer.start()
+                                                    }
+
+                                }
+                                // Timer{
+                                //     id: timer
+                                //     interval: 0 // 触发间隔为0，即下一帧
+                                //     onTriggered: {
+                                //     var lastwidth=tabContent.width / 5 * 4
+                                //     var scaledWidth = editorView.width // 获取缩放后的宽度
+                                //         // 在这里可以处理缩放后的宽度
+                                //     var number= scaledWidth/lastwidth
+                                //     var intValue = Math.floor(number*100);
+                                //         console.log("pinch2:"+number)
+                                //     //ToolCtrl.returnScale(intValue)
+                                //     }
+                                //}
                                 onModified:
                                 {
                                     parent.isModified_ = true
+                                }
+
+                                Connections{
+                                    target: editorView
+                                    function onRequestAddBrushLayer(){
+                                        addBrushLayer()
+                                    }
                                 }
                             }
                         }
@@ -106,6 +140,7 @@ Item
                             display_rect.width = width
                         }
                     }
+
                 }
 
                 Component.onCompleted:
@@ -129,7 +164,16 @@ Item
                             var url = dragEvent.text;
                             parent.layerModel.append({pixUrl: url});
                             thelayer.isModified_ = true
+                            thelayer.isBrushLayer_=false
                         }
+                    }
+                }
+                function addBrushLayer(){
+                    if(thelayer.isBrushLayer_===false){
+                        var pixUrl_brush ="File:///run/media/root/study/QTstudy/Ps/ImageCraft/Image/new5000x5000.png"
+                        layerModel.append({pixUrl:pixUrl_brush});
+                        thelayer.isModified_=true
+                        thelayer.isBrushLayer_=true
                     }
                 }
                 onIsModifiedChanged:
@@ -149,6 +193,8 @@ Item
                 ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
+
+                ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }
         onCountChanged:

@@ -60,5 +60,6 @@
         <file>icon/PNG.svg</file>
         <file>icon/save.svg</file>
         <file>icon/img.svg</file>
+        <file>Image/new5000x5000.png</file>
     </qresource>
 </RCC>
