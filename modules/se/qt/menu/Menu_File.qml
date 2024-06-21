@@ -92,18 +92,7 @@ Menu
         text: qsTr("捕获屏幕截图")
         onTriggered:
         {
-            ActiveCtrl.TakeAFullScreenshot()
-        }
-    }
-
-    MenuSeparator{}
-
-    MyMenuItem
-    {
-        text: qsTr("图像属性")
-        onTriggered:
-        {
-            console.log("图像属性")
+            ActiveCtrl.takeAFullScreenshot()
         }
     }
 

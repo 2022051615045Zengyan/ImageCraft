@@ -42,6 +42,8 @@ class ActiveCtrl : public QObject
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
     Q_PROPERTY(QObject* exportPathDialog READ exportPathDialog WRITE setExportPathDialog NOTIFY
                    exportPathDialogChanged FINAL)
+    Q_PROPERTY(QObject* askSaveDialog READ askSaveDialog WRITE setAskSaveDialog NOTIFY
+                   askSaveDialogChanged FINAL)
 
 public:
     explicit ActiveCtrl(QObject* parent = nullptr);
@@ -55,7 +57,7 @@ public:
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
 
     Q_INVOKABLE void refresh();
-    Q_INVOKABLE void TakeAFullScreenshot();
+    Q_INVOKABLE void takeAFullScreenshot();
 
     Q_INVOKABLE void exportImage();
 
@@ -98,6 +100,9 @@ public:
     QObject* exportPathDialog() const;
     void setExportPathDialog(QObject* newExportPathDialog);
 
+    QObject* askSaveDialog() const;
+    void setAskSaveDialog(QObject* newAskSaveDialog);
+
 signals:
 
     void dialogBoxChanged();
@@ -130,10 +135,20 @@ signals:
 
     void exportPathDialogChanged();
 
+    void askSaveDialogChanged();
+
+    void saved();
+
+    void closed();
+
 private slots:
     void openSlot();
     void saveAsSlot();
     void exportSlot();
+    void askSave_saveSlot();
+    void askSave_discardSlot();
+    void askSave_cancelSlot();
+    void closeAllSlot();
 
 private:
     QString m_savePath;
@@ -155,6 +170,7 @@ private:
     QObject* m_failToSave = nullptr;
     QObject* m_sharePage = nullptr;
     QObject* m_exportPathDialog = nullptr;
+    QObject* m_askSaveDialog = nullptr;
 
     void loadRecentFiles();
     void saveRecentFiles();

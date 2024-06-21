@@ -127,7 +127,7 @@ Item
                                 {
                                     if (pageModel.count > index)
                                     {
-                                        pageModel.remove(index, 1)
+                                        ActiveCtrl.close()
                                     }
                                 });
                             }
@@ -159,9 +159,6 @@ Item
                     }
                 }
 
-
-
-
                 TapHandler
                 {
                     onTapped:
@@ -175,8 +172,6 @@ Item
                     id: tabBarHover
                 }
 
-
-
                 Component.onCompleted:
                 {
                     tabBar.currentIndex = index
@@ -188,7 +183,6 @@ Item
                         suffix = ""
                     }
                     suffix = fileName.substring(dotIndex)
-                    console.log(suffix)
 
                     if(suffix === ".png")
                     {
