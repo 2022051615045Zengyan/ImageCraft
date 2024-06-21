@@ -1,13 +1,17 @@
 /** Zoom_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Zoom toolBar 对画布整体进行缩放
+ *   modified by Zengyan on 2014-6-21
+ *      added zoomfunction
  */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 Item {
     id: zoom
     anchors.fill: parent
+    property alias zoom_size: _zoom_size
 
     RowLayout {
         width: parent.width
@@ -19,16 +23,29 @@ Item {
             Layout.preferredWidth: parent.height*3
             text: "缩小"
             icon.name: "file-zoom-out"
-
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            enabled: _zoom_size.currentIndex!==0
+
+            onClicked: {
+                // 随机选择一个不同的选项
+                if(_zoom_size.currentIndex===0)
+                {
+                   return
+                }
+                else{
+                   _zoom_size.currentIndex--
+
+                }
+            }
         }
+
 
         ComboBox {
             id: _zoom_size
             Layout.preferredWidth: parent.height*3
             model: ListModel{id:_zoom_size_model}
-            currentIndex: 0
+            currentIndex: 9
             Component.onCompleted: {
                 for(var i =10 ;i<=100;i+=10)
                 {
@@ -59,8 +76,18 @@ Item {
                     v = i+"%"
                     _zoom_size_model.append({"value":v})
                 }
-            }
 
+            }
+            onCurrentIndexChanged: {
+                       // 当用户改变选项时触发
+
+                       var scaleMultiple = _zoom_size_model.get(currentIndex).value;
+
+                      var number = parseFloat(scaleMultiple);
+
+                       // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
+                       ToolCtrl.setScaleFactor(number,currentIndex);
+                   }
 
 
             Layout.fillWidth: true
@@ -74,6 +101,19 @@ Item {
             icon.name: "file-zoom-in"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            enabled: _zoom_size.currentIndex!==_zoom_size.model.count
+
+            onClicked: {
+
+                if(_zoom_size.currentIndex===_zoom_size.model.count)
+                {
+                   return
+                }
+                else{
+                    _zoom_size.currentIndex++
+
+                }
+            }
         }
 
 
@@ -82,4 +122,8 @@ Item {
             Layout.preferredWidth: 1000
         }
     }
+    Component.onCompleted: {
+        ToolCtrl.zoom_size=zoom_size
+    }
 }
+

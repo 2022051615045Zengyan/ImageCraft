@@ -55,10 +55,14 @@
         <file>Image/new1600x900.png</file>
         <file>icon/IC.ico</file>
         <file>icon/imagecraft.png</file>
+<<<<<<< HEAD
         <file>icon/JPEG.svg</file>
         <file>icon/JPG.svg</file>
         <file>icon/PNG.svg</file>
         <file>icon/save.svg</file>
         <file>icon/img.svg</file>
+=======
+        <file>Image/new5000x5000.png</file>
+>>>>>>> origin/main
     </qresource>
 </RCC>
