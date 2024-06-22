@@ -9,7 +9,9 @@
 
  * Modified by RenTianxiang on 2024-6-20
  *      modified export action
-
+ *
+ * Modified by RenTianxiang on 2024-6-22
+ *      Added a new exit prompt to save the modified picture
  */
 import QtQuick
 import QtQuick.Controls
@@ -175,7 +177,7 @@ Menu
         icon.name: "application-exit"
         onTriggered:
         {
-            Qt.quit()
+            ActiveCtrl.exitWindow()
         }
     }
 }

@@ -9,6 +9,9 @@
  * 
  * Modified by RenTianxiang on 2024-6-21
  * Added the ability to close the picture prompt to save
+ * 
+ * Modified by RenTianxiang on 2024-6-22
+ * Added a new exit prompt to save the modified picture
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -249,17 +252,23 @@ void ActiveCtrl::exportSlot()
 //询问保存修改后，用户选择保存的处理逻辑
 void ActiveCtrl::askSave_saveSlot()
 {
+    connect(
+        this,
+        &ActiveCtrl::saved,
+        this,
+        [=, this]() {
+            m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                                    "removeElement",
+                                                    Q_ARG(QVariant,
+                                                          QVariant::fromValue(m_currentIndex)),
+                                                    Q_ARG(QVariant, QVariant::fromValue(1)));
+            disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
+            disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
+            disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
+            emit closed();
+        },
+        Qt::SingleShotConnection);
     save();
-    connect(this, &ActiveCtrl::saved, this, [=, this]() {
-        m_sharePage->metaObject()->invokeMethod(m_sharePage,
-                                                "removeElement",
-                                                Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
-                                                Q_ARG(QVariant, QVariant::fromValue(1)));
-    });
-    disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
-    disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
-    disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
-    emit closed();
 }
 
 //询问保存修改后，用户选择不保存的处理逻辑
@@ -278,16 +287,21 @@ void ActiveCtrl::askSave_discardSlot()
 
 void ActiveCtrl::askSave_cancelSlot()
 {
+    disconnect(this, &ActiveCtrl::closeAlled, this, &ActiveCtrl::exitSlot);
     disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
     disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
     disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
-    emit closed();
+    disconnect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot);
 }
 
 void ActiveCtrl::closeAllSlot()
 {
-    disconnect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot);
     closeAll();
+}
+
+void ActiveCtrl::exitSlot()
+{
+    QCoreApplication::exit();
 }
 
 QObject *ActiveCtrl::askSaveDialog() const
@@ -459,7 +473,6 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 void ActiveCtrl::close()
 {
     if (!m_sharePage) {
-        emit closed();
         return;
     }
     if (m_currentIndex != -1) {
@@ -478,12 +491,13 @@ void ActiveCtrl::close()
                                                     Q_ARG(QVariant,
                                                           QVariant::fromValue(m_currentIndex)),
                                                     Q_ARG(QVariant, QVariant::fromValue(1)));
+            emit closed();
+            return;
         }
-        emit currentLayerChanged();
     } else {
         qDebug() << "关闭失败!";
+        return;
     }
-    emit closed();
 }
 
 void ActiveCtrl::closeAll()
@@ -493,9 +507,10 @@ void ActiveCtrl::closeAll()
     }
     int num = QQmlProperty::read(m_sharePage, "count").toInt();
     if (num == 0) {
+        emit closeAlled();
         return;
     }
-    connect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot);
+    connect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot, Qt::SingleShotConnection);
     close();
 }
 
@@ -561,6 +576,12 @@ void ActiveCtrl::exportImage()
     m_exportPathDialog->metaObject()->invokeMethod(m_exportPathDialog, "open", Qt::DirectConnection);
 
     connect(m_exportPathDialog, SIGNAL(accepted()), this, SLOT(exportSlot()));
+}
+
+void ActiveCtrl::exitWindow()
+{
+    connect(this, &ActiveCtrl::closeAlled, this, &ActiveCtrl::exitSlot);
+    closeAll();
 }
 
 cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)

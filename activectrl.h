@@ -60,6 +60,7 @@ public:
     Q_INVOKABLE void takeAFullScreenshot();
 
     Q_INVOKABLE void exportImage();
+    Q_INVOKABLE void exitWindow();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -141,6 +142,8 @@ signals:
 
     void closed();
 
+    void closeAlled();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -149,6 +152,7 @@ private slots:
     void askSave_discardSlot();
     void askSave_cancelSlot();
     void closeAllSlot();
+    void exitSlot();
 
 private:
     QString m_savePath;

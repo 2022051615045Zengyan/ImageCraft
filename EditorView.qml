@@ -57,22 +57,28 @@ Image
         {
             id:hoverhandler
             onHoveredChanged: {
-                if(hovered){
-
-                    if(ToolCtrl.selectedTool === "移动"){
+                if(hovered)
+                {
+                    if(ToolCtrl.selectedTool === "移动")
+                    {
                         cursorShape=Qt.SizeAllCursor
-                    }else if(ToolCtrl.selectedTool === "吸管"){
+                    }else if(ToolCtrl.selectedTool === "吸管")
+                    {
                         cursorShape=Qt.BlankCursor
-                    }else if(ToolCtrl.selectedTool === "抓手"){
+                    }else if(ToolCtrl.selectedTool === "抓手")
+                    {
                         cursorShape=Qt.OpenHandCursor
                     }else if(ToolCtrl.selectedTool === "套索工具"||
                              ToolCtrl.selectedTool === "框选"||
                              ToolCtrl.selectedTool === "裁剪"||
-                             ToolCtrl.selectedTool === "文字"){
+                             ToolCtrl.selectedTool === "文字")
+                    {
                         cursorShape=Qt.CrossCursor
                     }
                 }else
+                {
                     cursorShape=Qt.ArrowCursor
+                }
             }
             onPointChanged: {
                 var x=point.position.x
@@ -91,10 +97,10 @@ Image
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "画笔"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.FreeDraw)
-                  console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                editor.setCurrentShape(Editor.FreeDraw)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
             }
             onPositionChanged: {
                 editor.continueDrawing(mouseX,mouseY)
@@ -110,10 +116,10 @@ Image
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "矩阵"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.Rectangle)
-                 console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                editor.setCurrentShape(Editor.Rectangle)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
             }
             onPositionChanged: {
                 editor.continueDrawing(mouseX,mouseY)
@@ -132,14 +138,7 @@ Image
             source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
             visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
         }
-        Image {
-            width: 15
-            height: 15
-            z:1
-            id: cursor
-            source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-            visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
-        }
+
         //吸管移动
         TapHandler
         {

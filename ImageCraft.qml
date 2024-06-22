@@ -1,12 +1,16 @@
 /** ImageCraft.qml
  * Modified by ZengYan on 2024-6-19
  * Funtion: Setting Menubottom
+ *
+ * Modified by RenTianxiang on 2024-6-22
+ * Added a new exit prompt to save the modified picture
  */
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "modules/se/qt/menu"
 import "modules/se/qt/toolBar"
+import ImageCraft 1.0
 
 ApplicationWindow
 {
@@ -51,5 +55,11 @@ ApplicationWindow
         objectName: "dialogBox"
         sharePage: icContent.pageModel
         tabBar_currentIndex: icContent.tags.currentIndex
+    }
+
+    onClosing: function(event)
+    {
+        event.accepted = false
+        ActiveCtrl.exitWindow()
     }
 }
