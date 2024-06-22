@@ -43,6 +43,9 @@ void Editor::openImage(const QString &path)
     m_path = QString(QUrl(path).toLocalFile());
     if (m_path.isEmpty()) {
         m_image.load(QString(":" + path));
+    } else if (m_path.left(4) == "/tmp") {
+        m_image.load(m_path);
+        m_path.clear();
     } else {
         m_image.load(m_path);
     }

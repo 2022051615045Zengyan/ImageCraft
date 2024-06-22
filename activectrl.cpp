@@ -6,6 +6,9 @@
  * Modified by RenTianxiang on 2024-6-20
  * Reorganized the logical structure to save and save as
  * Added export finction
+ * 
+ * Modified by RenTianxiang on 2024-6-21
+ * Added the ability to close the picture prompt to save
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -243,6 +246,63 @@ void ActiveCtrl::exportSlot()
     }
 }
 
+//询问保存修改后，用户选择保存的处理逻辑
+void ActiveCtrl::askSave_saveSlot()
+{
+    save();
+    connect(this, &ActiveCtrl::saved, this, [=, this]() {
+        m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                                "removeElement",
+                                                Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                                Q_ARG(QVariant, QVariant::fromValue(1)));
+    });
+    disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
+    emit closed();
+}
+
+//询问保存修改后，用户选择不保存的处理逻辑
+void ActiveCtrl::askSave_discardSlot()
+{
+    m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                            "removeElement",
+                                            Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                            Q_ARG(QVariant, QVariant::fromValue(1)));
+
+    disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
+    emit closed();
+}
+
+void ActiveCtrl::askSave_cancelSlot()
+{
+    disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
+    disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
+    emit closed();
+}
+
+void ActiveCtrl::closeAllSlot()
+{
+    disconnect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot);
+    closeAll();
+}
+
+QObject *ActiveCtrl::askSaveDialog() const
+{
+    return m_askSaveDialog;
+}
+
+void ActiveCtrl::setAskSaveDialog(QObject *newAskSaveDialog)
+{
+    if (m_askSaveDialog == newAskSaveDialog)
+        return;
+    m_askSaveDialog = newAskSaveDialog;
+    emit askSaveDialogChanged();
+}
+
 QObject *ActiveCtrl::exportPathDialog() const
 {
     return m_exportPathDialog;
@@ -358,6 +418,7 @@ void ActiveCtrl::save()
                 if (image.save(m_savePath)) {
                     m_currentLayer->setProperty("isModified_", false);
                     qDebug() << "Save success to: " << m_savePath;
+                    emit saved();
                 } else {
                     m_failToSave->metaObject()->invokeMethod(m_failToSave,
                                                              "open",
@@ -398,18 +459,31 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 void ActiveCtrl::close()
 {
     if (!m_sharePage) {
+        emit closed();
         return;
     }
     if (m_currentIndex != -1) {
-        m_sharePage->metaObject()->invokeMethod(m_sharePage,
-                                                "removeElement",
-                                                Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
-                                                Q_ARG(QVariant, QVariant::fromValue(1)));
-        m_currentLayer = nullptr;
+        bool isModified = QQmlProperty::read(m_currentLayer, "isModified_").toBool();
+        if (isModified) {
+            connect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
+            connect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
+            connect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
+            m_askSaveDialog->metaObject()->invokeMethod(m_askSaveDialog,
+                                                        "openDialog",
+                                                        Qt::DirectConnection);
+            return;
+        } else {
+            m_sharePage->metaObject()->invokeMethod(m_sharePage,
+                                                    "removeElement",
+                                                    Q_ARG(QVariant,
+                                                          QVariant::fromValue(m_currentIndex)),
+                                                    Q_ARG(QVariant, QVariant::fromValue(1)));
+        }
         emit currentLayerChanged();
     } else {
         qDebug() << "关闭失败!";
     }
+    emit closed();
 }
 
 void ActiveCtrl::closeAll()
@@ -417,13 +491,12 @@ void ActiveCtrl::closeAll()
     if (!m_sharePage) {
         return;
     }
-    if (m_currentIndex != -1) {
-        m_sharePage->metaObject()->invokeMethod(m_sharePage, "clear", Qt::DirectConnection);
-        m_currentLayer = nullptr;
-        emit currentLayerChanged();
-    } else {
-        qDebug() << "关闭全部失败!!";
+    int num = QQmlProperty::read(m_sharePage, "count").toInt();
+    if (num == 0) {
+        return;
     }
+    connect(this, &ActiveCtrl::closed, this, &ActiveCtrl::closeAllSlot);
+    close();
 }
 
 void ActiveCtrl::refresh()
@@ -450,14 +523,13 @@ void ActiveCtrl::refresh()
     emit refreshSignal();
 }
 
-void ActiveCtrl::TakeAFullScreenshot()
+void ActiveCtrl::takeAFullScreenshot()
 {
     QScreen *screen = QGuiApplication::primaryScreen();
     if (!screen) {
         qDebug() << "获取主屏幕错误";
         return;
     }
-    qDebug() << screen;
     QPixmap pixmap = screen->grabWindow(0);
 
     if (pixmap.isNull()) {
@@ -478,8 +550,7 @@ void ActiveCtrl::TakeAFullScreenshot()
     }
 
     filePath = "file://" + filePath;
-    int lastIndexOfSlash = filePath.lastIndexOf('/') + 1;
-    QString fileName = filePath.mid(lastIndexOfSlash);
+    QString fileName = "untitled";
     QMetaObject::invokeMethod(m_sharePage, //调用方法，后面是传参
                               "addElement",
                               Q_ARG(QVariant, QVariant::fromValue(fileName)),

@@ -46,7 +46,7 @@ Item
                     height: layer.height
                     width: layer.height
                     clip: true
-                    color: "black"
+                    color: "white"
                     anchors.centerIn: parent
 
                     Rectangle
@@ -55,7 +55,7 @@ Item
                         height: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) >= (tabContent.height / tabContent.width)) ? layers.itemAt(0).height : (layers.itemAt(0).sourceSize.height * layers.itemAt(0).width / layers.itemAt(0).sourceSize.width)
                         width: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) <= (tabContent.height / tabContent.width)) ? layers.itemAt(0).width : (layers.itemAt(0).sourceSize.width * layers.itemAt(0).height / layers.itemAt(0).sourceSize.height)
                         anchors.centerIn: parent
-                        color: !layers.count ?  "black" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
+                        color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
                         property ListModel layerListModel: ListModel {}
                         property Repeater layers: layers_
                         property bool isModified_: false

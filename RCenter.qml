@@ -67,7 +67,7 @@ Item
                         width: 100
                         radius: 20
                         color: viewtags.currentIndex === index ? "grey" : "#00000000"
-                        clip: true
+                        // clip: true
 
                         Row
                         {
@@ -103,15 +103,39 @@ Item
                             }
                             Text
                             {
+                                id: viewtext
+                                width: viewtags.width - eyes.width - 15
                                 font.bold: viewtags.currentIndex === index ? true : false
                                 scale: viewtags.currentIndex === index ? 1.1 : 1
                                 text: pixUrl.substring(pixUrl.lastIndexOf("/") + 1)
+                                elide: Text.ElideRight // 设置超出部分显示省略号
                                 color: "black"
                                 Behavior on scale {
                                     NumberAnimation
                                     {
                                         duration: 200
                                         easing.type: Easing.InOutQuad
+                                    }
+                                }
+
+                                HoverHandler
+                                {
+                                    id: hoverHandler
+                                }
+
+                                Rectangle
+                                {
+                                    width: showText.contentWidth + 6
+                                    height: showText.contentHeight + 6
+                                    color: "white"
+                                    anchors.left: parent.right
+                                    visible: hoverHandler.hovered
+                                    Text
+                                    {
+                                        id: showText
+                                        anchors.centerIn: parent
+                                        color: "black"
+                                        text: viewtext.text
                                     }
                                 }
                             }
