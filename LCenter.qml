@@ -38,6 +38,9 @@ Item
                 property Rectangle thelayer: layer
                 property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
                 property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
+                property int keys: 0
+                property var undoStack: []
+                property var redoStack: []
 
                 Rectangle
                 {

@@ -20,10 +20,7 @@ Editor::Editor(QObject *parent)
     , m_currentShape(FreeDraw)
 {}
 
-Editor::~Editor()
-{
-    qDebug() << "an editor destroyed!!";
-}
+Editor::~Editor() {}
 
 QImage Editor::image() const
 {

@@ -584,6 +584,40 @@ void ActiveCtrl::exitWindow()
     closeAll();
 }
 
+void ActiveCtrl::addOperation(Operation::OperationType type, const QVariantMap &params)
+{
+    Operation *op = new Operation(type, params, this);
+    m_undoStack.push(op);
+    qDeleteAll(m_redoStack);
+    m_redoStack.clear();
+}
+
+void ActiveCtrl::undo()
+{
+    if (!m_undoStack.isEmpty()) {
+        Operation *op = m_undoStack.pop();
+        emit performUndo(op->type(), op->params());
+        m_redoStack.push(op);
+    }
+}
+
+void ActiveCtrl::redo()
+{
+    if (!m_redoStack.isEmpty()) {
+        Operation *op = m_redoStack.pop();
+        emit performRedo(op->type(), op->params());
+        m_undoStack.push(op);
+    }
+}
+
+void ActiveCtrl::reset()
+{
+    qDeleteAll(m_undoStack);
+    m_undoStack.clear();
+    qDeleteAll(m_redoStack);
+    m_redoStack.clear();
+}
+
 cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)
 {
     cv::Mat mat;
