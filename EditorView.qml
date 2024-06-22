@@ -3,6 +3,8 @@
  * Funtion: show image
  * modified by Zengyan on 2024-6-20
  *   change cursorshape setting
+ * modified by Zengyan on 2024-6-22
+ * perfected zoom function
  */
 import QtQuick
 import QtQuick.Controls
@@ -11,7 +13,7 @@ import ImageCraft 1.0
 Image
 {
     id: imageView
-    property int currentscale: 9
+
     property Editor editor: editor1
     signal modified()
     signal requestAddBrushLayer()
@@ -35,6 +37,7 @@ Image
 
     Rectangle
     {
+        property double scale: scale
         id: imageViewDragArea
         anchors.centerIn: parent
 
@@ -160,9 +163,34 @@ Image
         }
 
     }
+    MouseArea {
+        anchors.fill: parent
+        onPressed: {
+            startX = mouseX
+            startY = mouseY
+        }
+        onPositionChanged: {
+            endX = mouseX
+            endY = mouseY
+        }
+        onReleased: {
+            console.log("Start Point: ", startX, ",", startY)
+            console.log("End Point: ", endX, ",", endY)
+        }
+    }
     // PinchArea
 
+    PinchHandler {
+        id: handler
 
+        enabled: ToolCtrl.selectedTool==="缩放"
+        //onRotationChanged: (delta) => parent.rotation += delta // add
+        onScaleChanged: {
+                            ToolCtrl.returnScale(scale)
+
+                        }
+
+    }
 
 
 }

@@ -3,6 +3,8 @@
  * Funtion: Zoom toolBar 对画布整体进行缩放
  *   modified by Zengyan on 2014-6-21
  *      added zoomfunction
+ * modified by Zengyan on 2024-6-22
+ * perfected zoom function
  */
 import QtQuick
 import QtQuick.Controls
@@ -31,10 +33,10 @@ Item {
                 // 随机选择一个不同的选项
                 if(_zoom_size.currentIndex===0)
                 {
-                   return
+                    return
                 }
                 else{
-                   _zoom_size.currentIndex--
+                    _zoom_size.currentIndex--
 
                 }
             }
@@ -44,52 +46,26 @@ Item {
         ComboBox {
             id: _zoom_size
             Layout.preferredWidth: parent.height*3
-            model: ListModel{id:_zoom_size_model}
-            currentIndex: 9
-            Component.onCompleted: {
-                for(var i =10 ;i<=100;i+=10)
-                {
-                    var v = i+"%"
-                    _zoom_size_model.append({"value":v})
-                }
+            editable: true
 
-                for(i =200 ;i<=1000;i+=100)
-                {
-                    v = i+"%"
-                    _zoom_size_model.append({"value":v})
-                }
 
-                for(i =1500 ;i<=5000;i+=500)
-                {
-                    v = i+"%"
-                    _zoom_size_model.append({"value":v})
-                }
-
-                for(i =6000 ;i<=10000;i+=1000)
-                {
-                    v = i+"%"
-                    _zoom_size_model.append({"value":v})
-                }
-
-                for(i =12500 ;i<=20000;i+=2500)
-                {
-                    v = i+"%"
-                    _zoom_size_model.append({"value":v})
-                }
-
+            onAccepted: {
+                var num=parseInt(editText)
+                ToolCtrl.zoomSet.insert(num)
+                ToolCtrl.currentEditorViewChanged()
             }
+
             onCurrentIndexChanged: {
-                       // 当用户改变选项时触发
-
-                       var scaleMultiple = _zoom_size_model.get(currentIndex).value;
-
-                      var number = parseFloat(scaleMultiple);
-
-                       // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
-                       ToolCtrl.setScaleFactor(number,currentIndex);
-                   }
-
-
+                // 当用户改变选项时触发
+                var scaleMultiple = _zoom_size.model[currentIndex]
+                console.log("index:"+currentText)
+                // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
+                ToolCtrl.setScaleFactor(scaleMultiple,currentIndex);
+                console.log("scale:"+scaleMultiple)
+            }
+            delegate:ItemDelegate {
+            text: modelData + "%"
+}
             Layout.fillWidth: true
             Layout.minimumWidth: 0
         }
@@ -107,7 +83,7 @@ Item {
 
                 if(_zoom_size.currentIndex===_zoom_size.model.count)
                 {
-                   return
+                    return
                 }
                 else{
                     _zoom_size.currentIndex++
@@ -124,6 +100,7 @@ Item {
     }
     Component.onCompleted: {
         ToolCtrl.zoom_size=zoom_size
+        ToolCtrl.zoomSetChanged()
     }
 }
 

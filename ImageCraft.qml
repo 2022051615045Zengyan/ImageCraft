@@ -1,5 +1,5 @@
 /** ImageCraft.qml
- * Modified by ZengYan on 2024-6-19
+ * Written by ZengYan on 2024-6-19
  * Funtion: Setting Menubottom
  *
  * Modified by RenTianxiang on 2024-6-22
