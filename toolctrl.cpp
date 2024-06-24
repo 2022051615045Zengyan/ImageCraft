@@ -107,6 +107,19 @@ void ToolCtrl::modelChangedslot()
     m_zoom_size->setProperty("currentIndex", m_modelIndex);
 }
 
+QObject *ToolCtrl::imageSize() const
+{
+    return m_imageSize;
+}
+
+void ToolCtrl::setImageSize(QObject *newImageSize)
+{
+    if (m_imageSize == newImageSize)
+        return;
+    m_imageSize = newImageSize;
+    emit imageSizeChanged();
+}
+
 std::set<int> ToolCtrl::zoomSet() const
 {
     return m_zoomSet;
@@ -205,4 +218,9 @@ void ToolCtrl::returnScale(double Scalenumber)
     m_modelIndex = std ::distance(m_zoomSet.begin(), it);
     emit zoomSetChanged();
     // emit currentEditorViewChanged();
+}
+
+void ToolCtrl::getSize(const QString &size)
+{
+    m_imageSize->setProperty("text", size);
 }

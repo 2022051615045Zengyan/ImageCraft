@@ -1,7 +1,8 @@
 /** LCenter.qml
  * Written by Zengyan on 2024-6-19
  * Funtion: left center window
-*
+ *  modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions
  */
 import QtQuick
 import QtQuick.Controls
@@ -39,6 +40,7 @@ Item
                 property Rectangle thelayer: layer
                 property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
                 property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
+                property EditorView currentView
 
                 Rectangle
                 {
@@ -85,14 +87,21 @@ Item
                                         });
                                     }
                                     ToolCtrl.currentEditorView = editorView
+                                    tabContent.currentView=editorView
+                                    console.log(editorView)
                                     editor.openImage(pixUrl)
                                 }
                                 TapHandler
                                 {
-                                    onTapped:
+                                    onTapped:(event)=>
                                     {
-                                        ActiveCtrl.currentEditor = layers.itemAt(index) as Editor
+
+                                        ActiveCtrl.currentEditor = layers.itemAt(index).editor as Editor
                                         ToolCtrl.currentEditorView = editorView
+                                        tabContent.currentView = editorView
+                                        ActiveCtrl.flip=editorView.flip
+                                        ActiveCtrl.yScaleState(currentView.flip.yScale);
+                                        ActiveCtrl.xScaleState(currentView.flip.xScale);
                                     }
                                 }
 
@@ -172,7 +181,9 @@ Item
                 ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
-
+                ActiveCtrl.flip = (itemAt(currentIndex) ? itemAt(currentIndex).currentView.flip : null)
+                ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale);
+                ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale);
                 ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }

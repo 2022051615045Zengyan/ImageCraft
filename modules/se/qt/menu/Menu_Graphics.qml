@@ -1,10 +1,13 @@
 /** Menu_Graphics.qml
  * Written by Rentianxiang on 2024-6-18
  * Funtion: Graphics Menu
+ * modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions
  */
 
 import QtQuick
 import QtQuick.Controls
+import ImageCraft 1.0
 
 Menu{
     width: 300
@@ -50,7 +53,7 @@ Menu{
         sequence: "Ctrl+F"
         onTriggered:
         {
-            console.log("翻转(垂直)")
+            ActiveCtrl.verticallyFlip();
         }
     }
 
@@ -59,6 +62,7 @@ Menu{
         text: qsTr("翻转(水平)")
         onTriggered:
         {
+            ActiveCtrl.horizontallyFlip();
             console.log("翻转(水平)")
         }
     }

@@ -5,6 +5,8 @@
  *   change cursorshape setting
  * modified by Zengyan on 2024-6-22
  * perfected zoom function
+ * modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions,choicecolorfunction
  */
 import QtQuick
 import QtQuick.Controls
@@ -15,9 +17,11 @@ Image
     id: imageView
 
     property Editor editor: editor1
+    property alias flip: _flip
     signal modified()
     signal requestAddBrushLayer()
     fillMode: Image.PreserveAspectFit
+
 
     Editor
     {
@@ -45,6 +49,7 @@ Image
         z: 1
         height: status === Image.Ready ? ((sourceSize.height / sourceSize.width >= parent.height / parent.width) ? parent.height :  sourceSize.height * parent.width / sourceSize.width) : parent.height
         width: status === Image.Ready ? ((sourceSize.height / sourceSize.width < parent.height / parent.width) ? parent.width : sourceSize.width * parent.height / sourceSize.height) : parent.width
+
         DragHandler
         {
             id:dragHandler
@@ -94,10 +99,10 @@ Image
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "画笔"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.FreeDraw)
-                  console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                editor.setCurrentShape(Editor.FreeDraw)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
             }
             onPositionChanged: {
                 editor.continueDrawing(mouseX,mouseY)
@@ -113,10 +118,10 @@ Image
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "矩阵"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.Rectangle)
-                 console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                editor.setCurrentShape(Editor.Rectangle)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
             }
             onPositionChanged: {
                 editor.continueDrawing(mouseX,mouseY)
@@ -152,7 +157,6 @@ Image
                 {                // 获取鼠标点击位置的坐标
                     var x = parseInt(point.position.x)
                     var y = parseInt(point.position.y)
-
                     //转换为图片实际对应的x,y
                     x *= sourceSize.width / imageViewDragArea.width
                     y *= sourceSize.height / imageViewDragArea.height
@@ -180,18 +184,36 @@ Image
         }
     }
     // PinchArea
-
     PinchHandler {
         id: handler
-
         enabled: ToolCtrl.selectedTool==="缩放"
         //onRotationChanged: (delta) => parent.rotation += delta // add
-        onScaleChanged: {
-                            ToolCtrl.returnScale(scale)
+        onScaleChanged:
+        {
+            ToolCtrl.returnScale(scale)
+            var x=Math.ceil(imageViewDragArea.width*scale)
+            var y=Math.ceil(imageViewDragArea.height*scale)
+            var str=x.toString()+"*"+y.toString()
+            ToolCtrl.getSize(str)
 
-                        }
-
+        }
     }
+    transform: Scale {
+        id:_flip
+        origin.x:imageView.width/2
+        origin.y:imageView.height/2
 
+        yScale: 1
+        xScale: 1// 初始状态为正常
+        Component.onCompleted: {
+            ActiveCtrl.flip=flip
+            ActiveCtrl.yScaleState(yScale);
+            ActiveCtrl.xScaleState(xScale);
 
+        }
+        onScaleChanged:{
+            ActiveCtrl.yScaleState(yScale);
+            ActiveCtrl.xScaleState(xScale);
+        }
+    }
 }

@@ -9,6 +9,8 @@
  * 
  * Modified by RenTianxiang on 2024-6-21
  * Added the ability to close the picture prompt to save
+ *  modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -290,6 +292,45 @@ void ActiveCtrl::closeAllSlot()
     closeAll();
 }
 
+QObject *ActiveCtrl::flip() const
+{
+    return m_flip;
+}
+
+void ActiveCtrl::setFlip(QObject *newFlip)
+{
+    if (m_flip == newFlip)
+        return;
+    m_flip = newFlip;
+    emit flipChanged();
+}
+
+int ActiveCtrl::XScale() const
+{
+    return m_XScale;
+}
+
+void ActiveCtrl::setXScale(int newXScale)
+{
+    if (m_XScale == newXScale)
+        return;
+    m_XScale = newXScale;
+    emit XScaleChanged();
+}
+
+int ActiveCtrl::YScale() const
+{
+    return m_YScale;
+}
+
+void ActiveCtrl::setYScale(int newYScale)
+{
+    if (m_YScale == newYScale)
+        return;
+    m_YScale = newYScale;
+    emit YScaleChanged();
+}
+
 QObject *ActiveCtrl::askSaveDialog() const
 {
     return m_askSaveDialog;
@@ -454,6 +495,32 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 
     saveRecentFiles();
     emit recentFilesChanged();
+}
+
+void ActiveCtrl::verticallyFlip()
+{
+    if (m_YScale == 1)
+        m_flip->setProperty("yScale", -1);
+    else
+        m_flip->setProperty("yScale", 1);
+}
+
+void ActiveCtrl::horizontallyFlip()
+{
+    if (m_XScale == 1)
+        m_flip->setProperty("xScale", -1);
+    else
+        m_flip->setProperty("xScale", 1);
+}
+
+void ActiveCtrl::yScaleState(int yScale)
+{
+    m_YScale = yScale;
+}
+
+void ActiveCtrl::xScaleState(int xScale)
+{
+    m_XScale = xScale;
 }
 
 void ActiveCtrl::close()

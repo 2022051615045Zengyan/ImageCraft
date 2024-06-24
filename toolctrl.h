@@ -43,6 +43,7 @@ public:
     Q_INVOKABLE void getPointPositon(int x, int y);
     Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int currentIndex);
     Q_INVOKABLE void returnScale(double Scalenumber);
+    Q_INVOKABLE void getSize(const QString &size);
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
@@ -62,6 +63,9 @@ public:
     std::set<int> zoomSet() const;
     void setZoomSet(const std::set<int> &newZoomSet);
 
+    QObject *imageSize() const;
+    void setImageSize(QObject *newImageSize);
+
 signals:
     void selectedToolChanged();
 
@@ -76,6 +80,8 @@ signals:
 
     void zoomSetChanged();
 
+    void imageSizeChanged();
+
 private slots:
     void on_currentEditorViewChanged();
     void modelChangedslot();
@@ -84,9 +90,11 @@ private:
     QString m_selectedTool;
     QObject *m_showcolor = nullptr;
     QObject *m_pointtext = nullptr;
+    QObject *m_imageSize = nullptr;
     QObject *m_currentEditorView = nullptr;
     QObject *m_zoom_size = nullptr;
     std::set<int> m_zoomSet;
     QStringList m_zoomList;
     int m_modelIndex;
+    Q_PROPERTY(QObject *imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged FINAL)
 };
