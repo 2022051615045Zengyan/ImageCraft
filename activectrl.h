@@ -11,7 +11,9 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QSettings>
+#include <QStack>
 #include "editor.h"
+#include "operation.h"
 
 namespace cv {
 class Mat;
@@ -41,7 +43,8 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
     Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged FINAL)
-    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
+    Q_PROPERTY(
+        int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL)
     Q_PROPERTY(QObject* exportPathDialog READ exportPathDialog WRITE setExportPathDialog NOTIFY
                    exportPathDialogChanged FINAL)
     Q_PROPERTY(QObject* askSaveDialog READ askSaveDialog WRITE setAskSaveDialog NOTIFY
@@ -71,6 +74,13 @@ public:
     Q_INVOKABLE void takeAFullScreenshot();
 
     Q_INVOKABLE void exportImage();
+    Q_INVOKABLE void exitWindow();
+
+    //撤销操作
+    Q_INVOKABLE void addOperation(Operation::OperationType type, const QVariantMap& params);
+    Q_INVOKABLE void undo();
+    Q_INVOKABLE void redo();
+    Q_INVOKABLE void reset();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -160,12 +170,17 @@ signals:
     void saved();
 
     void closed();
-
     void YScaleChanged();
 
     void XScaleChanged();
 
     void flipChanged();
+
+    void closeAlled();
+
+    //撤销操作信号
+    void performUndo(Operation::OperationType type, const QVariantMap& params);
+    void performRedo(Operation::OperationType type, const QVariantMap& params);
 
 private slots:
     void openSlot();
@@ -175,6 +190,7 @@ private slots:
     void askSave_discardSlot();
     void askSave_cancelSlot();
     void closeAllSlot();
+    void exitSlot();
 
 private:
     QString m_savePath;
@@ -204,4 +220,8 @@ private:
     void loadRecentFiles();
     void saveRecentFiles();
     cv::Mat QImageToCvMat(const QImage& image);
+
+    //撤销操作
+    QStack<Operation*> m_undoStack; //储存撤销操作的容器
+    QStack<Operation*> m_redoStack; //储存重做操作的容器
 };

@@ -28,6 +28,15 @@ Image
         id: editor1
     }
 
+    Rectangle{
+        id:r
+        visible: false
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+    }
+
     Connections
     {
         target: editor
@@ -37,6 +46,19 @@ Image
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
         }
+
+        // function onTempImageChanged(){
+        //     modified()
+        //     imageProvider.setImage(editor.tempImageView)
+        //     imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)/*editor.tempImage*/
+        // }
+    }
+
+    Image {
+        id: tempImageView
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        source: ""
     }
 
     Rectangle
@@ -65,22 +87,28 @@ Image
         {
             id:hoverhandler
             onHoveredChanged: {
-                if(hovered){
-
-                    if(ToolCtrl.selectedTool === "移动"){
+                if(hovered)
+                {
+                    if(ToolCtrl.selectedTool === "移动")
+                    {
                         cursorShape=Qt.SizeAllCursor
-                    }else if(ToolCtrl.selectedTool === "吸管"){
+                    }else if(ToolCtrl.selectedTool === "吸管")
+                    {
                         cursorShape=Qt.BlankCursor
-                    }else if(ToolCtrl.selectedTool === "抓手"){
+                    }else if(ToolCtrl.selectedTool === "抓手")
+                    {
                         cursorShape=Qt.OpenHandCursor
                     }else if(ToolCtrl.selectedTool === "套索工具"||
                              ToolCtrl.selectedTool === "框选"||
                              ToolCtrl.selectedTool === "裁剪"||
-                             ToolCtrl.selectedTool === "文字"){
+                             ToolCtrl.selectedTool === "文字")
+                    {
                         cursorShape=Qt.CrossCursor
                     }
                 }else
+                {
                     cursorShape=Qt.ArrowCursor
+                }
             }
             onPointChanged: {
                 var x=point.position.x
@@ -103,32 +131,70 @@ Image
                 editor.setCurrentShape(Editor.FreeDraw)
                 console.log(Editor.currentShape)
                 editor.startDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.setShapeToFreeDraw()
+                console.log(x,y)
+                editor.startDrawing(x,y)
+                editor.setCurrentShape(Editor.FreeDraw)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
+
             }
             onPositionChanged: {
-                editor.continueDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.continueDrawing(x,y,false)
             }
             onReleased: {
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
                 console.log("已完成一次画笔操作")
-                editor.stopDrawing()
+                editor.stopDrawing(x,y)
             }
         }
 
         MouseArea{
-            id:recthandler
+            id:rectanglehandler
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "矩阵"
             onPressed: {
                 //requestAddBrushLayer()
+
+                editor.setCurrentShape(Editor.Rectangle)
+                console.log(Editor.currentShape)
+                editor.startDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.setShapeToRectangle()
+                console.log(x,y)
+                editor.startDrawing(x,y)
                 editor.setCurrentShape(Editor.Rectangle)
                 console.log(Editor.currentShape)
                 editor.startDrawing(mouseX,mouseY)
             }
             onPositionChanged: {
-                editor.continueDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.continueDrawing(x,y,true) //临时绘制
             }
             onReleased: {
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
                 console.log("已完成一次矩阵操作")
-                editor.stopDrawing()
+                editor.stopDrawing(x,y)
             }
         }
 
@@ -140,14 +206,7 @@ Image
             source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
             visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
         }
-        Image {
-            width: 15
-            height: 15
-            z:1
-            id: cursor
-            source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-            visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
-        }
+
         //吸管移动
         TapHandler
         {

@@ -1,11 +1,8 @@
 /** MyToolBar.qml
-<<<<<<< HEAD
  * Written by RenTianxiang on 2024-6-19
  * Funtion: ToolBar integration
-=======
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Toolbar integration
->>>>>>> dev
  */
 import QtQuick
 import QtQuick.Controls

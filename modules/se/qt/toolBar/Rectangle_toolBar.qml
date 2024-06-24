@@ -30,6 +30,7 @@ Item {
             border.color: "grey"
             border.width: 2
 
+
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -100,8 +101,7 @@ Item {
             id:_rectangle_Rect
             text:qsTr("矩阵")
             onClicked: {
-                editor.setCurrentShape(Editor.Rectangle)
-                console.log(Editor.currentShape)
+                Editor.setShapeToRectangle()
             }
         }
 
@@ -109,8 +109,7 @@ Item {
             id:_boxselect_Elliptical
             text:qsTr("椭圆")
             onClicked: {
-                editor.setCurrentShape(Editor.Ellipse)
-                console.log(Editor.currentShape)
+                Editor.setShapeToEllipse()
             }
         }
 

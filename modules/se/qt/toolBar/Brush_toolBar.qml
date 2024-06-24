@@ -21,8 +21,7 @@ Item {
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
             onClicked: {
-                editor.setCurrentShape(Editor.FreeDraw)
-                console.log(Editor.currentShape)
+                Editor.setShapeToFreeDraw()
             }
         }
 

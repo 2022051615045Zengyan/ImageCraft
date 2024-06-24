@@ -123,7 +123,7 @@ Item
         id: _askSaveDialog
 
         title: "Unsaved Changes"
-        text: "You have unsaved changes. Do you want to save before close?"
+        text: "untitled have unsaved changes. Do you want to save before close it?"
         buttons: MessageDialog.Save | MessageDialog.Discard | MessageDialog.Cancel
 
         signal saveClicked()
@@ -135,6 +135,7 @@ Item
             //延迟调用open  防止dialog还在open状态
             Qt.callLater(function()
             {
+                text = (sharePage.get(tabBar_currentIndex) ? sharePage.get(tabBar_currentIndex)["pageName"] : "untitled") + " have unsaved changes. Do you want to save before close it?"
                 open()
             });
         }
