@@ -22,6 +22,15 @@ Image
         id: editor1
     }
 
+    Rectangle{
+        id:r
+        visible: false
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+    }
+
     Connections
     {
         target: editor
@@ -31,6 +40,19 @@ Image
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
         }
+
+        // function onTempImageChanged(){
+        //     modified()
+        //     imageProvider.setImage(editor.tempImageView)
+        //     imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)/*editor.tempImage*/
+        // }
+    }
+
+    Image {
+        id: tempImageView
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        source: ""
     }
 
     Rectangle
@@ -76,36 +98,60 @@ Image
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "画笔"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.FreeDraw)
-                  console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.setShapeToFreeDraw()
+                console.log(x,y)
+                editor.startDrawing(x,y)
             }
             onPositionChanged: {
-                editor.continueDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.continueDrawing(x,y,false)
             }
             onReleased: {
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
                 console.log("已完成一次画笔操作")
-                editor.stopDrawing()
+                editor.stopDrawing(x,y)
             }
         }
 
         MouseArea{
-            id:recthandler
+            id:rectanglehandler
             anchors.fill: parent
             enabled: ToolCtrl.selectedTool === "矩阵"
             onPressed: {
-                  //requestAddBrushLayer()
-                  editor.setCurrentShape(Editor.Rectangle)
-                 console.log(Editor.currentShape)
-                  editor.startDrawing(mouseX,mouseY)
+                //requestAddBrushLayer()
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.setShapeToRectangle()
+                console.log(x,y)
+                editor.startDrawing(x,y)
             }
             onPositionChanged: {
-                editor.continueDrawing(mouseX,mouseY)
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
+                editor.continueDrawing(x,y,true) //临时绘制
             }
             onReleased: {
+                var x = mouseX
+                var y = mouseY
+                x *= sourceSize.width / imageViewDragArea.width
+                y *= sourceSize.height / imageViewDragArea.height
                 console.log("已完成一次矩阵操作")
-                editor.stopDrawing()
+                editor.stopDrawing(x,y)
             }
         }
 

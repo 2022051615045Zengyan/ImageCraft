@@ -50,10 +50,16 @@ void Editor::openImage(const QString &path)
     emit imageChanged();
 }
 
-void Editor::draw(int x, int y)
+void Editor::draw(int x, int y, bool isTemporary)
 {
     qDebug() << x << y;
-    QPainter painter(&m_image);
+
+    QImage *targetImage = isTemporary ? &m_previewImage : &m_image;
+
+    //targetImage->fill(Qt::transparent);
+
+    QPainter painter(targetImage);
+
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
@@ -74,25 +80,53 @@ void Editor::draw(int x, int y)
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
         break;
     }
+
+    // if (isTemporary) {
+    //     emit tempImageChanged();
+    // } else {
+    //     emit imageChanged();
+    // }
+
     emit imageChanged();
 }
+
 void Editor::startDrawing(int x, int y)
 {
     m_drawing = true;
     m_lastPoint = QPoint(x, y);
-    continueDrawing(x, y); // 立即在开始绘制时绘制一个点
+
+    continueDrawing(x, y, true); // 立即在开始绘制时绘制一个点
 }
 
-void Editor::continueDrawing(int x, int y)
+void Editor::continueDrawing(int x, int y, bool isTemporary)
 {
     if (!m_drawing)
         return;
-    draw(x, y);
+    draw(x, y, isTemporary);
 }
 
-void Editor::stopDrawing()
+void Editor::stopDrawing(int x, int y)
 {
     m_drawing = false;
+    draw(x, y, false);
+}
+
+void Editor::setShapeToRectangle()
+{
+    setCurrentShape(Rectangle);
+    emit currentShapeChanged();
+}
+
+void Editor::setShapeToEllipse()
+{
+    setCurrentShape(Ellipse);
+    emit currentShapeChanged();
+}
+
+void Editor::setShapeToFreeDraw()
+{
+    setCurrentShape(FreeDraw);
+    emit currentShapeChanged();
 }
 
 QString Editor::path() const
@@ -139,10 +173,36 @@ Editor::Shape Editor::currentShape() const
     return m_currentShape;
 }
 
-void Editor::setCurrentShape(Shape newCurrentShape)
+void Editor::setCurrentShape(Editor::Shape newCurrentShape)
 {
     if (m_currentShape == newCurrentShape)
         return;
     m_currentShape = newCurrentShape;
     emit currentShapeChanged();
+}
+
+QImage Editor::previewImage() const
+{
+    return m_previewImage;
+}
+
+void Editor::setPreviewImage(const QImage &newPreviewImage)
+{
+    if (m_previewImage == newPreviewImage)
+        return;
+    m_previewImage = newPreviewImage;
+    emit previewImageChanged();
+}
+
+QImage Editor::tempImage() const
+{
+    // return m_tempImage;
+}
+
+void Editor::setTempImage(const QImage &newTempImage)
+{
+    // if (m_tempImage == newTempImage)
+    //     return;
+    // m_tempImage = newTempImage;
+    // emit tempImageChanged();
 }
