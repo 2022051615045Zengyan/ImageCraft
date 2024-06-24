@@ -4,6 +4,7 @@
  */
 import QtQuick
 import QtQuick.Controls
+import ImageCraft
 
 Menu {
     width: 300
@@ -15,7 +16,7 @@ Menu {
         text:qsTr("撤销（&U)")
         icon.name: "edit-redo-symbolic-rtl"
         onTriggered: {
-            console.log("还原已被点击")
+            ActiveCtrl.undo()
         }
     }
 
@@ -24,7 +25,7 @@ Menu {
         text:qsTr("重做（&W)")
         icon.name: "edit-redo"
         onTriggered: {
-            console.log("前进一步已被点击")
+            ActiveCtrl.redo()
         }
     }
 

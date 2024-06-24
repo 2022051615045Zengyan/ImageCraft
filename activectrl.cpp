@@ -12,11 +12,15 @@
  * 
  * Modified by RenTianxiang on 2024-6-22
  * Added a new exit prompt to save the modified picture
+ *
+ * Modified by RenTianxiang on 2024-6-24
+ *      Finished moving the layer undo and redo
  */
 #include "activectrl.h"
 #include <QDesktopServices>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QJSValue>
 #include <QMetaObject>
 #include <QPixmap>
 #include <QQmlProperty>
@@ -171,7 +175,7 @@ void ActiveCtrl::saveAsSlot()
                 QImage image = grabResult->image();
                 cv::Mat matImage = QImageToCvMat(image);
                 if (cv::imwrite(m_savePath.toStdString(), matImage, compression_params)) {
-                    m_currentLayer->setProperty("isModified_", false);
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
                     qDebug() << "Save success to: " << m_savePath;
 
                     int lastIndexOfSlash = m_savePath.lastIndexOf('/') + 1;
@@ -191,9 +195,7 @@ void ActiveCtrl::saveAsSlot()
                                               Q_ARG(QVariant, QVariant::fromValue(m_savePath)));
                     addRecentFiles(savePath);
                 } else {
-                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
-                                                             "open",
-                                                             Qt::AutoConnection);
+                    QMetaObject::invokeMethod(m_failToSave, "open", Qt::AutoConnection);
                 }
             });
         } else {
@@ -235,12 +237,10 @@ void ActiveCtrl::exportSlot()
                 QImage image = grabResult->image();
                 cv::Mat matImage = QImageToCvMat(image);
                 if (cv::imwrite(fileName.toStdString(), matImage, compression_params)) {
-                    m_currentLayer->setProperty("isModified_", false);
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
                     qDebug() << "Save success to: " << fileName;
                 } else {
-                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
-                                                             "open",
-                                                             Qt::AutoConnection);
+                    QMetaObject::invokeMethod(m_failToSave, "open", Qt::AutoConnection);
                 }
             });
         } else {
@@ -257,11 +257,10 @@ void ActiveCtrl::askSave_saveSlot()
         &ActiveCtrl::saved,
         this,
         [=, this]() {
-            m_sharePage->metaObject()->invokeMethod(m_sharePage,
-                                                    "removeElement",
-                                                    Q_ARG(QVariant,
-                                                          QVariant::fromValue(m_currentIndex)),
-                                                    Q_ARG(QVariant, QVariant::fromValue(1)));
+            QMetaObject::invokeMethod(m_sharePage,
+                                      "removeElement",
+                                      Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                      Q_ARG(QVariant, QVariant::fromValue(1)));
             disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
             disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
             disconnect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
@@ -274,10 +273,10 @@ void ActiveCtrl::askSave_saveSlot()
 //询问保存修改后，用户选择不保存的处理逻辑
 void ActiveCtrl::askSave_discardSlot()
 {
-    m_sharePage->metaObject()->invokeMethod(m_sharePage,
-                                            "removeElement",
-                                            Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
-                                            Q_ARG(QVariant, QVariant::fromValue(1)));
+    QMetaObject::invokeMethod(m_sharePage,
+                              "removeElement",
+                              Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                              Q_ARG(QVariant, QVariant::fromValue(1)));
 
     disconnect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
     disconnect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
@@ -407,13 +406,13 @@ void ActiveCtrl::setCurrentEditor(Editor *newCurrentEditor)
 
 void ActiveCtrl::open()
 {
-    m_openDialogBox->metaObject()->invokeMethod(m_openDialogBox, "open", Qt::AutoConnection);
+    QMetaObject::invokeMethod(m_openDialogBox, "open", Qt::AutoConnection);
     QObject::connect(m_openDialogBox, SIGNAL(accepted()), this, SLOT(openSlot()));
 }
 
 void ActiveCtrl::newImage()
 {
-    m_newDialogBox->metaObject()->invokeMethod(m_newDialogBox, "open", Qt::AutoConnection);
+    QMetaObject::invokeMethod(m_newDialogBox, "open", Qt::AutoConnection);
 }
 
 void ActiveCtrl::save()
@@ -430,13 +429,11 @@ void ActiveCtrl::save()
             QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, [=, this]() {
                 QImage image = grabResult->image();
                 if (image.save(m_savePath)) {
-                    m_currentLayer->setProperty("isModified_", false);
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
                     qDebug() << "Save success to: " << m_savePath;
                     emit saved();
                 } else {
-                    m_failToSave->metaObject()->invokeMethod(m_failToSave,
-                                                             "open",
-                                                             Qt::AutoConnection);
+                    QMetaObject::invokeMethod(m_failToSave, "open", Qt::AutoConnection);
                 }
             });
         } else {
@@ -450,7 +447,7 @@ void ActiveCtrl::saveAs()
     if (!m_currentLayer) {
         return;
     }
-    m_savePathDialod->metaObject()->invokeMethod(m_savePathDialod, "open", Qt::DirectConnection);
+    QMetaObject::invokeMethod(m_savePathDialod, "open", Qt::DirectConnection);
     connect(m_savePathDialod, SIGNAL(accepted()), this, SLOT(saveAsSlot()));
 }
 
@@ -476,21 +473,17 @@ void ActiveCtrl::close()
         return;
     }
     if (m_currentIndex != -1) {
-        bool isModified = QQmlProperty::read(m_currentLayer, "isModified_").toBool();
-        if (isModified) {
+        if (m_modified) {
             connect(m_askSaveDialog, SIGNAL(saveClicked()), this, SLOT(askSave_saveSlot()));
             connect(m_askSaveDialog, SIGNAL(discardClicked()), this, SLOT(askSave_discardSlot()));
             connect(m_askSaveDialog, SIGNAL(cancelClicked()), this, SLOT(askSave_cancelSlot()));
-            m_askSaveDialog->metaObject()->invokeMethod(m_askSaveDialog,
-                                                        "openDialog",
-                                                        Qt::DirectConnection);
+            QMetaObject::invokeMethod(m_askSaveDialog, "openDialog", Qt::DirectConnection);
             return;
         } else {
-            m_sharePage->metaObject()->invokeMethod(m_sharePage,
-                                                    "removeElement",
-                                                    Q_ARG(QVariant,
-                                                          QVariant::fromValue(m_currentIndex)),
-                                                    Q_ARG(QVariant, QVariant::fromValue(1)));
+            QMetaObject::invokeMethod(m_sharePage,
+                                      "removeElement",
+                                      Q_ARG(QVariant, QVariant::fromValue(m_currentIndex)),
+                                      Q_ARG(QVariant, QVariant::fromValue(1)));
             emit closed();
             return;
         }
@@ -584,38 +577,93 @@ void ActiveCtrl::exitWindow()
     closeAll();
 }
 
-void ActiveCtrl::addOperation(Operation::OperationType type, const QVariantMap &params)
-{
-    Operation *op = new Operation(type, params, this);
-    m_undoStack.push(op);
-    qDeleteAll(m_redoStack);
-    m_redoStack.clear();
-}
-
+//撤销
 void ActiveCtrl::undo()
 {
-    if (!m_undoStack.isEmpty()) {
-        Operation *op = m_undoStack.pop();
-        emit performUndo(op->type(), op->params());
-        m_redoStack.push(op);
+    if (!m_currentLayer) {
+        return;
+    }
+    QVariant index;
+    QMetaObject::invokeMethod(m_currentLayer, "undoStackPop", qReturnArg(index));
+    QVariant actionAndParams;
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "getUndoActionAndParams",
+                              qReturnArg(actionAndParams),
+                              Q_ARG(QVariant, index));
+
+    if (actionAndParams.isNull()) {
+        return;
+    }
+
+    OperationType action;
+    QVariantMap params;
+    if (actionAndParams.isValid() && actionAndParams.canConvert(QMetaType::QVariantMap)) {
+        QVariantMap map = actionAndParams.toMap();
+        action = static_cast<OperationType>(map["action"].toInt());
+        params = map["params"].toMap();
+    }
+
+    switch (action) {
+    case AddLayer:
+        if (index.toInt() == 0) {
+            break;
+        }
+        QMetaObject::invokeMethod(m_currentLayer, "removeLayer", Q_ARG(QVariant, index));
+        break;
+    case MoveLayer:
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "moveLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, params["oldX"]),
+                                  Q_ARG(QVariant, params["oldY"]));
+        break;
+    default:
+        qDebug() << action;
     }
 }
 
+//重做
 void ActiveCtrl::redo()
 {
-    if (!m_redoStack.isEmpty()) {
-        Operation *op = m_redoStack.pop();
-        emit performRedo(op->type(), op->params());
-        m_undoStack.push(op);
+    if (!m_currentLayer) {
+        return;
     }
-}
+    QVariant index;
+    QMetaObject::invokeMethod(m_currentLayer, "redoStackPop", qReturnArg(index));
 
-void ActiveCtrl::reset()
-{
-    qDeleteAll(m_undoStack);
-    m_undoStack.clear();
-    qDeleteAll(m_redoStack);
-    m_redoStack.clear();
+    if (index.toInt() == -2) //上一次撤销是删除图层的操作  特殊处理
+    {
+        QMetaObject::invokeMethod(m_currentLayer, "deletedStackPop", Qt::AutoConnection);
+    } else {
+        QVariant actionAndParams;
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "getRedoActionAndParams",
+                                  qReturnArg(actionAndParams),
+                                  Q_ARG(QVariant, index));
+        if (actionAndParams.isNull()) {
+            return;
+        }
+
+        OperationType action;
+        QVariantMap params;
+        if (actionAndParams.isValid() && actionAndParams.canConvert(QMetaType::QVariantMap)) {
+            QVariantMap map = actionAndParams.toMap();
+            action = static_cast<OperationType>(map["action"].toInt());
+            params = map["params"].toMap();
+        }
+
+        switch (action) {
+        case MoveLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "moveLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["newX"]),
+                                      Q_ARG(QVariant, params["newY"]));
+            break;
+        default:
+            qDebug() << action;
+        }
+    }
 }
 
 cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)

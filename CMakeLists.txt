@@ -84,7 +84,8 @@ qt_add_qml_module(
   SOURCES
   toolctrl.cpp
   toolctrl.h
-  SOURCES operation.h operation.cpp)
+  SOURCES
+  QML_FILES Layer.qml)
 
 target_compile_features(appImageCraft PRIVATE cxx_std_20)
 

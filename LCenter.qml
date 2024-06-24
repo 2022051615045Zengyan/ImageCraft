@@ -23,145 +23,15 @@ Item
         currentIndex: lcenter.currentIndex
         clip: true
 
-        Repeater {
+        Repeater
+        {
             model: pageModel
 
-            Item
+            Layer
             {
-                id: tabContent
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                property bool isModified: layer.isModified_
-                property bool isBrushLayer:layer.isBrushLayer_
-                property ListModel layerModel: layer.layerListModel
-                property Repeater layers: layer.layers
-                property Rectangle thelayer: layer
-                property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
-                property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
-                property int keys: 0
-                property var undoStack: []
-                property var redoStack: []
-
-                Rectangle
-                {
-                    id: display_rect
-                    height: layer.height
-                    width: layer.height
-                    clip: true
-                    color: "white"
-                    anchors.centerIn: parent
-
-                    Rectangle
-                    {
-                        id: layer
-                        height: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) >= (tabContent.height / tabContent.width)) ? layers.itemAt(0).height : (layers.itemAt(0).sourceSize.height * layers.itemAt(0).width / layers.itemAt(0).sourceSize.width)
-                        width: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) <= (tabContent.height / tabContent.width)) ? layers.itemAt(0).width : (layers.itemAt(0).sourceSize.width * layers.itemAt(0).height / layers.itemAt(0).sourceSize.height)
-                        anchors.centerIn: parent
-                        color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
-                        property ListModel layerListModel: ListModel {}
-                        property Repeater layers: layers_
-                        property bool isModified_: false
-                        property bool isBrushLayer_:false
-
-                        Repeater
-                        {
-                            id: layers_
-                            model: layer.layerListModel
-                            EditorView
-                            {
-                                id: editorView
-
-                                x: parent.width === width ? 0 : - (width - parent.width) / 2
-                                y: parent.height === height ? 0 : - (height - parent.height) / 2
-
-                                width: tabContent.width / 5 * 4
-                                height: tabContent.height / 5 * 4
-
-                                Component.onCompleted:
-                                {
-                                    if(index === 0)
-                                    {
-                                        Qt.callLater(function()
-                                        {
-                                            parent.isModified_ = false
-                                        });
-                                    }
-                                    ToolCtrl.currentEditorView = editorView
-                                    editor.openImage(pixUrl)
-                                }
-                                TapHandler
-                                {
-                                    onTapped:
-                                    {
-                                        ActiveCtrl.currentEditor = layers.itemAt(index) as Editor
-                                        ToolCtrl.currentEditorView = editorView
-                                    }
-                                }
-
-
-                                onModified:
-                                {
-                                    parent.isModified_ = true
-                                }
-
-                                Connections{
-                                    target: editorView
-                                    function onRequestAddBrushLayer(){
-                                        addBrushLayer()
-                                    }
-                                }
-                            }
-                        }
-                        onHeightChanged:
-                        {
-                            display_rect.height = height
-                        }
-                        onWidthChanged:
-                        {
-                            display_rect.width = width
-                        }
-                    }
-
-                }
-
-                Component.onCompleted:
-                {
-                    layerModel.append({pixUrl: pixUrl_yuan})
-                }
-
-                //拖放文件区域
-                DropArea
-                {
-                    anchors.fill: parent
-                    onDropped: function(dragEvent)
-                    {
-                        handleDrop(dragEvent)
-                    }
-
-                    function handleDrop(dragEvent)
-                    {
-                        if (dragEvent.hasText)
-                        {
-                            var url = dragEvent.text;
-                            parent.layerModel.append({pixUrl: url});
-                            thelayer.isModified_ = true
-                            thelayer.isBrushLayer_=false
-                        }
-                    }
-                }
-                function addBrushLayer(){
-                    if(thelayer.isBrushLayer_===false){
-                        var pixUrl_brush ="File:///run/media/root/study/QTstudy/Ps/ImageCraft/Image/new5000x5000.png"
-                        layerModel.append({pixUrl:pixUrl_brush});
-                        thelayer.isModified_=true
-                        thelayer.isBrushLayer_=true
-                    }
-                }
-                onIsModifiedChanged:
-                {
-                    ActiveCtrl.modified = isModified
-                }
             }
         }
 

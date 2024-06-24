@@ -5,6 +5,12 @@
  *   change cursorshape setting
  * modified by Zengyan on 2024-6-22
  * perfected zoom function
+ *
+ * Modified by RenTianxiang on 2024-6-23
+ *      added propertys and functions to manage redo and undo
+ *
+ * Modified by RenTianxiang on 2024-6-24
+ *      Finished moving the layer undo and redo
  */
 import QtQuick
 import QtQuick.Controls
@@ -15,8 +21,15 @@ Image
     id: imageView
 
     property Editor editor: editor1
+    property int key   //标识符
+    property var undoStack: []
+    property var redoStack: []
+    property int oldX
+    property int oldY
+    property int oldScale: 1
     signal modified()
     signal requestAddBrushLayer()
+    signal addUndoStack()
     fillMode: Image.PreserveAspectFit
 
     Editor
@@ -52,7 +65,15 @@ Image
             enabled: ToolCtrl.selectedTool === "移动"
             onActiveChanged:
             {
-                modified()
+                if(!active)
+                {
+                    saveState(ActiveCtrl.MoveLayer, {oldX: imageView.oldX, oldY: imageView.oldY, newX: imageView.x, newY: imageView.y})
+                }else
+                {
+                    oldX = x
+                    oldY = y
+                    modified()
+                }
             }
         }
 
@@ -185,12 +206,48 @@ Image
 
         enabled: ToolCtrl.selectedTool==="缩放"
         //onRotationChanged: (delta) => parent.rotation += delta // add
-        onScaleChanged: {
-                            ToolCtrl.returnScale(scale)
+        onScaleChanged:
+        {
+            ToolCtrl.returnScale(scale)
 
-                        }
+        }
 
     }
 
+    //保存修改前的状态
+    function saveState(action, params)
+    {
+        undoStack.push({action: action, params: params})
+        redoStack = []
+        addUndoStack()
+    }
 
+    function getUndoActionAndParams()   //获取撤销栈的数据
+    {
+        if(undoStack.length < 0)
+        {
+            return null
+        }
+
+        var map = undoStack.pop()
+        redoStack.push(map)
+        return map
+    }
+
+    function getRedoActionAndParams()   //获取重做栈的数据
+    {
+        if(redoStack.length < 0)
+        {
+            return null
+        }
+        var map = redoStack.pop()
+        undoStack.push(map)
+        return map
+    }
+
+    function move(x, y) //移动图层
+    {
+        imageView.x = x
+        imageView.y = y
+    }
 }

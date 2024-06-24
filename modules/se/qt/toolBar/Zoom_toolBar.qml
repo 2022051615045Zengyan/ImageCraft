@@ -58,10 +58,8 @@ Item {
             onCurrentIndexChanged: {
                 // 当用户改变选项时触发
                 var scaleMultiple = _zoom_size.model[currentIndex]
-                console.log("index:"+currentText)
                 // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
                 ToolCtrl.setScaleFactor(scaleMultiple,currentIndex);
-                console.log("scale:"+scaleMultiple)
             }
             delegate:ItemDelegate {
             text: modelData + "%"
