@@ -9,7 +9,9 @@
 
  * Modified by RenTianxiang on 2024-6-20
  *      modified export action
-
+ *
+ * Modified by RenTianxiang on 2024-6-22
+ *      Added a new exit prompt to save the modified picture
  */
 import QtQuick
 import QtQuick.Controls
@@ -92,18 +94,7 @@ Menu
         text: qsTr("捕获屏幕截图")
         onTriggered:
         {
-            ActiveCtrl.TakeAFullScreenshot()
-        }
-    }
-
-    MenuSeparator{}
-
-    MyMenuItem
-    {
-        text: qsTr("图像属性")
-        onTriggered:
-        {
-            console.log("图像属性")
+            ActiveCtrl.takeAFullScreenshot()
         }
     }
 
@@ -186,7 +177,7 @@ Menu
         icon.name: "application-exit"
         onTriggered:
         {
-            Qt.quit()
+            ActiveCtrl.exitWindow()
         }
     }
 }

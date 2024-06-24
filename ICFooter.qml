@@ -1,8 +1,10 @@
 /** ICFooter.qml
  * Written by ZengYan on 2024-6-19
  * Funtion: Setting bottom
- * * modified by Zengyan on 2014-6-20
+ *  modified by Zengyan on 2014-6-20
  *      added getcolorfunction
+ * modified by Zengyan on 2014-6-22
+ *       added colorrectangles
  */
 import QtQuick
 import QtQuick.Controls
@@ -40,24 +42,104 @@ Rectangle {
                     Layout.preferredHeight: colorshow.height
                     Rectangle
                     {
+                        width:height
+                        height: parent.height-2
+                        anchors.centerIn: parent
+                        border.color: "#c0c0c0"
+                        color:"transparent"
+                        Rectangle{
                         id: _showcolor
                         width:height
-                        height: parent.height-10
+                        height: parent.height-15
                         color: "#ddff00"
+                        border.color: "#c0c0c0"
+
                         anchors.centerIn: parent
+                        }
                     }
                 }
                 Rectangle{
-                    Layout.preferredWidth:colorshow.width/6*2
+                    id:colorrectangle
+                    Layout.preferredWidth:colorshow.width/7*3
                     Layout.preferredHeight: colorshow.height
+                    ListModel {
+                        id: colorModel
+                        // 22 个不同的颜色，每排 11 个方块，共两行
+                        ListElement { color: "black" }
+                        ListElement { color: "#808080" }
+                        ListElement { color: "red" }
+                        ListElement { color: "#ff8000" }
+                        ListElement { color: "yellow" }
+                        ListElement { color: "#00ff00" }
+                        ListElement { color: "#00ffff" }
+                        ListElement { color: "#0000ff" }
+                        ListElement { color: "#ff00ff" }
+                        ListElement { color: "#ff8080" }
+                        ListElement { color: "#80ff80" }
+
+                        ListElement { color: "white" }
+                        ListElement { color: "#c0c0c0" }
+                        ListElement { color: "#800000" }
+                        ListElement { color: "#804000" }
+                        ListElement { color: "#808000" }
+                        ListElement { color: "#008000" }
+                        ListElement { color: "#008080" }
+                        ListElement { color: "#000080" }
+                        ListElement { color: "#800080" }
+                        ListElement { color: "#8080ff" }
+                        ListElement { color: "#ffff80" }
+                    }
+
+                    GridView {
+                        anchors.fill: parent
+                        model: colorModel
+                        cellWidth: parent.width/11
+                        cellHeight: parent.height/2
+
+
+                        delegate: Rectangle {
+                            width:parent.width/11-1
+                            height:parent.height/2-1
+                            color: model.color
+                            border.color: "#c0c0c0"
+                        }
+            //             Timer{
+            //                 id: clickTimer //超过300ms(典型延时时间)还没有触发第二次点击证明是单击
+            //                 property int clickNum: 0
+
+            //                 interval: 300;
+            //                 onTriggered: {
+            //                     if(isFullScreen){
+            //                         clickNum = 0;
+            //                         clickTimer.stop();
+            //                         window();
+            //                     }else{
+            //                         clickNum = 0;
+            //                         clickTimer.stop();
+            //                         Controller.multiView();
+            //                     }
+            //                 }
+            //             }
+            //             TapHandler {
+
+            //                 onTapped: {
+            //                     clickTimer.clickNum++
+            //                     if(clickTimer.clickNum == 1) {
+            //                         clickTimer.start()
+            //                     }
+            //                     if(clickTimer.clickNum == 2) {
+            //                         clickTimer.clickNum = 0
+            //                         clickTimer.stop()
+            //                         fullScreen()
+            //                     }
+            //                 }
+            //             }
+                    }
+
                 }
-                Rectangle{
-                    Layout.preferredWidth:colorshow.width/6
-                    Layout.preferredHeight: colorshow.height
-                    color: "#a02dd5"
-                }
+
             }
-            color: "#00fffb"
+
         }
         MenuSeparator{
             id:separator2

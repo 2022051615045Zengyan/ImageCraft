@@ -1,6 +1,7 @@
 /** LCenter.qml
  * Written by Zengyan on 2024-6-19
  * Funtion: left center window
+*
  */
 import QtQuick
 import QtQuick.Controls
@@ -38,6 +39,9 @@ Item
                 property Rectangle thelayer: layer
                 property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
                 property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
+                property int keys: 0
+                property var undoStack: []
+                property var redoStack: []
 
                 Rectangle
                 {
@@ -45,7 +49,7 @@ Item
                     height: layer.height
                     width: layer.height
                     clip: true
-                    color: "black"
+                    color: "white"
                     anchors.centerIn: parent
 
                     Rectangle
@@ -54,7 +58,7 @@ Item
                         height: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) >= (tabContent.height / tabContent.width)) ? layers.itemAt(0).height : (layers.itemAt(0).sourceSize.height * layers.itemAt(0).width / layers.itemAt(0).sourceSize.width)
                         width: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) <= (tabContent.height / tabContent.width)) ? layers.itemAt(0).width : (layers.itemAt(0).sourceSize.width * layers.itemAt(0).height / layers.itemAt(0).sourceSize.height)
                         anchors.centerIn: parent
-                        color: !layers.count ?  "black" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
+                        color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
                         property ListModel layerListModel: ListModel {}
                         property Repeater layers: layers_
                         property bool isModified_: false
@@ -83,7 +87,7 @@ Item
                                             parent.isModified_ = false
                                         });
                                     }
-
+                                    ToolCtrl.currentEditorView = editorView
                                     editor.openImage(pixUrl)
                                 }
                                 TapHandler
@@ -91,8 +95,11 @@ Item
                                     onTapped:
                                     {
                                         ActiveCtrl.currentEditor = layers.itemAt(index) as Editor
+                                        ToolCtrl.currentEditorView = editorView
                                     }
                                 }
+
+
                                 onModified:
                                 {
                                     parent.isModified_ = true
@@ -115,6 +122,7 @@ Item
                             display_rect.width = width
                         }
                     }
+
                 }
 
                 Component.onCompleted:
@@ -167,6 +175,8 @@ Item
                 ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
+
+                ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }
         onCountChanged:
