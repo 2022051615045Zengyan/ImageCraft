@@ -1,7 +1,6 @@
 /** LCenter.qml
  * Written by Zengyan on 2024-6-19
  * Funtion: left center window
-*
  */
 import QtQuick
 import QtQuick.Controls
@@ -45,7 +44,9 @@ Item
                 ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
-
+                ActiveCtrl.flip = (itemAt(currentIndex) ? itemAt(currentIndex).currentView.flip : null)
+                ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale);
+                ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale);
                 ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }

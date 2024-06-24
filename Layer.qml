@@ -7,6 +7,9 @@
  *
  * Modified by RenTianxiang on 2024-6-24
  *      Finished moving the layer undo and redo
+ *
+ *  modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions
  */
 
 import QtQuick
@@ -83,14 +86,19 @@ Item
                         key = tabContent.keys++
                         saveState(ActiveCtrl.AddLayer, {})
                         ToolCtrl.currentEditorView = editorView
+                        tabContent.currentView=editorView
                         editor.openImage(thepixUrl)
                     }
                     TapHandler
                     {
-                        onTapped:
+                        onTapped:(event)=>
                         {
-                            ActiveCtrl.currentEditor = layers.itemAt(index) as Editor
+                            ActiveCtrl.currentEditor = layers.itemAt(index).editor as Editor
                             ToolCtrl.currentEditorView = editorView
+                            tabContent.currentView = editorView
+                            ActiveCtrl.flip=editorView.flip
+                            ActiveCtrl.yScaleState(currentView.flip.yScale);
+                            ActiveCtrl.xScaleState(currentView.flip.xScale);
                         }
                     }
 

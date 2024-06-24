@@ -2,6 +2,8 @@
  * Written by ZhanXuecai on 2024-6-20
  * Funtion: control menu actions
  * Funtion: refresh and TakeAFullScreenshot
+ * modified by Zengyan on 2024-6-24
+ *  added  verticallyFlip,horizontallyFlip functions
  */
 #pragma once
 
@@ -47,6 +49,10 @@ class ActiveCtrl : public QObject
     Q_PROPERTY(QObject* askSaveDialog READ askSaveDialog WRITE setAskSaveDialog NOTIFY
                    askSaveDialogChanged FINAL)
 
+    Q_PROPERTY(int YScale READ YScale WRITE setYScale NOTIFY YScaleChanged FINAL)
+    Q_PROPERTY(int XScale READ XScale WRITE setXScale NOTIFY XScaleChanged FINAL)
+    Q_PROPERTY(QObject* flip READ flip WRITE setFlip NOTIFY flipChanged FINAL)
+
 public:
     //图层修改类型
     enum OperationType { MoveLayer, ScaleLayer, AddLayer, ReMoveLayer, ModifiedLayer };
@@ -61,6 +67,11 @@ public:
     Q_INVOKABLE void close();
     Q_INVOKABLE void closeAll();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
+
+    Q_INVOKABLE void verticallyFlip();
+    Q_INVOKABLE void horizontallyFlip();
+    Q_INVOKABLE void yScaleState(int yScale);
+    Q_INVOKABLE void xScaleState(int xScale);
 
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void takeAFullScreenshot();
@@ -114,6 +125,15 @@ public:
     QObject* askSaveDialog() const;
     void setAskSaveDialog(QObject* newAskSaveDialog);
 
+    int YScale() const;
+    void setYScale(int newYScale);
+
+    int XScale() const;
+    void setXScale(int newXScale);
+
+    QObject* flip() const;
+    void setFlip(QObject* newFlip);
+
 signals:
 
     void dialogBoxChanged();
@@ -151,6 +171,11 @@ signals:
     void saved();
 
     void closed();
+    void YScaleChanged();
+
+    void XScaleChanged();
+
+    void flipChanged();
 
     void closeAlled();
 
@@ -185,7 +210,10 @@ private:
     QObject* m_sharePage = nullptr;
     QObject* m_exportPathDialog = nullptr;
     QObject* m_askSaveDialog = nullptr;
+    int m_YScale;
+    int m_XScale;
 
+    QObject* m_flip = nullptr;
     void loadRecentFiles();
     void saveRecentFiles();
     cv::Mat QImageToCvMat(const QImage& image);
