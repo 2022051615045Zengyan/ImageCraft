@@ -44,9 +44,12 @@ Item
                 ActiveCtrl.size = (itemAt(currentIndex) ? itemAt(currentIndex).imageSize : null)
                 var filePath = (itemAt(currentIndex) ? itemAt(currentIndex).filePath : "")
                 ActiveCtrl.savePath = filePath
-                ActiveCtrl.flip = (itemAt(currentIndex) ? itemAt(currentIndex).currentView.flip : null)
-                ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale);
-                ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale);
+                if(itemAt(currentIndex).currentView)
+                {
+                    ActiveCtrl.flip = itemAt(currentIndex).currentView.flip
+                    ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale);
+                    ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale);
+                }
                 ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }

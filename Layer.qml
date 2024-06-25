@@ -13,6 +13,9 @@
  *
  * Modified by RenTianxiang on 2024-6-25
  *      Zoom and Settings invisible undo and redo completed, Fixed a bug where you could only select the lowest layer
+ *
+ * Modified by RenTianxiang on 2024-6-26
+ *      The switch between the current image in the Layer is consistent with the switch between the tabs in the RCenter, making it easy to see the currently selected Layer
  */
 
 import QtQuick
@@ -32,6 +35,7 @@ Item
     property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
     property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
     property EditorView currentView: null
+    property int currentIndex: -1
     property int keys: 1
     property var undoStack: []
     property var redoStack: []
@@ -40,6 +44,7 @@ Item
     property bool firstTaped: true
 
     signal modifiedChanged()    //给isModified赋值就触发这个信号(方便更新oldModified和newModified)
+    signal indexChanged(var index)
 
     Rectangle
     {
@@ -101,7 +106,7 @@ Item
                         key = tabContent.keys++
                         saveState(ActiveCtrl.AddLayer, {})
                         ToolCtrl.currentEditorView = editorView
-                        tabContent.currentView = editorView
+                        tabContent.currentIndex = index
                         editor.openImage(thepixUrl)
                     }
                     imageViewDragAreaTap.onTapped:
@@ -109,12 +114,7 @@ Item
                         if(tabContent.firstTaped)//第一个触发的响应
                         {
                             tabContent.firstTaped = false
-                            ActiveCtrl.currentEditor = layers.itemAt(index).editor as Editor
-                            ToolCtrl.currentEditorView = editorView
-                            tabContent.currentView = editorView
-                            ActiveCtrl.flip=editorView.flip
-                            ActiveCtrl.yScaleState(currentView.flip.yScale);
-                            ActiveCtrl.xScaleState(currentView.flip.xScale);
+                            tabContent.currentIndex = index
 
                             if(ToolCtrl.selectedTool === "吸管")
                             {                // 获取鼠标点击位置的坐标
@@ -342,5 +342,26 @@ Item
         oldModified = newModified
         newModified = isModified
         ActiveCtrl.modified = isModified
+    }
+
+    onCurrentViewChanged:
+    {
+        if(currentView)
+        {
+            ActiveCtrl.flip = currentView.flip
+            ActiveCtrl.yScaleState(currentView.flip.yScale);
+            ActiveCtrl.xScaleState(currentView.flip.xScale);
+            ToolCtrl.currentEditorView = currentView
+            ActiveCtrl.currentEditor = currentView.editor as Editor
+        }
+    }
+
+    onCurrentIndexChanged:
+    {
+        if(currentIndex != -1)
+        {
+            currentView = layers.itemAt(currentIndex)
+            indexChanged(currentIndex)
+        }
     }
 }
