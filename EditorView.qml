@@ -3,6 +3,9 @@
  * Funtion: show image
  * modified by Zengyan on 2024-6-20
  *   change cursorshape setting
+ * modified by ZhanXuecai on 2024-6-21
+ *   added Brush tool method
+ *
  * modified by Zengyan on 2024-6-22
  * perfected zoom function
  *
@@ -13,8 +16,15 @@
  *      Finished moving the layer undo and redo
  * modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions,choicecolorfunction
+
  * Modified by Zengyan on 2024-6-25
  * added rotation function
+
+
+ * modified by ZhanXuecai on 2024-6-24
+ *   perfected Rectangle tool method
+ * modified by ZhanXuecai on 2024-6-25
+ *   perfected Rectangle and Brush tool method
 
  */
 import QtQuick
@@ -40,9 +50,7 @@ Image
     signal modified()
     signal requestAddBrushLayer()
     signal addUndoStack()
-    fillMode: Image.PreserveAspectFit
-
-
+    //fillMode: Image.PreserveAspectFit
     Editor
     {
         id: editor1
@@ -74,12 +82,12 @@ Image
         // }
     }
 
-    Image {
-        id: tempImageView
-        anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
-        source: ""
-    }
+    // Image {
+    //     id: tempImageView
+    //     anchors.fill: parent
+    //     fillMode: Image.PreserveAspectFit
+    //     source: ""
+    // }
 
     Rectangle
     {
@@ -88,7 +96,7 @@ Image
         anchors.centerIn: parent
 
         color: "transparent"
-        z: 1
+        z: -1
         height: status === Image.Ready ? ((sourceSize.height / sourceSize.width >= parent.height / parent.width) ? parent.height :  sourceSize.height * parent.width / sourceSize.width) : parent.height
         width: status === Image.Ready ? ((sourceSize.height / sourceSize.width < parent.height / parent.width) ? parent.width : sourceSize.width * parent.height / sourceSize.height) : parent.width
 
@@ -150,81 +158,6 @@ Image
             }
         }
 
-        // MouseArea{
-        //     id:brushhandler
-        //     anchors.fill: parent
-        //     enabled: ToolCtrl.selectedTool === "画笔"
-        //     onPressed: {
-        //         //requestAddBrushLayer()
-        //         editor.setCurrentShape(Editor.FreeDraw)
-        //         console.log(Editor.currentShape)
-        //         editor.startDrawing(mouseX,mouseY)
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         editor.setShapeToFreeDraw()
-        //         console.log(x,y)
-        //         editor.startDrawing(x,y)
-        //         editor.setCurrentShape(Editor.FreeDraw)
-        //         console.log(Editor.currentShape)
-        //         editor.startDrawing(mouseX,mouseY)
-
-        //     }
-        //     onPositionChanged: {
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         editor.continueDrawing(x,y,false)
-        //     }
-        //     onReleased: {
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         console.log("已完成一次画笔操作")
-        //         editor.stopDrawing(x,y)
-        //     }
-        // }
-
-        // MouseArea{
-        //     id:rectanglehandler
-        //     anchors.fill: parent
-        //     enabled: ToolCtrl.selectedTool === "矩阵"
-        //     onPressed: {
-        //         //requestAddBrushLayer()
-
-        //         editor.setCurrentShape(Editor.Rectangle)
-        //         console.log(Editor.currentShape)
-        //         editor.startDrawing(mouseX,mouseY)
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         editor.setShapeToRectangle()
-        //         console.log(x,y)
-        //         editor.startDrawing(x,y)
-        //         editor.setCurrentShape(Editor.Rectangle)
-        //         console.log(Editor.currentShape)
-        //         editor.startDrawing(mouseX,mouseY)
-        //     }
-        //     onPositionChanged: {
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         editor.continueDrawing(x,y,true) //临时绘制
-        //     }
-        //     onReleased: {
-        //         var x = mouseX
-        //         var y = mouseY
-        //         x *= sourceSize.width / imageViewDragArea.width
-        //         y *= sourceSize.height / imageViewDragArea.height
-        //         console.log("已完成一次矩阵操作")
-        //         editor.stopDrawing(x,y)
-        //     }
-        // }
 
         Image {
             width: 15
@@ -243,7 +176,54 @@ Image
 
     }
 
-    // PinchArea
+    MouseArea{
+        id:brushhandler
+        anchors.fill: parent
+        enabled: ToolCtrl.selectedTool === "画笔"
+        onPressed: {
+            requestAddBrushLayer()
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            ToolCtrl.setShapeToFreeDraw()
+            ToolCtrl.startDrawing(x,y)
+        }
+        onPositionChanged: {
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            ToolCtrl.continueDrawing(x,y,false)
+        }
+        onReleased: {
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            console.log("已完成一次画笔操作")
+            ToolCtrl.stopDrawing(x,y)
+        }
+    }
+
+    MouseArea{
+        id:recthandler
+        anchors.fill: parent
+        enabled: ToolCtrl.selectedTool === "矩阵"
+        onPressed: {
+            requestAddBrushLayer()
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            ToolCtrl.setShapeToRectangle()
+            ToolCtrl.startDrawing(x,y)
+        }
+        onPositionChanged: {
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            ToolCtrl.continueDrawing(x,y,false)
+        }
+        onReleased: {
+            var x = mouseX / imageView.width * sourceSize.width
+            var y = mouseY / imageView.height * sourceSize.height
+            console.log("已完成一次画笔操作")
+            ToolCtrl.stopDrawing(x,y)
+        }
+    }
+
     PinchHandler {
         id: handler
         enabled: ToolCtrl.selectedTool==="缩放"

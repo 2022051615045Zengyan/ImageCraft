@@ -719,7 +719,6 @@ void ActiveCtrl::undo()
                               "getUndoActionAndParams",
                               qReturnArg(actionAndParams),
                               Q_ARG(QVariant, index));
-
     if (actionAndParams.isNull()) {
         return;
     }
