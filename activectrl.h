@@ -4,6 +4,8 @@
  * Funtion: refresh and TakeAFullScreenshot
  * modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions
+ *   Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 #pragma once
 
@@ -52,7 +54,11 @@ class ActiveCtrl : public QObject
     Q_PROPERTY(int YScale READ YScale WRITE setYScale NOTIFY YScaleChanged FINAL)
     Q_PROPERTY(int XScale READ XScale WRITE setXScale NOTIFY XScaleChanged FINAL)
     Q_PROPERTY(QObject* flip READ flip WRITE setFlip NOTIFY flipChanged FINAL)
-
+    Q_PROPERTY(QObject* currentImageView READ currentImageView WRITE setCurrentImageView NOTIFY
+                   currentImageViewChanged FINAL)
+    Q_PROPERTY(double anglenum READ anglenum WRITE setAnglenum NOTIFY anglenumChanged FINAL)
+    Q_PROPERTY(QObject* rotationDialogBox READ rotationDialogBox WRITE setRotationDialogBox NOTIFY
+                   rotationDialogBoxChanged FINAL)
 public:
     //图层修改类型
     enum OperationType {
@@ -74,7 +80,10 @@ public:
     Q_INVOKABLE void close();
     Q_INVOKABLE void closeAll();
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
-
+    Q_INVOKABLE void getAngle(double angle);
+    Q_INVOKABLE void openDialog();
+    Q_INVOKABLE void leftRotation();
+    Q_INVOKABLE void rightRotation();
     Q_INVOKABLE void verticallyFlip();
     Q_INVOKABLE void horizontallyFlip();
     Q_INVOKABLE void yScaleState(int yScale);
@@ -141,6 +150,15 @@ public:
     QObject* flip() const;
     void setFlip(QObject* newFlip);
 
+    QObject* currentImageView() const;
+    void setCurrentImageView(QObject* newCurrentImageView);
+
+    double anglenum() const;
+    void setAnglenum(double newAnglenum);
+
+    QObject* rotationDialogBox() const;
+    void setRotationDialogBox(QObject* newRotationDialogBox);
+
 signals:
 
     void dialogBoxChanged();
@@ -186,6 +204,12 @@ signals:
 
     void closeAlled();
 
+    void currentImageViewChanged();
+
+    void anglenumChanged();
+
+    void rotationDialogBoxChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -209,7 +233,7 @@ private:
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;
     QString m_originalImageUrl;
-
+    QObject* m_rotationDialogBox = nullptr;
     QObject* m_openDialogBox = nullptr;
     QObject* m_newDialogBox = nullptr;
     QObject* m_savePathDialod = nullptr;
@@ -219,8 +243,10 @@ private:
     QObject* m_askSaveDialog = nullptr;
     int m_YScale;
     int m_XScale;
-
+    double m_anglenum;
     QObject* m_flip = nullptr;
+    QObject* m_currentImageView = nullptr;
+
     void loadRecentFiles();
     void saveRecentFiles();
     cv::Mat QImageToCvMat(const QImage& image);

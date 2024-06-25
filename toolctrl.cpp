@@ -4,12 +4,25 @@
  *   modified by Zengyan on 2014-6-20
  *      added getpointposition
  *   modified by Zengyan on 2014-6-21
- *      added zoom function   
+ *      added zoom function
+ *   modified by ZhanXuecai on 2024-6-21
+ *      move brush function and rectangle function to here
  *   modified by Zengyan on 2024-6-22
- *   perfected zoom function   
+
+ *   perfected zoom function  
+ *   Modified by Zengyan on 2024-6-25
+ * added rotation function 
+
+ *      perfected zoom function   
+ *   modified by ZhanXuecai on 2024-6-24
+ *      perfected brush rectangle function
+ *   modified by ZhanXuecai on 2024-6-25
+ *      perfected brush function and rectangle function
+
  */
 #include "toolctrl.h"
 #include <QColor>
+#include <QPainter>
 #include <QQmlProperty>
 
 ToolCtrl::ToolCtrl(QObject *parent)
@@ -24,6 +37,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
         m_zoomList = options;
         m_zoom_size->setProperty("model", m_zoomList);
         QMetaObject::invokeMethod(m_zoom_size, "modelChanged", Qt::AutoConnection);
+        m_zoomRepeater->setProperty("model", m_zoomList);
     });
 
     for (int i = 10; i <= 100; i += 10) {
@@ -101,11 +115,64 @@ void ToolCtrl::on_currentEditorViewChanged()
     auto it = m_zoomSet.find(number);
     int currentIndex = std ::distance(m_zoomSet.begin(), it);
     m_zoom_size->setProperty("currentIndex", currentIndex);
+    m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
 }
 
 void ToolCtrl::modelChangedslot()
 {
     m_zoom_size->setProperty("currentIndex", m_modelIndex);
+}
+
+QObject *ToolCtrl::zoomColumnLayout() const
+{
+    return m_zoomColumnLayout;
+}
+
+void ToolCtrl::setZoomColumnLayout(QObject *newZoomColumnLayout)
+{
+    if (m_zoomColumnLayout == newZoomColumnLayout)
+        return;
+    m_zoomColumnLayout = newZoomColumnLayout;
+    emit zoomColumnLayoutChanged();
+}
+
+QObject *ToolCtrl::zoomRepeater() const
+{
+    return m_zoomRepeater;
+}
+
+void ToolCtrl::setZoomRepeater(QObject *newZoomRepeater)
+{
+    if (m_zoomRepeater == newZoomRepeater)
+        return;
+    m_zoomRepeater = newZoomRepeater;
+    emit zoomRepeaterChanged();
+}
+
+Editor *ToolCtrl::canvasEditor() const
+{
+    return m_canvasEditor;
+}
+
+void ToolCtrl::setCanvasEditor(Editor *newCanvasEditor)
+{
+    if (m_canvasEditor == newCanvasEditor)
+        return;
+    m_canvasEditor = newCanvasEditor;
+    emit canvasEditorChanged();
+}
+
+QImage ToolCtrl::canvasImage() const
+{
+    return m_canvasImage;
+}
+
+void ToolCtrl::setCanvasImage(const QImage &newCanvasImage)
+{
+    if (m_canvasImage == newCanvasImage)
+        return;
+    m_canvasImage = newCanvasImage;
+    emit canvasImageChanged();
 }
 
 QObject *ToolCtrl::imageSize() const
@@ -196,7 +263,7 @@ void ToolCtrl::getPointPositon(int x, int y)
 }
 
 //缩放图片
-void ToolCtrl::setScaleFactor(const float &Scalemultiple, int currentIndex)
+void ToolCtrl::setScaleFactor(const float &Scalemultiple, int index)
 {
     if (!m_currentEditorView) {
         return;
@@ -204,6 +271,7 @@ void ToolCtrl::setScaleFactor(const float &Scalemultiple, int currentIndex)
     float number = Scalemultiple / 100;
     qDebug() << number;
     m_currentEditorView->setProperty("scale", number);
+    m_zoomColumnLayout->setProperty("currentIndex", index);
 }
 //捕获图片缩放大小倍数返回缩放值
 void ToolCtrl::returnScale(double Scalenumber)
@@ -217,6 +285,7 @@ void ToolCtrl::returnScale(double Scalenumber)
             Qt::SingleShotConnection);
     auto it = m_zoomSet.find(number);
     m_modelIndex = std ::distance(m_zoomSet.begin(), it);
+    m_zoomColumnLayout->setProperty("currentIndex", m_modelIndex);
     emit zoomSetChanged();
     // emit currentEditorViewChanged();
 }
@@ -224,4 +293,148 @@ void ToolCtrl::returnScale(double Scalenumber)
 void ToolCtrl::getSize(const QString &size)
 {
     m_imageSize->setProperty("text", size);
+}
+
+void ToolCtrl::getRepeaterIndex(int index)
+{
+    m_zoom_size->setProperty("currentIndex", index);
+}
+
+void ToolCtrl::draw(int x, int y, bool isTemporary)
+{
+    QImage *targetImage = isTemporary ? &m_previewImage : &m_canvasImage;
+
+    QPainter painter(targetImage);
+
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
+    switch (m_currentShape) {
+    case FreeDraw:
+        //qDebug() << m_currentShape;
+        painter.drawLine(m_lastPoint, QPoint(x, y));
+        m_lastPoint = QPoint(x, y);
+        break;
+
+    case Rectangle:
+        //qDebug() << m_currentShape;
+        painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
+        break;
+
+    case Ellipse:
+        //qDebug() << m_currentShape;
+        painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
+        break;
+    }
+
+    // if (isTemporary) {
+    //     emit tempImageChanged();
+    // } else {
+    //     emit imageChanged();
+    // }
+    m_canvasEditor->setImage(m_canvasImage);
+}
+
+void ToolCtrl::startDrawing(int x, int y)
+{
+    m_drawing = true;
+    m_lastPoint = QPoint(x, y);
+
+    continueDrawing(x, y, false); // 立即在开始绘制时绘制一个点
+}
+
+void ToolCtrl::continueDrawing(int x, int y, bool isTemporary)
+{
+    if (!m_drawing)
+        return;
+    draw(x, y, isTemporary);
+}
+
+void ToolCtrl::stopDrawing(int x, int y)
+{
+    m_drawing = false;
+    draw(x, y, false);
+}
+
+void ToolCtrl::setShapeToRectangle()
+{
+    setCurrentShape(Rectangle);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToEllipse()
+{
+    setCurrentShape(Ellipse);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToFreeDraw()
+{
+    setCurrentShape(FreeDraw);
+    emit currentShapeChanged();
+}
+
+QColor ToolCtrl::brushColor() const
+{
+    return m_brushColor;
+}
+
+void ToolCtrl::setBrushColor(const QColor &newBrushColor)
+{
+    if (m_brushColor == newBrushColor)
+        return;
+    m_brushColor = newBrushColor;
+    emit brushColorChanged();
+}
+
+int ToolCtrl::brushSize() const
+{
+    return m_brushSize;
+}
+
+void ToolCtrl::setBrushSize(int newBrushSize)
+{
+    if (m_brushSize == newBrushSize)
+        return;
+    m_brushSize = newBrushSize;
+    emit brushSizeChanged();
+}
+
+ToolCtrl::Shape ToolCtrl::currentShape() const
+{
+    return m_currentShape;
+}
+
+void ToolCtrl::setCurrentShape(ToolCtrl::Shape newCurrentShape)
+{
+    if (m_currentShape == newCurrentShape)
+        return;
+    m_currentShape = newCurrentShape;
+    emit currentShapeChanged();
+}
+
+QImage ToolCtrl::previewImage() const
+{
+    return m_previewImage;
+}
+
+void ToolCtrl::setPreviewImage(const QImage &newPreviewImage)
+{
+    if (m_previewImage == newPreviewImage)
+        return;
+    m_previewImage = newPreviewImage;
+    emit previewImageChanged();
+}
+
+QImage ToolCtrl::tempImage() const
+{
+    // return m_tempImage;
+}
+
+void ToolCtrl::setTempImage(const QImage &newTempImage)
+{
+    // if (m_tempImage == newTempImage)
+    //     return;
+    // m_tempImage = newTempImage;
+    // emit tempImageChanged();
 }

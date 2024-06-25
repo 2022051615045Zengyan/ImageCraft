@@ -1,9 +1,9 @@
 /** ICFooter.qml
  * Written by ZengYan on 2024-6-19
  * Funtion: Setting bottom
- *  modified by Zengyan on 2014-6-20
+ *  modified by Zengyan on 2024-6-20
  *      added getcolorfunction
- * modified by Zengyan on 2014-6-22
+ * modified by Zengyan on 2024-6-22
  *       added colorrectangles
  * modified by Zengyan on 2024-6-24
  * added choicecolorfunction, rightbottomtextshow

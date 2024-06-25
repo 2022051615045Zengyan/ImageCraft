@@ -11,6 +11,12 @@
  *  modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions
  *
+ * Modified by Zengyan on 2024-6-25
+ * added rotation function and Menu_View's zoomfunction
+
+ * modified by ZhanXuecai on 2024-6-25
+ *  added onRequestAddBrushLayer,getBrushLayerKeys()
+ *
  * Modified by RenTianxiang on 2024-6-25
  *      Zoom and Settings invisible undo and redo completed, Fixed a bug where you could only select the lowest layer
  *
@@ -28,7 +34,6 @@ Item
     property bool isModified: false
     property bool oldModified: false
     property bool newModified: false
-    property bool isBrushLayer:layer.isBrushLayer_
     property ListModel layerModel: layer.layerListModel
     property Repeater layers: layer.layers
     property Rectangle thelayer: layer
@@ -45,6 +50,7 @@ Item
 
     signal modifiedChanged()    //给isModified赋值就触发这个信号(方便更新oldModified和newModified)
     signal indexChanged(var index)
+    property var canvasList:[]
 
     Rectangle
     {
@@ -64,7 +70,6 @@ Item
             color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
             property ListModel layerListModel: ListModel {}
             property Repeater layers: layers_
-            property bool isBrushLayer_:false
             Repeater
             {
                 id: layers_
@@ -76,6 +81,8 @@ Item
                     y: parent.height === height ? 0 : - (height - parent.height) / 2
 
                     property var thepixUrl: pixUrl
+
+                    fillMode: thepixUrl === "/Image/tm533.6x253.6.png" ? Image.Stretch : Image.PreserveAspectFit
 
                     width: tabContent.width / 5 * 4
                     height: tabContent.height / 5 * 4
@@ -90,6 +97,7 @@ Item
 
                     Component.onCompleted:
                     {
+
                         if(index === 0)
                         {
                             Qt.callLater(function()
@@ -102,8 +110,9 @@ Item
                                 });
                             });
                         }
-
-                        key = tabContent.keys++
+                        key = tabContent.keys
+                        tabContent.keys++
+                        console.log("originalKey:"+key)
                         saveState(ActiveCtrl.AddLayer, {})
                         ToolCtrl.currentEditorView = editorView
                         tabContent.currentIndex = index
@@ -142,10 +151,18 @@ Item
                         modifiedChanged()
                     }
 
-                    Connections{
+                    Connections
+                    {
                         target: editorView
-                        function onRequestAddBrushLayer(){
-                            addBrushLayer()
+                        function onRequestAddBrushLayer()
+                        {
+                            var index=getBrushLayerKeys()
+                            if(index)
+                            {
+                                console.log(index)
+                                ToolCtrl.canvasImage=layers.itemAt(index).editor.image
+                                ToolCtrl.canvasEditor=layers.itemAt(index).editor
+                            }
                         }
                     }
                 }
@@ -322,18 +339,30 @@ Item
                 layerModel.append({pixUrl: url})
                 tabContent.isModified = true
                 modifiedChanged()
-                thelayer.isBrushLayer_ = false
             }
         }
     }
 
-    function addBrushLayer(){
-        if(thelayer.isBrushLayer_=== false){
-            var pixUrl_brush ="File:///run/media/root/study/QTstudy/Ps/ImageCraft/Image/new5000x5000.png"
-            layerModel.append({pixUrl:pixUrl_brush});
+    function getBrushLayerKeys(){
+        if(canvasList.length!==0 && findCanvasIndexBykey(canvasList[canvasList.length-1])===layers.count-1){
+            return findCanvasIndexBykey(canvasList[canvasList.length-1])
+        }else{
+            layerModel.append({pixUrl:"/Image/tm533.6x253.6.png"});
             tabContent.isModified = true
             modifiedChanged()
-            thelayer.isBrushLayer_ = true
+            canvasList.push(keys-1)
+            return layers.count-1
+        }
+    }
+
+    function findCanvasIndexBykey(key)
+    {
+        for(var i = 0; i < layers.count; i++)
+        {
+            if(layers.itemAt(i).key === key)
+            {
+                return i
+            }
         }
     }
 

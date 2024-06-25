@@ -1,10 +1,13 @@
 /** Menu_View.qml
  * Written by ZhanXuecai on 2024-6-18
  * Funtion: View Menu
+ * Modified by Zengyan on 2024-6-25
+ * added zoom function
  */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 
 Menu {
     width:300
@@ -39,58 +42,46 @@ Menu {
         text: "缩小（&O)"
         icon.name: "file-zoom-out"
         sequence:"Ctrl+-"
+        onTriggered:
+        {
+            if(_zoomColumnLayout.currentIndex > 0)
+            {
+                _zoomRepeater.itemAt( _zoomColumnLayout.currentIndex-1).clicked()
+            }
+        }
     }
 
     Menu{
         title:"缩放（&Z)"
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
 
-        ColumnLayout{
-            Repeater{
-                model:10
+        ColumnLayout
+        {
+            id: _zoomColumnLayout
+            property int currentIndex: 9
+            Repeater
+            {
+                id: _zoomRepeater
                 delegate:
-                    RadioButton{
-                        text:(index+1)*10+"%"
-                        width: 200
+                    RadioButton
+                {
+                    text:modelData + "%"
+                    width: 200
+                    checked: index === _zoomColumnLayout.currentIndex
+                    onClicked:
+                    {
+                        ToolCtrl.getRepeaterIndex(index)
+                        _zoomColumnLayout.currentIndex = index
                     }
-            }
-            Repeater{
-                model:9
-                delegate:
-                    RadioButton{
-                        text:(index+2)*100+"%"
-                        width: 200
-                }
-            }
-            Repeater{
-                model:8
-                delegate:
-                    RadioButton{
-                        text:(index+3)*500+"%"
-                        width: 200
-                }
-            }
-
-            Repeater{
-                model:5
-                delegate:
-                    RadioButton{
-                        text:(index+6)*1000+"%"
-                        width: 200
-                }
-            }
-
-            Repeater{
-                model:4
-                delegate:
-                    RadioButton{
-                        text:(index+5)*2500+"%"
-                        width: 200
                 }
             }
         }
+        Component.onCompleted:
+        {
+            ToolCtrl.zoomRepeater = _zoomRepeater
+            ToolCtrl.zoomColumnLayout=_zoomColumnLayout
 
-
+        }
     }
 
     //放大
@@ -98,70 +89,75 @@ Menu {
         text: "放大（&I)"
         icon.name: "file-zoom-in"
         sequence:"Ctrl++"
+        onTriggered:
+        {
+            console.log(_zoomRepeater.count)
+            if(_zoomColumnLayout.currentIndex < _zoomRepeater.count-1)
+            {
+                _zoomRepeater.itemAt( _zoomColumnLayout.currentIndex + 1).clicked()
+            }else
+                return
+        }
     }
 
     MenuSeparator{}
 
     MyMenuItem
+    {
+        text: qsTr("显示网格(&G)")
+        sequence: "Ctrl+G"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
+        property bool ischecked: false
+        // enabled: false
+        onTriggered:
         {
-            text: qsTr("显示网格(&G)")
-            sequence: "Ctrl+G"
-            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            property bool ischecked: false
-            // enabled: false
-            onTriggered:
-            {
-                console.log("显示网格")
-                ischecked = !ischecked
-                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            }
+            console.log("显示网格")
+            ischecked = !ischecked
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
+    }
 
     MyMenuItem
+    {
+        text: qsTr("显示总览图(&H)")
+        sequence: "Ctrl+H"
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
+        property bool ischecked: false
+        // enabled: false
+        onTriggered:
         {
-            text: qsTr("显示总览图(&H)")
-            sequence: "Ctrl+H"
-            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            property bool ischecked: false
-            // enabled: false
-            onTriggered:
-            {
-                console.log("显示总览图")
-                ischecked = !ischecked
-                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            }
+            console.log("显示总览图")
+            ischecked = !ischecked
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
+    }
     MenuSeparator{}
 
     MyMenuItem
+    {
+        text: qsTr("总览图缩放显示（&M)")
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
+        property bool ischecked: false
+        enabled: false
+        onTriggered:
         {
-            text: qsTr("总览图缩放显示（&M)")
-            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            property bool ischecked: false
-            enabled: false
-            onTriggered:
-            {
-                console.log("总览图缩放显示（")
-                ischecked = !ischecked
-                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            }
+            console.log("总览图缩放显示（")
+            ischecked = !ischecked
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
+    }
 
     MyMenuItem
+    {
+        text: qsTr("启用总览图矩阵(&R)")
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
+        property bool ischecked: false
+        enabled: false
+        onTriggered:
         {
-            text: qsTr("启用总览图矩阵(&R)")
-            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            property bool ischecked: false
-            enabled: false
-            onTriggered:
-            {
-                console.log("启用总览图矩阵")
-                ischecked = !ischecked
-                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-            }
+            console.log("启用总览图矩阵")
+            ischecked = !ischecked
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
-
-
-
-
+    }
 }

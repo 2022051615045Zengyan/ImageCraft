@@ -20,6 +20,8 @@
  *      
  *Modified by RenTianxiang on 2024-6-25
  *      Zoom and Settings invisible undo and redo completed
+ *  Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -345,6 +347,45 @@ void ActiveCtrl::exitSlot()
     QCoreApplication::exit();
 }
 
+QObject *ActiveCtrl::rotationDialogBox() const
+{
+    return m_rotationDialogBox;
+}
+
+void ActiveCtrl::setRotationDialogBox(QObject *newRotationDialogBox)
+{
+    if (m_rotationDialogBox == newRotationDialogBox)
+        return;
+    m_rotationDialogBox = newRotationDialogBox;
+    emit rotationDialogBoxChanged();
+}
+
+double ActiveCtrl::anglenum() const
+{
+    return m_anglenum;
+}
+
+void ActiveCtrl::setAnglenum(double newAnglenum)
+{
+    if (qFuzzyCompare(m_anglenum, newAnglenum))
+        return;
+    m_anglenum = newAnglenum;
+    emit anglenumChanged();
+}
+
+QObject *ActiveCtrl::currentImageView() const
+{
+    return m_currentImageView;
+}
+
+void ActiveCtrl::setCurrentImageView(QObject *newCurrentImageView)
+{
+    if (m_currentImageView == newCurrentImageView)
+        return;
+    m_currentImageView = newCurrentImageView;
+    emit currentImageViewChanged();
+}
+
 QObject *ActiveCtrl::askSaveDialog() const
 {
     return m_askSaveDialog;
@@ -509,6 +550,29 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
     emit recentFilesChanged();
 }
 
+void ActiveCtrl::getAngle(double angle)
+{
+    m_anglenum = angle;
+}
+
+void ActiveCtrl::openDialog()
+{
+    QMetaObject::invokeMethod(m_rotationDialogBox, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::leftRotation()
+{
+    m_anglenum = m_anglenum - 90;
+    qDebug() << m_anglenum;
+    m_currentImageView->setProperty("currentAngle", m_anglenum);
+}
+
+void ActiveCtrl::rightRotation()
+{
+    m_anglenum = m_anglenum + 90;
+    m_currentImageView->setProperty("currentAngle", m_anglenum);
+}
+
 void ActiveCtrl::verticallyFlip()
 {
     if (m_YScale == 1)
@@ -658,7 +722,6 @@ void ActiveCtrl::undo()
                               "getUndoActionAndParams",
                               qReturnArg(actionAndParams),
                               Q_ARG(QVariant, index));
-
     if (actionAndParams.isNull()) {
         return;
     }

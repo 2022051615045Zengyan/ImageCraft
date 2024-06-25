@@ -7,10 +7,13 @@
  *
  * Modified by RenTianxiang on 2024-6-21
  *      added askSaveDialog to ask the user whether to save the current changes
+ * Modified by Zengyan on 2024-6-25
+ *   add Rotation selection window
  */
 import QtQuick
 import QtQuick.Dialogs
 import QtQuick.Controls
+import QtQuick.Layouts
 import ImageCraft 1.0
 
 Item
@@ -20,6 +23,7 @@ Item
     required property int tabBar_currentIndex
     property alias openFileDialog: _openFileDialog
     property alias newImageDialog: _newImageDialog
+    property alias  rotationDialog: _rotationDialog
     property alias savePathDialog: _savePathDialog
     property alias failToSave: _failToSave
     property alias exportPathDialog: _exportPathDialog
@@ -94,6 +98,114 @@ Item
         }
     }
 
+    Dialog{
+        id:_rotationDialog
+        title:"Spin the image"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        width: 500
+        height: 300
+        anchors.centerIn: parent
+        ColumnLayout{
+
+                ColumnLayout{
+                    id:direction
+                    Layout.preferredHeight: _rotationDialog.height/4
+                    Layout.preferredWidth: _rotationDialog.width
+
+                    Text {
+                        Layout.preferredHeight: direction.height/4
+                        Layout.preferredWidth:direction.width
+                        text: qsTr("Direction")
+                    }
+                    RowLayout{
+                        Layout.preferredHeight: direction.height/4*3
+                        Layout.preferredWidth:direction.width
+
+                        RadioButton{
+
+                            id:anticlockwise
+                            text: "Turn anticlockwise"
+                            onClicked: {
+                                clockwise.enabled=false
+
+                            }
+                        }
+                        RadioButton{
+                            id:clockwise
+                            text:"Turn clockwise"
+                            onClicked: {
+                                anticlockwise.enabled=false
+
+                            }
+                        }
+                    }
+                }
+
+
+            ColumnLayout{
+                id:angle
+                Layout.preferredHeight: _rotationDialog.height/4
+                Layout.preferredWidth: _rotationDialog.width
+                Text {
+                    Layout.preferredHeight: angle.height/5
+                    Layout.preferredWidth:angle.width
+
+                    text: qsTr("Angle")
+
+                }
+                RadioButton{
+                    id:angle90
+                    Layout.preferredHeight: angle.height/5
+                    Layout.preferredWidth:angle.width
+                    text: qsTr("90(D)")
+                }
+                RadioButton{
+                    id:angle180
+                    Layout.preferredHeight: angle.height/5
+                    Layout.preferredWidth:angle.width
+                    text: qsTr("180(E)")
+                }
+                RadioButton{
+                    id:angle270
+                    Layout.preferredHeight: angle.height/5
+                    Layout.preferredWidth:angle.width
+                    text: qsTr("270(G)")
+                }
+                RowLayout
+                {
+                    id:user
+                    Layout.preferredHeight: angle.height/5
+                    Layout.preferredWidth:angle.width
+                    RadioButton{
+                        id:userdefined
+                        Layout.preferredHeight: angle.height/5
+                        Layout.preferredWidth:angle.width/3
+                        text: qsTr("user-defined(U):")
+                        onClicked: {
+
+                        }
+                    }
+                    Slider{
+                        id:angleslider
+                        from: 1
+                        value: 0
+                        to: 100
+                    }
+                    SpinBox {
+                        id: control
+                        validator: IntValidator {
+                            locale: control.locale.name
+                            bottom: Math.min(control.from, control.to)
+                            top: Math.max(control.from, control.to)
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
     FileDialog
     {
         id: _savePathDialog
@@ -166,5 +278,6 @@ Item
         ActiveCtrl.failToSave = failToSave
         ActiveCtrl.exportPathDialog = exportPathDialog
         ActiveCtrl.askSaveDialog = askSaveDialog
+        ActiveCtrl.rotationDialogBox=_rotationDialog
     }
 }
