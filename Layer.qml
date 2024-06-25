@@ -10,6 +10,9 @@
  *
  *  modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions
+ *
+ * Modified by RenTianxiang on 2024-6-25
+ *      Zoom and Settings invisible undo and redo completed, Fixed a bug where you could only select the lowest layer
  */
 
 import QtQuick
@@ -21,17 +24,22 @@ Item
 
     property bool isModified: false
     property bool oldModified: false
+    property bool newModified: false
     property bool isBrushLayer:layer.isBrushLayer_
     property ListModel layerModel: layer.layerListModel
     property Repeater layers: layer.layers
     property Rectangle thelayer: layer
     property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
     property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
+    property EditorView currentView: null
     property int keys: 1
     property var undoStack: []
     property var redoStack: []
     property var deletedStack: []
     property var tempStack: []
+    property bool firstTaped: true
+
+    signal modifiedChanged()    //给isModified赋值就触发这个信号(方便更新oldModified和newModified)
 
     Rectangle
     {
@@ -69,7 +77,10 @@ Item
 
                     onAddUndoStack:
                     {
-                        thelayer.saveKeyAndModified(editorView.key, tabContent.oldModified, tabContent.isModified)
+                        Qt.callLater(function()
+                        {
+                            thelayer.saveKeyAndModified(editorView.key, tabContent.oldModified, tabContent.newModified)
+                        });
                     }
 
                     Component.onCompleted:
@@ -79,34 +90,56 @@ Item
                             Qt.callLater(function()
                             {
                                 tabContent.isModified = false
-                                tabContent.oldModified = false
+                                Qt.callLater(function()
+                                {
+                                    tabContent.oldModified = false
+                                    tabContent.newModified = false
+                                });
                             });
                         }
 
                         key = tabContent.keys++
                         saveState(ActiveCtrl.AddLayer, {})
                         ToolCtrl.currentEditorView = editorView
-                        tabContent.currentView=editorView
+                        tabContent.currentView = editorView
                         editor.openImage(thepixUrl)
                     }
-                    TapHandler
+                    imageViewDragAreaTap.onTapped:
                     {
-                        onTapped:(event)=>
+                        if(tabContent.firstTaped)//第一个触发的响应
                         {
+                            tabContent.firstTaped = false
                             ActiveCtrl.currentEditor = layers.itemAt(index).editor as Editor
                             ToolCtrl.currentEditorView = editorView
                             tabContent.currentView = editorView
                             ActiveCtrl.flip=editorView.flip
                             ActiveCtrl.yScaleState(currentView.flip.yScale);
                             ActiveCtrl.xScaleState(currentView.flip.xScale);
+
+                            if(ToolCtrl.selectedTool === "吸管")
+                            {                // 获取鼠标点击位置的坐标
+                                var x = parseInt(editorView.imageViewDragAreaTap.point.position.x)
+                                var y = parseInt(editorView.imageViewDragAreaTap.point.position.y)
+                                //转换为图片实际对应的x,y
+                                x *= editorView.sourceSize.width / editorView.imageViewDragArea.width
+                                y *= editorView.sourceSize.height / editorView.imageViewDragArea.height
+                                //获取图片的像素颜色
+                                ToolCtrl.getPixelColor(editorView.editor.path, x, y);
+                                // console.log(editorView.editor.path)
+                            }
+
+                            //延迟修改firstTaped为false，不影响下一次使用
+                            Qt.callLater(function()
+                            {
+                                tabContent.firstTaped = true
+                            });
                         }
                     }
 
-
                     onModified:
                     {
-                        oldModified = isModified
                         tabContent.isModified = true
+                        modifiedChanged()
                     }
 
                     Connections{
@@ -162,11 +195,10 @@ Item
                     return -2   //表示刚刚的撤销操作是销毁组件
                 }
                 tabContent.deletedStack.push(map)
-                // console.log("here findKey: " + key)
                 return -1
             }
 
-            //保存被修改的图层的key
+            //保存被修改的图层的key和全局的修改状态
             function saveKeyAndModified(key, oldModified, newModified)
             {
                 tabContent.redoStack = []
@@ -182,12 +214,9 @@ Item
 
                 var map = tabContent.undoStack.pop()
                 tabContent.isModified = map["oldModified"]
-                Qt.callLater(function()
-                {
-                    tabContent.oldModified = map["newModified"]
-                });
+                tabContent.newModified = map["newModified"]
+                modifiedChanged()
                 tabContent.redoStack.push(map)
-                // console.log("redo: " + tabContent.redoStack)
                 return findIndexBykey(map["key"])
             }
 
@@ -199,12 +228,9 @@ Item
                 }
 
                 var map = tabContent.redoStack.pop()
-                // console.log("redo: " + tabContent.redoStack)
                 tabContent.isModified = map["newModified"]
-                Qt.callLater(function()
-                {
-                    tabContent.oldModified = map["oldModified"]
-                });
+                tabContent.newModified = map["oldModified"]
+                modifiedChanged()
                 tabContent.undoStack.push(map)
                 return findIndexBykey(map["key"])
             }
@@ -229,6 +255,7 @@ Item
                     {
                         layers.itemAt(map["index"]).key = map["key"]
                         layers.itemAt(map["index"]).redoStack = map["redoStack"]
+                        layers.itemAt(map["index"]).redoStack.pop()
                         //恢复因在创建组件完成时修改的值（不是首次创建 需要恢复原来的状态）
                         tabContent.keys--
                         tabContent.redoStack = tabContent.tempStack
@@ -244,8 +271,31 @@ Item
 
             function setModified(flag)
             {
-                tabContent.oldModified = tabContent.isModified
                 tabContent.isModified = flag
+                modifiedChanged()
+            }
+
+            function scaleLayer(index, scale)   //缩放图层
+            {
+
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).scale = scale
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
+            }
+
+            function setVisibleLayer(index, visible)   //设置图层的可见性
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).visible = visible
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
             }
         }
     }
@@ -271,6 +321,7 @@ Item
                 var url = dragEvent.text;
                 layerModel.append({pixUrl: url})
                 tabContent.isModified = true
+                modifiedChanged()
                 thelayer.isBrushLayer_ = false
             }
         }
@@ -281,12 +332,15 @@ Item
             var pixUrl_brush ="File:///run/media/root/study/QTstudy/Ps/ImageCraft/Image/new5000x5000.png"
             layerModel.append({pixUrl:pixUrl_brush});
             tabContent.isModified = true
+            modifiedChanged()
             thelayer.isBrushLayer_ = true
         }
     }
 
-    onIsModifiedChanged:
+    onModifiedChanged:
     {
+        oldModified = newModified
+        newModified = isModified
         ActiveCtrl.modified = isModified
     }
 }

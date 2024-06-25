@@ -55,7 +55,14 @@ class ActiveCtrl : public QObject
 
 public:
     //图层修改类型
-    enum OperationType { MoveLayer, ScaleLayer, AddLayer, ReMoveLayer, ModifiedLayer };
+    enum OperationType {
+        MoveLayer,
+        ScaleLayer,
+        AddLayer,
+        ReMoveLayer,
+        ModifiedLayer,
+        VisibleLayer
+    };
     Q_ENUM(OperationType)
 
     explicit ActiveCtrl(QObject* parent = nullptr);

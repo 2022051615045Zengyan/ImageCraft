@@ -15,6 +15,7 @@ Item
     required property ListModel pageModel
     required property int currentIndex
     required property StackLayout stackL
+    property alias stackR: rightLayout
 
     StackLayout
     {
@@ -92,9 +93,19 @@ Item
                                     {
                                         theStackL.layers.itemAt(index).visible = !theStackL.layers.itemAt(index).visible
                                         theStackL.layers.itemAt(index).modified()
+                                    }
+                                }
+
+                                Connections
+                                {
+                                    target: theStackL.layers.itemAt(index)
+
+                                    function onVisibleChanged()
+                                    {
                                         isShow = !isShow
                                     }
                                 }
+
                                 HoverHandler
                                 {
                                     id: eyesHover

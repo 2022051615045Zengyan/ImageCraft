@@ -23,6 +23,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
         }
         m_zoomList = options;
         m_zoom_size->setProperty("model", m_zoomList);
+        QMetaObject::invokeMethod(m_zoom_size, "modelChanged", Qt::AutoConnection);
     });
 
     for (int i = 10; i <= 100; i += 10) {
