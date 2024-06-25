@@ -6,7 +6,9 @@
  *   modified by Zengyan on 2014-6-21
  *      added zoom function   
  *   modified by Zengyan on 2024-6-22
- *   perfected zoom function   
+ *   perfected zoom function  
+ *   Modified by Zengyan on 2024-6-25
+ * added rotation function 
  */
 #include "toolctrl.h"
 #include <QColor>
@@ -23,6 +25,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
         }
         m_zoomList = options;
         m_zoom_size->setProperty("model", m_zoomList);
+        m_zoomRepeater->setProperty("model", m_zoomList);
     });
 
     for (int i = 10; i <= 100; i += 10) {
@@ -100,11 +103,38 @@ void ToolCtrl::on_currentEditorViewChanged()
     auto it = m_zoomSet.find(number);
     int currentIndex = std ::distance(m_zoomSet.begin(), it);
     m_zoom_size->setProperty("currentIndex", currentIndex);
+    m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
 }
 
 void ToolCtrl::modelChangedslot()
 {
     m_zoom_size->setProperty("currentIndex", m_modelIndex);
+}
+
+QObject *ToolCtrl::zoomColumnLayout() const
+{
+    return m_zoomColumnLayout;
+}
+
+void ToolCtrl::setZoomColumnLayout(QObject *newZoomColumnLayout)
+{
+    if (m_zoomColumnLayout == newZoomColumnLayout)
+        return;
+    m_zoomColumnLayout = newZoomColumnLayout;
+    emit zoomColumnLayoutChanged();
+}
+
+QObject *ToolCtrl::zoomRepeater() const
+{
+    return m_zoomRepeater;
+}
+
+void ToolCtrl::setZoomRepeater(QObject *newZoomRepeater)
+{
+    if (m_zoomRepeater == newZoomRepeater)
+        return;
+    m_zoomRepeater = newZoomRepeater;
+    emit zoomRepeaterChanged();
 }
 
 QObject *ToolCtrl::imageSize() const
@@ -195,7 +225,7 @@ void ToolCtrl::getPointPositon(int x, int y)
 }
 
 //缩放图片
-void ToolCtrl::setScaleFactor(const float &Scalemultiple, int currentIndex)
+void ToolCtrl::setScaleFactor(const float &Scalemultiple, int index)
 {
     if (!m_currentEditorView) {
         return;
@@ -203,6 +233,7 @@ void ToolCtrl::setScaleFactor(const float &Scalemultiple, int currentIndex)
     float number = Scalemultiple / 100;
     qDebug() << number;
     m_currentEditorView->setProperty("scale", number);
+    m_zoomColumnLayout->setProperty("currentIndex", index);
 }
 //捕获图片缩放大小倍数返回缩放值
 void ToolCtrl::returnScale(double Scalenumber)
@@ -216,6 +247,7 @@ void ToolCtrl::returnScale(double Scalenumber)
             Qt::SingleShotConnection);
     auto it = m_zoomSet.find(number);
     m_modelIndex = std ::distance(m_zoomSet.begin(), it);
+    m_zoomColumnLayout->setProperty("currentIndex", m_modelIndex);
     emit zoomSetChanged();
     // emit currentEditorViewChanged();
 }
@@ -223,4 +255,9 @@ void ToolCtrl::returnScale(double Scalenumber)
 void ToolCtrl::getSize(const QString &size)
 {
     m_imageSize->setProperty("text", size);
+}
+
+void ToolCtrl::getRepeaterIndex(int index)
+{
+    m_zoom_size->setProperty("currentIndex", index);
 }

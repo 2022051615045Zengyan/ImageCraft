@@ -3,6 +3,8 @@
  * Funtion: Graphics Menu
  * modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions
+ * Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 
 import QtQuick
@@ -63,7 +65,6 @@ Menu{
         onTriggered:
         {
             ActiveCtrl.horizontallyFlip();
-            console.log("翻转(水平)")
         }
     }
 
@@ -76,7 +77,7 @@ Menu{
         sequence: "Ctrl+Shift+left"
         onTriggered:
         {
-            console.log("旋转(向左)")
+            ActiveCtrl.leftRotation()
         }
     }
 
@@ -87,7 +88,7 @@ Menu{
         sequence: "Ctrl+Shift+right"
         onTriggered:
         {
-            console.log("旋转(向右)")
+            ActiveCtrl.rightRotation()
         }
     }
 
@@ -98,6 +99,7 @@ Menu{
         sequence: "Ctrl+R"
         onTriggered:
         {
+            ActiveCtrl.openDialog()
             console.log("旋转")
         }
     }

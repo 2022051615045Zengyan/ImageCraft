@@ -10,6 +10,8 @@
  *
  *  modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions
+ * Modified by Zengyan on 2024-6-25
+ * added rotation function and Menu_View's zoomfunction
  */
 
 import QtQuick
@@ -28,6 +30,7 @@ Item
     property string filePath: layers.count ? layers.itemAt(0).editor.path : ""
     property size imageSize: layers.count ? layers.itemAt(0).sourceSize : size(0, 0)
     property EditorView currentView: null
+    property bool firstTap: true
     property int keys: 1
     property var undoStack: []
     property var redoStack: []
@@ -90,19 +93,40 @@ Item
                         tabContent.currentView=editorView
                         editor.openImage(thepixUrl)
                     }
-                    TapHandler
+
+                    imageViewDragAreaTap.onTapped:
                     {
-                        onTapped:(event)=>
+                        if(firstTap)
                         {
+                            firstTap = false
                             ActiveCtrl.currentEditor = layers.itemAt(index).editor as Editor
                             ToolCtrl.currentEditorView = editorView
+                            ActiveCtrl.currentImageView=editorView
+                            ActiveCtrl.anglenum=editorView.currentAngle
+
                             tabContent.currentView = editorView
                             ActiveCtrl.flip=editorView.flip
                             ActiveCtrl.yScaleState(currentView.flip.yScale);
                             ActiveCtrl.xScaleState(currentView.flip.xScale);
+
+                            if(ToolCtrl.selectedTool === "吸管")
+                            {                // 获取鼠标点击位置的坐标
+                                var x = parseInt(imageViewDragAreaTap.point.position.x)
+                                var y = parseInt(imageViewDragAreaTap.point.position.y)
+                                //转换为图片实际对应的x,y
+                                x *= sourceSize.width / imageViewDragArea.width
+                                y *= sourceSize.height / imageViewDragArea.height
+                                //获取图片的像素颜色
+                                ToolCtrl.getPixelColor(editor.path, x, y);
+                                console.log(editor.path);
+                            }
+
+                            Qt.callLater(function()
+                            {
+                                firstTap = true
+                            });
                         }
                     }
-
 
                     onModified:
                     {

@@ -48,7 +48,6 @@ Item {
             Layout.preferredWidth: parent.height*3
             editable: true
 
-
             onAccepted: {
                 var num=parseInt(editText)
                 ToolCtrl.zoomSet.insert(num)
@@ -62,8 +61,8 @@ Item {
                 ToolCtrl.setScaleFactor(scaleMultiple,currentIndex);
             }
             delegate:ItemDelegate {
-            text: modelData + "%"
-}
+                text: modelData + "%"
+            }
             Layout.fillWidth: true
             Layout.minimumWidth: 0
         }
@@ -79,7 +78,7 @@ Item {
 
             onClicked: {
 
-                if(_zoom_size.currentIndex===_zoom_size.model.count)
+                if(_zoom_size.currentIndex===_zoom_size.model.count-1)
                 {
                     return
                 }
@@ -89,7 +88,6 @@ Item {
                 }
             }
         }
-
 
         Item {
             Layout.fillWidth: true

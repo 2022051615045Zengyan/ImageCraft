@@ -1,6 +1,8 @@
 /** LCenter.qml
  * Written by Zengyan on 2024-6-19
  * Funtion: left center window
+ * Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 import QtQuick
 import QtQuick.Controls
@@ -47,6 +49,8 @@ Item
                 ActiveCtrl.flip = (itemAt(currentIndex) ? itemAt(currentIndex).currentView.flip : null)
                 ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale);
                 ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale);
+                ActiveCtrl.currentImageView=(itemAt(currentIndex) ? itemAt(currentIndex).currentView : null)
+                ActiveCtrl.anglenum=(itemAt(currentIndex) ? itemAt(currentIndex).currentView.currentAngle : null)
                 ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
             });
         }

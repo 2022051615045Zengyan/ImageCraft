@@ -7,6 +7,8 @@
  *      added zoomfuntion
  * modified by Zengyan on 2024-6-22
  *     perfected zoom function 
+ *   Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 #pragma once
 
@@ -33,7 +35,11 @@ class ToolCtrl : public QObject
     Q_PROPERTY(QStringList zoomList READ zoomList WRITE setZoomList NOTIFY zoomListChanged FINAL)
 
     Q_PROPERTY(std::set<int> zoomSet READ zoomSet WRITE setZoomSet NOTIFY zoomSetChanged FINAL)
-
+    Q_PROPERTY(QObject *imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged FINAL)
+    Q_PROPERTY(QObject *zoomRepeater READ zoomRepeater WRITE setZoomRepeater NOTIFY
+                   zoomRepeaterChanged FINAL)
+    Q_PROPERTY(QObject *zoomColumnLayout READ zoomColumnLayout WRITE setZoomColumnLayout NOTIFY
+                   zoomColumnLayoutChanged FINAL)
 public:
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;
@@ -41,10 +47,10 @@ public:
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
     Q_INVOKABLE void getPointPositon(int x, int y);
-    Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int currentIndex);
+    Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int index);
     Q_INVOKABLE void returnScale(double Scalenumber);
     Q_INVOKABLE void getSize(const QString &size);
-
+    Q_INVOKABLE void getRepeaterIndex(int index);
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
 
@@ -66,6 +72,12 @@ public:
     QObject *imageSize() const;
     void setImageSize(QObject *newImageSize);
 
+    QObject *zoomRepeater() const;
+    void setZoomRepeater(QObject *newZoomRepeater);
+
+    QObject *zoomColumnLayout() const;
+    void setZoomColumnLayout(QObject *newZoomColumnLayout);
+
 signals:
     void selectedToolChanged();
 
@@ -82,6 +94,10 @@ signals:
 
     void imageSizeChanged();
 
+    void zoomRepeaterChanged();
+
+    void zoomColumnLayoutChanged();
+
 private slots:
     void on_currentEditorViewChanged();
     void modelChangedslot();
@@ -93,8 +109,9 @@ private:
     QObject *m_imageSize = nullptr;
     QObject *m_currentEditorView = nullptr;
     QObject *m_zoom_size = nullptr;
+    QObject *m_zoomRepeater = nullptr;
+    QObject *m_zoomColumnLayout = nullptr;
     std::set<int> m_zoomSet;
     QStringList m_zoomList;
     int m_modelIndex;
-    Q_PROPERTY(QObject *imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged FINAL)
 };
