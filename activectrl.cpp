@@ -575,28 +575,16 @@ void ActiveCtrl::rightRotation()
 
 void ActiveCtrl::verticallyFlip()
 {
-    if (m_YScale == 1)
-        m_flip->setProperty("yScale", -1);
-    else
-        m_flip->setProperty("yScale", 1);
+    int yScale = QQmlProperty::read(m_flip, "yScale").toInt();
+    yScale = -yScale;
+    m_flip->setProperty("yScale", yScale);
 }
 
 void ActiveCtrl::horizontallyFlip()
 {
-    if (m_XScale == 1)
-        m_flip->setProperty("xScale", -1);
-    else
-        m_flip->setProperty("xScale", 1);
-}
-
-void ActiveCtrl::yScaleState(int yScale)
-{
-    m_YScale = yScale;
-}
-
-void ActiveCtrl::xScaleState(int xScale)
-{
-    m_XScale = xScale;
+    int xScale = QQmlProperty::read(m_flip, "xScale").toInt();
+    xScale = -xScale;
+    m_flip->setProperty("xScale", xScale);
 }
 
 void ActiveCtrl::close()
@@ -760,6 +748,30 @@ void ActiveCtrl::undo()
                                   Q_ARG(QVariant, index),
                                   Q_ARG(QVariant, params["visible"]));
         break;
+    case FlipXLayer: {
+        int xScale = params["xScale"].toInt();
+        QVariant variantXScale = -xScale;
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "flipXLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, variantXScale));
+        break;
+    }
+    case FlipYLayer: {
+        int yScale = params["yScale"].toInt();
+        QVariant variantYScale = -yScale;
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "flipYLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, variantYScale));
+        break;
+    }
+    case SpinLayer:
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "spinLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, params["oldAngle"]));
+        break;
     default:
         qDebug() << action;
         break;
@@ -819,6 +831,24 @@ void ActiveCtrl::redo()
                                       Q_ARG(QVariant, variantVisible));
             break;
         }
+        case FlipXLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "flipXLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["xScale"]));
+            break;
+        case FlipYLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "flipYLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["yScale"]));
+            break;
+        case SpinLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "spinLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["newAngle"]));
+            break;
         default:
             qDebug() << action;
             break;

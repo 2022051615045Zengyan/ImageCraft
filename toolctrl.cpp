@@ -18,12 +18,15 @@
  *      perfected brush rectangle function
  *   modified by ZhanXuecai on 2024-6-25
  *      perfected brush function and rectangle function
-
+ * 
+ * Modified by RenTianxiang on 2024-6-26
+ *      Fixed a zoom bug
  */
 #include "toolctrl.h"
 #include <QColor>
 #include <QPainter>
 #include <QQmlProperty>
+#include <cmath>
 
 ToolCtrl::ToolCtrl(QObject *parent)
     : QObject{parent}
@@ -36,8 +39,9 @@ ToolCtrl::ToolCtrl(QObject *parent)
         }
         m_zoomList = options;
         m_zoom_size->setProperty("model", m_zoomList);
-        QMetaObject::invokeMethod(m_zoom_size, "modelChanged", Qt::AutoConnection);
+        m_zoom_size->setProperty("currentIndex", m_modelIndex);
         m_zoomRepeater->setProperty("model", m_zoomList);
+        m_zoomColumnLayout->setProperty("currentIndex", m_modelIndex);
     });
 
     for (int i = 10; i <= 100; i += 10) {
@@ -59,6 +63,8 @@ ToolCtrl::ToolCtrl(QObject *parent)
     for (int i = 12500; i <= 20000; i += 2500) {
         m_zoomSet.insert(i);
     }
+
+    m_modelIndex = 9;
 }
 
 QString ToolCtrl::selectedTool() const
@@ -111,16 +117,31 @@ void ToolCtrl::on_currentEditorViewChanged()
         return;
     }
     double readscale = QQmlProperty::read(m_currentEditorView, "scale").toFloat();
-    int number = readscale * 100;
-    auto it = m_zoomSet.find(number);
+    double number = readscale * 100;
+    QString temp;
+    QTextStream stream(&temp);
+    stream << number;
+    int dotIndex = temp.indexOf('.');
+    temp = temp.left(dotIndex);
+    bool ok;
+    int number1 = temp.toInt(&ok);
+    auto it = m_zoomSet.find(number1);
     int currentIndex = std ::distance(m_zoomSet.begin(), it);
     m_zoom_size->setProperty("currentIndex", currentIndex);
     m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
 }
 
-void ToolCtrl::modelChangedslot()
+int ToolCtrl::modelIndex() const
 {
-    m_zoom_size->setProperty("currentIndex", m_modelIndex);
+    return m_modelIndex;
+}
+
+void ToolCtrl::setModelIndex(int newModelIndex)
+{
+    if (m_modelIndex == newModelIndex)
+        return;
+    m_modelIndex = newModelIndex;
+    emit modelIndexChanged();
 }
 
 QObject *ToolCtrl::zoomColumnLayout() const
@@ -269,25 +290,25 @@ void ToolCtrl::setScaleFactor(const float &Scalemultiple, int index)
         return;
     }
     float number = Scalemultiple / 100;
-    qDebug() << number;
     m_currentEditorView->setProperty("scale", number);
     m_zoomColumnLayout->setProperty("currentIndex", index);
 }
 //捕获图片缩放大小倍数返回缩放值
 void ToolCtrl::returnScale(double Scalenumber)
 {
-    int number = Scalenumber * 100;
-    m_zoomSet.insert(number);
-    connect(m_zoom_size,
-            SIGNAL(modelChanged()),
-            this,
-            SLOT(modelChangedslot()),
-            Qt::SingleShotConnection);
-    auto it = m_zoomSet.find(number);
+    double number = Scalenumber * 100;
+    QString temp;
+    QTextStream stream(&temp);
+    stream << number;
+    int dotIndex = temp.indexOf('.');
+    temp = temp.left(dotIndex);
+    bool ok;
+    int number1 = temp.toInt(&ok);
+
+    m_zoomSet.insert(number1);
+    auto it = m_zoomSet.find(number1);
     m_modelIndex = std ::distance(m_zoomSet.begin(), it);
-    m_zoomColumnLayout->setProperty("currentIndex", m_modelIndex);
     emit zoomSetChanged();
-    // emit currentEditorViewChanged();
 }
 
 void ToolCtrl::getSize(const QString &size)
@@ -372,6 +393,12 @@ void ToolCtrl::setShapeToFreeDraw()
 {
     setCurrentShape(FreeDraw);
     emit currentShapeChanged();
+}
+
+void ToolCtrl::zoomSetInsert(QVariant num)
+{
+    m_zoomSet.insert(num.toInt());
+    emit zoomSetChanged();
 }
 
 QColor ToolCtrl::brushColor() const

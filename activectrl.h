@@ -67,7 +67,10 @@ public:
         AddLayer,
         ReMoveLayer,
         ModifiedLayer,
-        VisibleLayer
+        VisibleLayer,
+        FlipXLayer,
+        FlipYLayer,
+        SpinLayer
     };
     Q_ENUM(OperationType)
 
@@ -86,8 +89,6 @@ public:
     Q_INVOKABLE void rightRotation();
     Q_INVOKABLE void verticallyFlip();
     Q_INVOKABLE void horizontallyFlip();
-    Q_INVOKABLE void yScaleState(int yScale);
-    Q_INVOKABLE void xScaleState(int xScale);
 
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void takeAFullScreenshot();

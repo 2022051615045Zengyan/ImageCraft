@@ -3,6 +3,9 @@
  * Funtion: View Menu
  * Modified by Zengyan on 2024-6-25
  * added zoom function
+ *
+ * Modified by RenTianxiang on 2024-6-26
+ *      Fixed a zoom bug
  */
 import QtQuick
 import QtQuick.Controls
@@ -62,25 +65,34 @@ Menu {
             Repeater
             {
                 id: _zoomRepeater
-                delegate:
-                    RadioButton
+                delegate: zoomdelegate
+
+                Component
                 {
-                    text:modelData + "%"
-                    width: 200
-                    checked: index === _zoomColumnLayout.currentIndex
-                    onClicked:
+                    id: zoomdelegate
+                    RadioButton
                     {
-                        ToolCtrl.getRepeaterIndex(index)
-                        _zoomColumnLayout.currentIndex = index
+                        text:modelData + "%"
+                        width: 200
+                        checked: index === _zoomColumnLayout.currentIndex
+                        onClicked:
+                        {
+                            currentIndex = index
+                            ToolCtrl.getRepeaterIndex(index)
+                        }
                     }
                 }
+            }
+
+            onCurrentIndexChanged:
+            {
+                _zoomRepeater.itemAt(currentIndex).clicked()
             }
         }
         Component.onCompleted:
         {
             ToolCtrl.zoomRepeater = _zoomRepeater
             ToolCtrl.zoomColumnLayout=_zoomColumnLayout
-
         }
     }
 

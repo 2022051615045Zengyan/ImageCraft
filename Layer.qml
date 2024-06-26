@@ -22,6 +22,10 @@
  *
  * Modified by RenTianxiang on 2024-6-26
  *      The switch between the current image in the Layer is consistent with the switch between the tabs in the RCenter, making it easy to see the currently selected Layer
+ *
+ * Modified by RenTianxiang on 2024-6-26
+ *      Complete the undo and redo of the flip and rotation
+ *      Fixed a zoom bug
  */
 
 import QtQuick
@@ -97,7 +101,6 @@ Item
 
                     Component.onCompleted:
                     {
-
                         if(index === 0)
                         {
                             Qt.callLater(function()
@@ -112,7 +115,6 @@ Item
                         }
                         key = tabContent.keys
                         tabContent.keys++
-                        console.log("originalKey:"+key)
                         saveState(ActiveCtrl.AddLayer, {})
                         ToolCtrl.currentEditorView = editorView
                         tabContent.currentIndex = index
@@ -137,7 +139,7 @@ Item
                                 // console.log(editorView.editor.path)
                             }
 
-                            //延迟修改firstTaped为false，不影响下一次使用
+                            //延迟修改firstTaped为true，不影响下一次使用
                             Qt.callLater(function()
                             {
                                 tabContent.firstTaped = true
@@ -294,7 +296,6 @@ Item
 
             function scaleLayer(index, scale)   //缩放图层
             {
-
                 layers.itemAt(index).redoOrUndo = true
                 layers.itemAt(index).scale = scale
 
@@ -306,8 +307,38 @@ Item
 
             function setVisibleLayer(index, visible)   //设置图层的可见性
             {
-                layers.itemAt(index).redoOrUndo = true
                 layers.itemAt(index).visible = visible
+            }
+
+            function flipYLayer(index, yScale)   //垂直（y）翻转图层
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).flip.yScale = yScale
+
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
+            }
+
+            function flipXLayer(index, xScale)   //水平（x）翻转图层
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).flip.xScale = xScale
+
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
+            }
+
+            function spinLayer(index, angle)     //旋转图层
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).currentAngle = angle
+
 
                 Qt.callLater(function()
                 {
@@ -370,6 +401,10 @@ Item
     {
         oldModified = newModified
         newModified = isModified
+    }
+
+    onIsModifiedChanged:
+    {
         ActiveCtrl.modified = isModified
     }
 
@@ -378,8 +413,6 @@ Item
         if(currentView)
         {
             ActiveCtrl.flip = currentView.flip
-            ActiveCtrl.yScaleState(currentView.flip.yScale);
-            ActiveCtrl.xScaleState(currentView.flip.xScale);
             ToolCtrl.currentEditorView = currentView
             ActiveCtrl.currentEditor = currentView.editor as Editor
         }

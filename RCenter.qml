@@ -95,6 +95,7 @@ Item
                                     {
                                         theStackL.layers.itemAt(index).visible = !theStackL.layers.itemAt(index).visible
                                         theStackL.layers.itemAt(index).modified()
+                                        theStackL.layers.itemAt(index).modifiedVisible()
                                     }
                                 }
 
@@ -166,6 +167,7 @@ Item
                     onCurrentIndexChanged:
                     {
                         homeTab.source = viewtags.currentItem.pixUrl_
+                        theStackL.currentIndex = currentIndex
                     }
                 }
                 Component.onCompleted:

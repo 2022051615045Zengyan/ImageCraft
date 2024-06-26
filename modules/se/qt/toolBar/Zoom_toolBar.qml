@@ -5,6 +5,9 @@
  *      added zoomfunction
  * modified by Zengyan on 2024-6-22
  * perfected zoom function
+ *
+ * Modified by RenTianxiang on 2024-6-26
+ *      Fixed a zoom bug
  */
 import QtQuick
 import QtQuick.Controls
@@ -49,20 +52,23 @@ Item {
             editable: true
 
             onAccepted: {
-                var num=parseInt(editText)
-                ToolCtrl.zoomSet.insert(num)
-                ToolCtrl.currentEditorViewChanged()
+                var num = parseInt(editText) / 100
+                ToolCtrl.returnScale(num)
             }
 
             onCurrentIndexChanged: {
-                // 当用户改变选项时触发
-                var scaleMultiple = _zoom_size.model[currentIndex]
-                // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
-                ToolCtrl.setScaleFactor(scaleMultiple,currentIndex);
+                Qt.callLater(function()
+                {
+                    // 当用户改变选项时触发
+                    var scaleMultiple = _zoom_size.model[currentIndex]
+                    // 调用 ToolCtrl.setScaleFactor() 并传递选中项的值
+                    ToolCtrl.setScaleFactor(scaleMultiple,currentIndex);
+                });
             }
             delegate:ItemDelegate {
                 text: modelData + "%"
             }
+
             Layout.fillWidth: true
             Layout.minimumWidth: 0
         }
@@ -84,7 +90,6 @@ Item {
                 }
                 else{
                     _zoom_size.currentIndex++
-
                 }
             }
         }

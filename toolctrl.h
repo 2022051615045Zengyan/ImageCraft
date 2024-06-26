@@ -63,6 +63,7 @@ class ToolCtrl : public QObject
 
     Q_PROPERTY(Editor *canvasEditor READ canvasEditor WRITE setCanvasEditor NOTIFY
                    canvasEditorChanged FINAL)
+    Q_PROPERTY(int modelIndex READ modelIndex WRITE setModelIndex NOTIFY modelIndexChanged FINAL)
 
 public:
     enum Shape { FreeDraw, Rectangle, Ellipse };
@@ -87,6 +88,7 @@ public:
     Q_INVOKABLE void setShapeToRectangle();
     Q_INVOKABLE void setShapeToEllipse();
     Q_INVOKABLE void setShapeToFreeDraw();
+    Q_INVOKABLE void zoomSetInsert(QVariant num);
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
@@ -136,6 +138,9 @@ public:
     Editor *canvasEditor() const;
     void setCanvasEditor(Editor *newCanvasEditor);
 
+    int modelIndex() const;
+    void setModelIndex(int newModelIndex);
+
 signals:
     void selectedToolChanged();
 
@@ -172,9 +177,10 @@ signals:
 
     void canvasEditorChanged();
 
+    void modelIndexChanged();
+
 private slots:
     void on_currentEditorViewChanged();
-    void modelChangedslot();
 
 private:
     QString m_selectedTool;

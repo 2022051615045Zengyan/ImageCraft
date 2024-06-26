@@ -48,11 +48,9 @@ Item
                 ActiveCtrl.savePath = filePath
                 ToolCtrl.currentEditorView=layer_?layer_.layers.itemAt(0):null
 
-                if(itemAt(currentIndex).currentView)
+                if(itemAt(currentIndex) && itemAt(currentIndex).currentView)
                 {
                     ActiveCtrl.flip = itemAt(currentIndex).currentView.flip
-                    ActiveCtrl.yScaleState(itemAt(currentIndex).currentView.flip.yScale)
-                    ActiveCtrl.xScaleState(itemAt(currentIndex).currentView.flip.xScale)
                     ActiveCtrl.currentImageView = itemAt(currentIndex).currentView
                     ActiveCtrl.anglenum =  itemAt(currentIndex).currentView.currentAngle
                 }
