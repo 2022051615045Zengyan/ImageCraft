@@ -36,6 +36,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
         }
         m_zoomList = options;
         m_zoom_size->setProperty("model", m_zoomList);
+        QMetaObject::invokeMethod(m_zoom_size, "modelChanged", Qt::AutoConnection);
         m_zoomRepeater->setProperty("model", m_zoomList);
     });
 
@@ -146,6 +147,7 @@ void ToolCtrl::setZoomRepeater(QObject *newZoomRepeater)
         return;
     m_zoomRepeater = newZoomRepeater;
     emit zoomRepeaterChanged();
+}
 
 Editor *ToolCtrl::canvasEditor() const
 {
@@ -296,6 +298,7 @@ void ToolCtrl::getSize(const QString &size)
 void ToolCtrl::getRepeaterIndex(int index)
 {
     m_zoom_size->setProperty("currentIndex", index);
+}
 
 void ToolCtrl::draw(int x, int y, bool isTemporary)
 {

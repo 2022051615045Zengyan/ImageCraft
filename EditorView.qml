@@ -16,16 +16,18 @@
  *      Finished moving the layer undo and redo
  * modified by Zengyan on 2024-6-24
  *  added  verticallyFlip,horizontallyFlip functions,choicecolorfunction
-
+ *
+ * Modified by RenTianxiang on 2024-6-25
+ *      Zoom and Settings invisible undo and redo completed
+ *
  * Modified by Zengyan on 2024-6-25
  * added rotation function
-
-
+ *
+ *
  * modified by ZhanXuecai on 2024-6-24
  *   perfected Rectangle tool method
  * modified by ZhanXuecai on 2024-6-25
  *   perfected Rectangle and Brush tool method
-
  */
 import QtQuick
 import QtQuick.Controls
@@ -41,7 +43,9 @@ Image
     property var redoStack: []
     property int oldX
     property int oldY
-    property int oldScale: 1
+    property double oldScale: 1
+    property double newScale: 1
+    property bool redoOrUndo: false
     //旋转效果
     property real currentAngle: 0
     property alias flip: _flip
@@ -74,20 +78,7 @@ Image
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
         }
-
-        // function onTempImageChanged(){
-        //     modified()
-        //     imageProvider.setImage(editor.tempImageView)
-        //     imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)/*editor.tempImage*/
-        // }
     }
-
-    // Image {
-    //     id: tempImageView
-    //     anchors.fill: parent
-    //     fillMode: Image.PreserveAspectFit
-    //     source: ""
-    // }
 
     Rectangle
     {
@@ -158,7 +149,6 @@ Image
             }
         }
 
-
         Image {
             width: 15
             height: 15
@@ -227,7 +217,6 @@ Image
     PinchHandler {
         id: handler
         enabled: ToolCtrl.selectedTool==="缩放"
-        //onRotationChanged: (delta) => parent.rotation += delta // add
         onScaleChanged:
         {
             ToolCtrl.returnScale(scale)
@@ -239,35 +228,60 @@ Image
     }
     //翻转效果
     transform: [Scale
-    {
-        id:_flip
-        origin.x:imageView.width/2
-        origin.y:imageView.height/2
-        yScale: 1
-        xScale: 1// 初始状态为正常
-        Component.onCompleted:
         {
-            ActiveCtrl.flip=flip
-            ActiveCtrl.yScaleState(yScale);
-            ActiveCtrl.xScaleState(xScale);
+            id:_flip
+            origin.x:imageView.width/2
+            origin.y:imageView.height/2
+            yScale: 1
+            xScale: 1// 初始状态为正常
+            Component.onCompleted:
+            {
+                ActiveCtrl.flip=flip
+                ActiveCtrl.yScaleState(yScale);
+                ActiveCtrl.xScaleState(xScale);
 
-        }
-        onScaleChanged:
-        {
-            ActiveCtrl.yScaleState(yScale);
-            ActiveCtrl.xScaleState(xScale);
-        }
-    }, Rotation {
-        id:_rotation
-        origin.x: imageView.width / 2
-        origin.y: imageView.height / 2
-        angle:imageView.currentAngle
+            }
+            onScaleChanged:
+            {
+                ActiveCtrl.yScaleState(yScale);
+                ActiveCtrl.xScaleState(xScale);
+            }
+        }, Rotation {
+            id:_rotation
+            origin.x: imageView.width / 2
+            origin.y: imageView.height / 2
+            angle:imageView.currentAngle
 
-    }]
+        }]
     Component.onCompleted: {
         ActiveCtrl.currentImageView=imageView
         ActiveCtrl.getAngle(currentAngle)
 
+    }
+
+    onScaleChanged:
+    {
+        oldScale = newScale
+        newScale = scale
+        ToolCtrl.returnScale(scale)
+        var x=Math.ceil(imageViewDragArea.width*scale)
+        var y=Math.ceil(imageViewDragArea.height*scale)
+        var str=x.toString()+"*"+y.toString()
+        ToolCtrl.getSize(str)
+
+        if(!redoOrUndo)
+        {
+            saveState(ActiveCtrl.ScaleLayer, {oldScale: oldScale, newScale: newScale})
+            modified()
+        }
+    }
+
+    onVisibleChanged:
+    {
+        if(!redoOrUndo)
+        {
+            saveState(ActiveCtrl.VisibleLayer, {visible: !visible})
+        }
     }
 
     //保存修改前的状态

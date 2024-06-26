@@ -54,8 +54,6 @@ class ToolCtrl : public QObject
     Q_PROPERTY(QObject *zoomColumnLayout READ zoomColumnLayout WRITE setZoomColumnLayout NOTIFY
                    zoomColumnLayoutChanged FINAL)
 
-    Q_PROPERTY(QObject *imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged FINAL)
-
     Q_PROPERTY(QColor brushColor READ brushColor WRITE setBrushColor NOTIFY brushColorChanged FINAL)
     Q_PROPERTY(int brushSize READ brushSize WRITE setBrushSize NOTIFY brushSizeChanged FINAL)
     Q_PROPERTY(Shape currentShape READ currentShape WRITE setCurrentShape NOTIFY currentShapeChanged FINAL)
