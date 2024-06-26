@@ -9,10 +9,15 @@
  *     move brush function and rectangle function to here
  * modified by Zengyan on 2024-6-22
  *     perfected zoom function 
+
+ *   Modified by Zengyan on 2024-6-25
+ * added rotation function
+
  * modified by ZhanXuecai on 2024-6-24
  *     perfected brush rectangle function
  * modified by ZhanXuecai on 2024-6-25
  *     perfected brush function and rectangle function
+
  */
 #pragma once
 
@@ -44,6 +49,10 @@ class ToolCtrl : public QObject
     Q_PROPERTY(std::set<int> zoomSet READ zoomSet WRITE setZoomSet NOTIFY zoomSetChanged FINAL)
 
     Q_PROPERTY(QObject *imageSize READ imageSize WRITE setImageSize NOTIFY imageSizeChanged FINAL)
+    Q_PROPERTY(QObject *zoomRepeater READ zoomRepeater WRITE setZoomRepeater NOTIFY
+                   zoomRepeaterChanged FINAL)
+    Q_PROPERTY(QObject *zoomColumnLayout READ zoomColumnLayout WRITE setZoomColumnLayout NOTIFY
+                   zoomColumnLayoutChanged FINAL)
 
     Q_PROPERTY(QColor brushColor READ brushColor WRITE setBrushColor NOTIFY brushColorChanged FINAL)
     Q_PROPERTY(int brushSize READ brushSize WRITE setBrushSize NOTIFY brushSizeChanged FINAL)
@@ -65,9 +74,12 @@ public:
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
     Q_INVOKABLE void getPointPositon(int x, int y);
-    Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int currentIndex);
+    Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int index);
     Q_INVOKABLE void returnScale(double Scalenumber);
     Q_INVOKABLE void getSize(const QString &size);
+
+    Q_INVOKABLE void getRepeaterIndex(int index);
+
     Q_INVOKABLE void draw(int x, int y, bool isTemporary);
     Q_INVOKABLE void startDrawing(int x, int y);
     Q_INVOKABLE void continueDrawing(int x, int y, bool isTemporary);
@@ -96,6 +108,12 @@ public:
 
     QObject *imageSize() const;
     void setImageSize(QObject *newImageSize);
+
+    QObject *zoomRepeater() const;
+    void setZoomRepeater(QObject *newZoomRepeater);
+
+    QObject *zoomColumnLayout() const;
+    void setZoomColumnLayout(QObject *newZoomColumnLayout);
 
     QColor brushColor() const;
     void setBrushColor(const QColor &newBrushColor);
@@ -134,6 +152,10 @@ signals:
 
     void imageSizeChanged();
 
+    void zoomRepeaterChanged();
+
+    void zoomColumnLayoutChanged();
+
     void brushColorChanged();
 
     void brushSizeChanged();
@@ -161,6 +183,8 @@ private:
     QObject *m_imageSize = nullptr;
     QObject *m_currentEditorView = nullptr;
     QObject *m_zoom_size = nullptr;
+    QObject *m_zoomRepeater = nullptr;
+    QObject *m_zoomColumnLayout = nullptr;
     std::set<int> m_zoomSet;
     QStringList m_zoomList;
     int m_modelIndex;

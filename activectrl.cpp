@@ -17,6 +17,11 @@
  *
  * Modified by RenTianxiang on 2024-6-24
  *      Finished moving the layer undo and redo
+ *      
+ *Modified by RenTianxiang on 2024-6-25
+ *      Zoom and Settings invisible undo and redo completed
+ *  Modified by Zengyan on 2024-6-25
+ * added rotation function
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -342,6 +347,45 @@ void ActiveCtrl::exitSlot()
     QCoreApplication::exit();
 }
 
+QObject *ActiveCtrl::rotationDialogBox() const
+{
+    return m_rotationDialogBox;
+}
+
+void ActiveCtrl::setRotationDialogBox(QObject *newRotationDialogBox)
+{
+    if (m_rotationDialogBox == newRotationDialogBox)
+        return;
+    m_rotationDialogBox = newRotationDialogBox;
+    emit rotationDialogBoxChanged();
+}
+
+double ActiveCtrl::anglenum() const
+{
+    return m_anglenum;
+}
+
+void ActiveCtrl::setAnglenum(double newAnglenum)
+{
+    if (qFuzzyCompare(m_anglenum, newAnglenum))
+        return;
+    m_anglenum = newAnglenum;
+    emit anglenumChanged();
+}
+
+QObject *ActiveCtrl::currentImageView() const
+{
+    return m_currentImageView;
+}
+
+void ActiveCtrl::setCurrentImageView(QObject *newCurrentImageView)
+{
+    if (m_currentImageView == newCurrentImageView)
+        return;
+    m_currentImageView = newCurrentImageView;
+    emit currentImageViewChanged();
+}
+
 QObject *ActiveCtrl::askSaveDialog() const
 {
     return m_askSaveDialog;
@@ -504,6 +548,29 @@ void ActiveCtrl::addRecentFiles(const QString &filePath)
 
     saveRecentFiles();
     emit recentFilesChanged();
+}
+
+void ActiveCtrl::getAngle(double angle)
+{
+    m_anglenum = angle;
+}
+
+void ActiveCtrl::openDialog()
+{
+    QMetaObject::invokeMethod(m_rotationDialogBox, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::leftRotation()
+{
+    m_anglenum = m_anglenum - 90;
+    qDebug() << m_anglenum;
+    m_currentImageView->setProperty("currentAngle", m_anglenum);
+}
+
+void ActiveCtrl::rightRotation()
+{
+    m_anglenum = m_anglenum + 90;
+    m_currentImageView->setProperty("currentAngle", m_anglenum);
 }
 
 void ActiveCtrl::verticallyFlip()
@@ -681,8 +748,21 @@ void ActiveCtrl::undo()
                                   Q_ARG(QVariant, params["oldX"]),
                                   Q_ARG(QVariant, params["oldY"]));
         break;
+    case ScaleLayer:
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "scaleLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, params["oldScale"]));
+        break;
+    case VisibleLayer:
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "setVisibleLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, params["visible"]));
+        break;
     default:
         qDebug() << action;
+        break;
     }
 }
 
@@ -724,8 +804,24 @@ void ActiveCtrl::redo()
                                       Q_ARG(QVariant, params["newX"]),
                                       Q_ARG(QVariant, params["newY"]));
             break;
+        case ScaleLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "scaleLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["newScale"]));
+            break;
+        case VisibleLayer: {
+            bool visible = params["visible"].toBool();
+            QVariant variantVisible = !visible;
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "setVisibleLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, variantVisible));
+            break;
+        }
         default:
             qDebug() << action;
+            break;
         }
     }
 }

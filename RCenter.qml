@@ -4,6 +4,9 @@
  *
  * Modified by ZhanXuecai on 2024-6-21
  * Function: add addBrushLayer()
+ *
+ * Modified by RenTianxiang on 2024-6-26
+ *      The switch between the current image in the Layer is consistent with the switch between the tabs in the RCenter, making it easy to see the currently selected Layer
  */
 import QtQuick
 import QtQuick.Controls
@@ -92,9 +95,19 @@ Item
                                     {
                                         theStackL.layers.itemAt(index).visible = !theStackL.layers.itemAt(index).visible
                                         theStackL.layers.itemAt(index).modified()
+                                    }
+                                }
+
+                                Connections
+                                {
+                                    target: theStackL.layers.itemAt(index)
+
+                                    function onVisibleChanged()
+                                    {
                                         isShow = !isShow
                                     }
                                 }
+
                                 HoverHandler
                                 {
                                     id: eyesHover
@@ -144,12 +157,16 @@ Item
                         {
                             onTapped:
                             {
-                                homeTab.source = pixUrl_
                                 viewtags.currentIndex = index
+                                theStackL.currentView = theStackL.layers.itemAt(index)
                             }
                         }
                     }
 
+                    onCurrentIndexChanged:
+                    {
+                        homeTab.source = viewtags.currentItem.pixUrl_
+                    }
                 }
                 Component.onCompleted:
                 {
@@ -158,6 +175,18 @@ Item
                         theStackL = stackL.itemAt(index)
                         layerListModel = theStackL.layerModel
                     });
+                }
+
+                Connections
+                {
+                    target: theStackL
+                    function onIndexChanged(index)
+                    {
+                        Qt.callLater(function()
+                        {
+                            viewtags.currentIndex = index
+                        });
+                    }
                 }
             }
         }
