@@ -21,10 +21,15 @@
  * 
  * Modified by RenTianxiang on 2024-6-26
  *      Fixed a zoom bug
+ *      
+ *   modified by ZhanXuecai on 2024-6-26
+ *      perfected draw function and added pendraw and spraydraw
+ *
  */
 #include "toolctrl.h"
 #include <QColor>
 #include <QPainter>
+#include <QPainterPath>
 #include <QQmlProperty>
 #include <cmath>
 
@@ -65,6 +70,11 @@ ToolCtrl::ToolCtrl(QObject *parent)
     }
 
     m_modelIndex = 9;
+    m_brushSize = 5;
+    m_drawing = false;
+    m_brushColor = Qt::red;
+    m_currentShape = FreeDraw;
+    m_spraySize = 1;
 }
 
 QString ToolCtrl::selectedTool() const
@@ -142,6 +152,53 @@ void ToolCtrl::setModelIndex(int newModelIndex)
         return;
     m_modelIndex = newModelIndex;
     emit modelIndexChanged();
+}
+
+int ToolCtrl::spraySize() const
+{
+    return m_spraySize;
+}
+
+void ToolCtrl::setSpraySize(int newSpraySize)
+{
+    // if (m_spraySize == newSpraySize)
+    //     return;
+    // m_spraySize = newSpraySize;
+
+    switch (newSpraySize) {
+    case 0:
+        m_spraySize = 1;
+        m_sprayRadius = 10;
+        m_sprayDensity = 3;
+        break;
+    case 1:
+        m_brushSize = 1;
+        m_sprayRadius = 10;
+        m_sprayDensity = 6;
+        break;
+    case 2:
+        m_brushSize = 1;
+        m_sprayRadius = 10;
+        m_sprayDensity = 9;
+        break;
+    case 3:
+        m_brushSize = 1;
+        m_sprayRadius = 20;
+        m_sprayDensity = 10;
+        break;
+    case 4:
+        m_brushSize = 1;
+        m_sprayRadius = 20;
+        m_sprayDensity = 15;
+        break;
+    case 5:
+        m_brushSize = 1;
+        m_sprayRadius = 20;
+        m_sprayDensity = 20;
+        break;
+    }
+
+    emit spraySizeChanged();
 }
 
 QObject *ToolCtrl::zoomColumnLayout() const
@@ -328,31 +385,86 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
     QPainter painter(targetImage);
 
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(QPen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    QPen pen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    if (m_currentShape == FreeDraw) {
+        switch (m_currentCapStyle) {
+        case RoundCap:
+            pen.setCapStyle(Qt::RoundCap);
+            break;
+
+        case SquareCap:
+            pen.setCapStyle(Qt::SquareCap);
+            break;
+
+        case SlashCap:
+            pen.setCapStyle(Qt::FlatCap);
+            break;
+
+        case BackSlashCap:
+            pen.setCapStyle(Qt::FlatCap);
+            break;
+        }
+    }
+
+    painter.setPen(pen);
 
     switch (m_currentShape) {
-    case FreeDraw:
-        //qDebug() << m_currentShape;
+    case FreeDraw: {
+        pen.setWidth(m_brushSize);
+        QPainterPath path;
+        path.moveTo(m_lastPoint);
+        path.lineTo(QPoint(x, y));
+
+        if (m_currentCapStyle == SlashCap) {
+            path.moveTo(QPoint(x - 5, y));
+            path.lineTo(QPoint(x, y + 5));
+        } else if (m_currentCapStyle == BackSlashCap) {
+            path.moveTo(QPoint(x + 5, y));
+            path.lineTo(QPoint(x, y - 5));
+        }
+        painter.drawPath(path);
+        m_lastPoint = QPoint(x, y);
+        break;
+    }
+
+    case PenDraw:
+        pen.setWidth(3);
+        painter.setPen(pen);
         painter.drawLine(m_lastPoint, QPoint(x, y));
         m_lastPoint = QPoint(x, y);
         break;
 
+    case SprayDraw: {
+        pen.setWidth(1);
+        for (int i = 0; i < m_sprayDensity; i++) {
+            int offsetX = rand() % (2 * m_sprayRadius) - m_sprayRadius;
+            int offsetY = rand() % (2 * m_sprayRadius) - m_sprayRadius;
+            painter.drawPoint(QPoint(x + offsetX, y + offsetY));
+        }
+        m_lastPoint = QPoint(x, y);
+        break;
+    }
+
     case Rectangle:
-        //qDebug() << m_currentShape;
+        pen.setWidth(5);
         painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
         break;
 
     case Ellipse:
-        //qDebug() << m_currentShape;
+        pen.setWidth(5);
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
         break;
     }
+
+    qDebug() << m_currentShape;
 
     // if (isTemporary) {
     //     emit tempImageChanged();
     // } else {
     //     emit imageChanged();
     // }
+
     m_canvasEditor->setImage(m_canvasImage);
 }
 
@@ -361,7 +473,11 @@ void ToolCtrl::startDrawing(int x, int y)
     m_drawing = true;
     m_lastPoint = QPoint(x, y);
 
-    continueDrawing(x, y, false); // 立即在开始绘制时绘制一个点
+    if (m_currentShape == FreeDraw | PenDraw | SprayDraw) {
+        draw(x, y, false);
+    } else {
+        draw(x, y, true);
+    }
 }
 
 void ToolCtrl::continueDrawing(int x, int y, bool isTemporary)
@@ -395,10 +511,16 @@ void ToolCtrl::setShapeToFreeDraw()
     emit currentShapeChanged();
 }
 
-void ToolCtrl::zoomSetInsert(QVariant num)
+void ToolCtrl::setShapeToPenDraw()
 {
-    m_zoomSet.insert(num.toInt());
-    emit zoomSetChanged();
+    setCurrentShape(PenDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToSprayDraw()
+{
+    setCurrentShape(SprayDraw);
+    emit currentShapeChanged();
 }
 
 QColor ToolCtrl::brushColor() const
@@ -419,12 +541,59 @@ int ToolCtrl::brushSize() const
     return m_brushSize;
 }
 
-void ToolCtrl::setBrushSize(int newBrushSize)
+void ToolCtrl::setCurrentBrushSize(int newBrushSize)
 {
-    if (m_brushSize == newBrushSize)
-        return;
-    m_brushSize = newBrushSize;
+    switch (newBrushSize) {
+    case 0:
+        m_brushSize = 1;
+        break;
+    case 1:
+        m_brushSize = 3;
+        break;
+    case 2:
+        m_brushSize = 5;
+        break;
+    case 3:
+        m_brushSize = 8;
+        break;
+    case 4:
+        m_brushSize = 10;
+        break;
+    }
     emit brushSizeChanged();
+}
+
+ToolCtrl::CapStyle ToolCtrl::currentCapStyle() const
+{
+    return m_currentCapStyle;
+}
+
+void ToolCtrl::setCurrentCapStyle(ToolCtrl::CapStyle newCurrentCapStyle)
+{
+    if (m_currentCapStyle == newCurrentCapStyle)
+        return;
+    m_currentCapStyle = newCurrentCapStyle;
+    emit currentCapStyleChanged();
+}
+
+void ToolCtrl::setCapStyle(int index)
+{
+    switch (index) {
+    case 0:
+        setCurrentCapStyle(RoundCap);
+        break;
+    case 1:
+        setCurrentCapStyle(SquareCap);
+        break;
+    case 2:
+        setCurrentCapStyle(SlashCap);
+        break;
+    case 3:
+        setCurrentCapStyle(BackSlashCap);
+        break;
+    default:
+        break;
+    }
 }
 
 ToolCtrl::Shape ToolCtrl::currentShape() const

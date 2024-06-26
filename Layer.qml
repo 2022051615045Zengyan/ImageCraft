@@ -13,7 +13,6 @@
  *
  * Modified by Zengyan on 2024-6-25
  * added rotation function and Menu_View's zoomfunction
-
  * modified by ZhanXuecai on 2024-6-25
  *  added onRequestAddBrushLayer,getBrushLayerKeys()
  *
@@ -164,6 +163,7 @@ Item
                                 console.log(index)
                                 ToolCtrl.canvasImage=layers.itemAt(index).editor.image
                                 ToolCtrl.canvasEditor=layers.itemAt(index).editor
+                                ToolCtrl.previewImage=layers.itemAt(index).editor.image
                             }
                         }
                     }

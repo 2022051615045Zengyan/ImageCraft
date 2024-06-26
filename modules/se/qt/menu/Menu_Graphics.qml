@@ -5,6 +5,8 @@
  *  added  verticallyFlip,horizontallyFlip functions
  * Modified by Zengyan on 2024-6-25
  * added rotation function
+ * Modified by Zengyan on 2024-6-26
+ * added uesr-defined rotation function
  */
 
 import QtQuick
@@ -100,7 +102,6 @@ Menu{
         onTriggered:
         {
             ActiveCtrl.openDialog()
-            console.log("旋转")
         }
     }
 

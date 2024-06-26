@@ -242,6 +242,12 @@ Item
                     {
                         listView.currentIndex = index
                         ToolCtrl.selectedTool = name
+                        if(ToolCtrl.selectedTool === "画笔"){
+                            ToolCtrl.setShapeToFreeDraw()
+                        }else if(ToolCtrl.selectedTool === "矩阵")
+                        {
+                            ToolCtrl.setShapeToRectangle()
+                        }
                     }
                 }
 
