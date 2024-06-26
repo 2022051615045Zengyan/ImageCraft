@@ -1,6 +1,9 @@
 /** Brush_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Brush toolBar 自由绘制
+ *
+ * Modified by ZhanXuecai on 2024-6-25
+ *   added setShapeToFreeDraw()
  */
 import QtQuick
 import QtQuick.Controls
@@ -21,7 +24,7 @@ Item {
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
             onClicked: {
-                Editor.setShapeToFreeDraw()
+                ToolCtrl.setShapeToFreeDraw()
             }
         }
 
@@ -33,9 +36,12 @@ Item {
             id: _brush_Paintbrush_Size
             Layout.preferredWidth:parent.height*3
             model: ["极细","细","较细","均衡","较粗","粗","极粗"]
-
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+
+            onCurrentIndexChanged: {
+                   ToolCtrl.setBrushSize(currentIndex)
+               }
         }
 
         Label{

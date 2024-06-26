@@ -1,6 +1,9 @@
 /** Rectangle_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Rectangle toolBar 绘制图形
+ *
+ * Modified by ZhanXuecai on 2024-6-25
+ *   added setShapeToRectangle(),setShapeToEllipse()
  */
 import QtQuick
 import QtQuick.Controls
@@ -101,7 +104,7 @@ Item {
             id:_rectangle_Rect
             text:qsTr("矩阵")
             onClicked: {
-                Editor.setShapeToRectangle()
+                ToolCtrl.setShapeToRectangle()
             }
         }
 
@@ -109,7 +112,7 @@ Item {
             id:_boxselect_Elliptical
             text:qsTr("椭圆")
             onClicked: {
-                Editor.setShapeToEllipse()
+                ToolCtrl.setShapeToEllipse()
             }
         }
 

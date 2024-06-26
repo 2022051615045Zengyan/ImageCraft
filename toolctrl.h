@@ -165,14 +165,14 @@ private:
     QStringList m_zoomList;
     int m_modelIndex;
 
-    QImage m_previewImage; //用来作为预览画布（显示绘画预览，去除多重绘画）的透明图片
+    QImage m_previewImage; //用来作为预览画布（实现绘画预览）的透明图片
     QImage m_canvasImage; //用来作为画布（显示绘画结果）的透明图片
     QImage m_tempImage;   //用来作为临时画布（显示绘画过程）的透明图片
 
     QPoint m_lastPoint;
     Shape m_currentShape = FreeDraw;
     QColor m_brushColor = Qt::red;
-    int m_brushSize = 5;
+    int m_brushSize = 1;
     bool m_drawing = false;
     Editor *m_canvasEditor = nullptr;
 };

@@ -154,7 +154,7 @@ Image
             z:1
             id: strawcursor
             source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-            visible:ToolCtrl.selectedTool === "吸管"&&hoverhandler.hovered
+            visible:ToolCtrl.selectedTool === "吸管" && hoverhandler.hovered
         }
 
         //吸管移动
@@ -216,7 +216,7 @@ Image
         onPositionChanged: {
             var x = mouseX / imageView.width * sourceSize.width
             var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.continueDrawing(x,y,false)
+            ToolCtrl.continueDrawing(x,y,true)
         }
         onReleased: {
             var x = mouseX / imageView.width * sourceSize.width

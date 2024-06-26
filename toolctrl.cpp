@@ -269,18 +269,15 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
 
     switch (m_currentShape) {
     case FreeDraw:
-        //qDebug() << m_currentShape;
         painter.drawLine(m_lastPoint, QPoint(x, y));
         m_lastPoint = QPoint(x, y);
         break;
 
     case Rectangle:
-        //qDebug() << m_currentShape;
         painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
         break;
 
     case Ellipse:
-        //qDebug() << m_currentShape;
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
         break;
     }
@@ -290,6 +287,7 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
     // } else {
     //     emit imageChanged();
     // }
+
     m_canvasEditor->setImage(m_canvasImage);
 }
 
@@ -298,7 +296,11 @@ void ToolCtrl::startDrawing(int x, int y)
     m_drawing = true;
     m_lastPoint = QPoint(x, y);
 
-    continueDrawing(x, y, false); // 立即在开始绘制时绘制一个点
+    if (m_currentShape == FreeDraw) {
+        continueDrawing(x, y, false);
+    } else {
+        continueDrawing(x, y, true);
+    }
 }
 
 void ToolCtrl::continueDrawing(int x, int y, bool isTemporary)
