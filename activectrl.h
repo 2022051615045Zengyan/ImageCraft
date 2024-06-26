@@ -6,6 +6,8 @@
  *  added  verticallyFlip,horizontallyFlip functions
  *   Modified by Zengyan on 2024-6-25
  * added rotation function
+ * Modified by Zengyan on 2024-6-26
+ * added uesr-defined rotation function
  */
 #pragma once
 
@@ -82,6 +84,7 @@ public:
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
     Q_INVOKABLE void getAngle(double angle);
     Q_INVOKABLE void openDialog();
+    Q_INVOKABLE void rotation(const QString& rotationstyle, double rotationangle);
     Q_INVOKABLE void leftRotation();
     Q_INVOKABLE void rightRotation();
     Q_INVOKABLE void verticallyFlip();

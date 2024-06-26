@@ -22,6 +22,8 @@
  *      Zoom and Settings invisible undo and redo completed
  *  Modified by Zengyan on 2024-6-25
  * added rotation function
+ *  Modified by Zengyan on 2024-6-26
+ * added uesr-defined rotation function
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -560,16 +562,27 @@ void ActiveCtrl::openDialog()
     QMetaObject::invokeMethod(m_rotationDialogBox, "open", Qt::AutoConnection);
 }
 
+void ActiveCtrl::rotation(const QString &rotationstyle, double rotationangle)
+{
+    if (!m_currentImageView)
+        return;
+    if (rotationstyle == "Turn anticlockwise")
+        m_anglenum = m_anglenum - rotationangle;
+    else
+        m_anglenum = m_anglenum + rotationangle;
+    m_currentImageView->setProperty("currentAngle", m_anglenum);
+}
+
 void ActiveCtrl::leftRotation()
 {
-    m_anglenum = m_anglenum - 90;
+    m_anglenum = m_anglenum + 90;
     qDebug() << m_anglenum;
     m_currentImageView->setProperty("currentAngle", m_anglenum);
 }
 
 void ActiveCtrl::rightRotation()
 {
-    m_anglenum = m_anglenum + 90;
+    m_anglenum = m_anglenum - 90;
     m_currentImageView->setProperty("currentAngle", m_anglenum);
 }
 
