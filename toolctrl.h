@@ -17,7 +17,8 @@
  *     perfected brush rectangle function
  * modified by ZhanXuecai on 2024-6-25
  *     perfected brush function and rectangle function
-
+ * modified by ZhanXuecai on 2024-6-26
+ *     perfected draw function and added pendraw and spraydraw
  */
 #pragma once
 
@@ -55,18 +56,26 @@ class ToolCtrl : public QObject
                    zoomColumnLayoutChanged FINAL)
 
     Q_PROPERTY(QColor brushColor READ brushColor WRITE setBrushColor NOTIFY brushColorChanged FINAL)
-    Q_PROPERTY(int brushSize READ brushSize WRITE setBrushSize NOTIFY brushSizeChanged FINAL)
-    Q_PROPERTY(Shape currentShape READ currentShape WRITE setCurrentShape NOTIFY currentShapeChanged FINAL)
+    Q_PROPERTY(int brushSize READ brushSize WRITE setCurrentBrushSize NOTIFY brushSizeChanged FINAL)
+    Q_PROPERTY(
+        Shape currentShape READ currentShape WRITE setCurrentShape NOTIFY currentShapeChanged FINAL)
     Q_PROPERTY(QImage previewImage READ previewImage WRITE setPreviewImage NOTIFY
                    previewImageChanged FINAL)
-    Q_PROPERTY(QImage canvasImage READ canvasImage WRITE setCanvasImage NOTIFY canvasImageChanged FINAL)
+    Q_PROPERTY(
+        QImage canvasImage READ canvasImage WRITE setCanvasImage NOTIFY canvasImageChanged FINAL)
 
     Q_PROPERTY(Editor *canvasEditor READ canvasEditor WRITE setCanvasEditor NOTIFY
                    canvasEditorChanged FINAL)
+    Q_PROPERTY(CapStyle currentCapStyle READ currentCapStyle WRITE setCurrentCapStyle NOTIFY
+                   currentCapStyleChanged FINAL)
+    Q_PROPERTY(int spraySize READ spraySize WRITE setSpraySize NOTIFY spraySizeChanged FINAL)
 
 public:
-    enum Shape { FreeDraw, Rectangle, Ellipse };
+    enum Shape { FreeDraw, PenDraw, SprayDraw, Rectangle, Ellipse };
     Q_ENUM(Shape)
+
+    enum CapStyle { RoundCap, SquareCap, SlashCap, BackSlashCap };
+    Q_ENUM(CapStyle)
 
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;
@@ -77,9 +86,7 @@ public:
     Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int index);
     Q_INVOKABLE void returnScale(double Scalenumber);
     Q_INVOKABLE void getSize(const QString &size);
-
     Q_INVOKABLE void getRepeaterIndex(int index);
-
     Q_INVOKABLE void draw(int x, int y, bool isTemporary);
     Q_INVOKABLE void startDrawing(int x, int y);
     Q_INVOKABLE void continueDrawing(int x, int y, bool isTemporary);
@@ -87,6 +94,11 @@ public:
     Q_INVOKABLE void setShapeToRectangle();
     Q_INVOKABLE void setShapeToEllipse();
     Q_INVOKABLE void setShapeToFreeDraw();
+    Q_INVOKABLE void setShapeToPenDraw();
+    Q_INVOKABLE void setShapeToSprayDraw();
+    Q_INVOKABLE void setCurrentBrushSize(int newBrushSize);
+    Q_INVOKABLE void setCapStyle(int index);
+    Q_INVOKABLE void setSpraySize(int newSpraySize);
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
@@ -119,7 +131,7 @@ public:
     void setBrushColor(const QColor &newBrushColor);
 
     int brushSize() const;
-    void setBrushSize(int newBrushSize);
+    void setBrushSize();
 
     ToolCtrl::Shape currentShape() const;
     void setCurrentShape(ToolCtrl::Shape newCurrentShape);
@@ -135,6 +147,11 @@ public:
 
     Editor *canvasEditor() const;
     void setCanvasEditor(Editor *newCanvasEditor);
+
+    CapStyle currentCapStyle() const;
+    void setCurrentCapStyle(CapStyle newCurrentCapStyle);
+
+    int spraySize() const;
 
 signals:
     void selectedToolChanged();
@@ -172,6 +189,10 @@ signals:
 
     void canvasEditorChanged();
 
+    void currentCapStyleChanged();
+
+    void spraySizeChanged();
+
 private slots:
     void on_currentEditorViewChanged();
     void modelChangedslot();
@@ -190,13 +211,17 @@ private:
     int m_modelIndex;
 
     QImage m_previewImage; //用来作为预览画布（实现绘画预览）的透明图片
-    QImage m_canvasImage; //用来作为画布（显示绘画结果）的透明图片
-    QImage m_tempImage;   //用来作为临时画布（显示绘画过程）的透明图片
+    QImage m_canvasImage;  //用来作为画布（显示绘画结果）的透明图片
+    QImage m_tempImage;    //用来作为临时画布（显示绘画过程）的透明图片
 
     QPoint m_lastPoint;
-    Shape m_currentShape = FreeDraw;
-    QColor m_brushColor = Qt::red;
-    int m_brushSize = 1;
-    bool m_drawing = false;
+    Shape m_currentShape;
+    CapStyle m_currentCapStyle;
+    QColor m_brushColor;
+    int m_brushSize;
+    int m_sprayRadius;  //喷漆半径
+    int m_sprayDensity; //喷漆密度
+    int m_spraySize;    //喷漆大小
+    bool m_drawing;
     Editor *m_canvasEditor = nullptr;
 };

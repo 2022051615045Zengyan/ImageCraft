@@ -4,6 +4,8 @@
  *
  * Modified by ZhanXuecai on 2024-6-25
  *   added setShapeToFreeDraw()
+ * Modified by ZhanXuecai on 2024-6-26
+ *   added pen and spray functions
  */
 import QtQuick
 import QtQuick.Controls
@@ -35,13 +37,15 @@ Item {
         ComboBox{
             id: _brush_Paintbrush_Size
             Layout.preferredWidth:parent.height*3
-            model: ["极细","细","较细","均衡","较粗","粗","极粗"]
+            model: ["细","较细","均衡","较粗","粗"]
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
-
+            Component.onCompleted: {
+                _brush_Paintbrush_Size.currentIndex = 2;
+            }
             onCurrentIndexChanged: {
-                   ToolCtrl.setBrushSize(currentIndex)
-               }
+                ToolCtrl.setCurrentBrushSize(currentIndex)
+            }
         }
 
         Label{
@@ -52,7 +56,10 @@ Item {
             id: _brush_Paintbrush_Family
             Layout.preferredWidth:parent.height*3
             model: ["⚫","⬛","/","\\"]
-
+            onCurrentIndexChanged: {
+                ToolCtrl.setCapStyle(currentIndex)
+                console.log("currentIndex:"+currentIndex)
+            }
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
@@ -68,6 +75,9 @@ Item {
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToPenDraw()
+            }
         }
 
         ToolSeparator {
@@ -81,6 +91,9 @@ Item {
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToSprayDraw()
+            }
         }
 
         Label{
@@ -90,7 +103,15 @@ Item {
         ComboBox{
             id: _line_spray_size
             Layout.preferredWidth:parent.height*3
-            model: ["小杯","中杯","大杯"]
+            model: ["微喷","轻喷","精喷","散喷","均喷","密喷"]
+
+            Component.onCompleted: {
+                _line_spray_size.currentIndex = 0;
+            }
+
+            onCurrentIndexChanged: {
+                ToolCtrl.setSpraySize(currentIndex)
+            }
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

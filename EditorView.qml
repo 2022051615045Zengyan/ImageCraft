@@ -174,7 +174,6 @@ Image
             requestAddBrushLayer()
             var x = mouseX / imageView.width * sourceSize.width
             var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.setShapeToFreeDraw()
             ToolCtrl.startDrawing(x,y)
         }
         onPositionChanged: {
@@ -190,6 +189,33 @@ Image
         }
     }
 
+    // TapHandler{
+    //     id:brushhandler1
+    //     target: imageView
+    //     enabled:ToolCtrl.selectedTool === "画笔"
+    //     onPressedChanged: {
+    //         if(pressed){
+    //             requestAddBrushLayer()
+    //             ToolCtrl.setShapeToFreeDraw()
+    //             ToolCtrl.startDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
+    //         }
+    //     }
+    //     onCanceled: {
+    //         console.log("以完成一次画笔工具")
+    //         ToolCtrl.stopDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
+    //     }
+    // }
+
+    // HoverHandler{
+    //     id:brushhandler2
+    //     target: imageView
+    //     onPointChanged: {
+    //         if(brushhandler1.pressed){
+    //             ToolCtrl.continueDrawing(point.position.x,point.position.y,false)
+    //         }
+    //     }
+    // }
+
     MouseArea{
         id:recthandler
         anchors.fill: parent
@@ -198,7 +224,6 @@ Image
             requestAddBrushLayer()
             var x = mouseX / imageView.width * sourceSize.width
             var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.setShapeToRectangle()
             ToolCtrl.startDrawing(x,y)
         }
         onPositionChanged: {
