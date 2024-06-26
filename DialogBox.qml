@@ -9,6 +9,8 @@
  *      added askSaveDialog to ask the user whether to save the current changes
  * Modified by Zengyan on 2024-6-25
  *   add Rotation selection window
+ * Modified by Zengyan on 2024-6-26
+ * added uesr-defined rotation function
  */
 import QtQuick
 import QtQuick.Dialogs
@@ -103,108 +105,117 @@ Item
         title:"Spin the image"
         standardButtons: Dialog.Ok | Dialog.Cancel
         width: 500
-        height: 300
-        anchors.centerIn: parent
+        height: 350
+        property string selectedwise: "" // 用来存储当前选中的角度值
+        property string selectedAngle: "" // 用来存储当前选中的角度值
         ColumnLayout{
+            ColumnLayout{
+                id:direction
+                Layout.preferredHeight: _rotationDialog.height/4
+                Layout.preferredWidth: _rotationDialog.width
+                Text {
+                    Layout.preferredHeight: direction.height/4
+                    Layout.preferredWidth:direction.width
+                    text: qsTr("Direction")
+                }
+                RowLayout
+                {
+                    Layout.preferredHeight: direction.height/4*3
+                    Layout.preferredWidth:direction.width
+                    spacing: 0
 
-                ColumnLayout{
-                    id:direction
-                    Layout.preferredHeight: _rotationDialog.height/4
-                    Layout.preferredWidth: _rotationDialog.width
-
-                    Text {
-                        Layout.preferredHeight: direction.height/4
-                        Layout.preferredWidth:direction.width
-                        text: qsTr("Direction")
-                    }
-                    RowLayout{
-                        Layout.preferredHeight: direction.height/4*3
-                        Layout.preferredWidth:direction.width
-
-                        RadioButton{
-
-                            id:anticlockwise
-                            text: "Turn anticlockwise"
+                    Repeater {
+                        id:wiserepeater
+                        model: ["Turn anticlockwise", "Turn clockwise"]
+                        RadioButton {
+                            text: modelData
                             onClicked: {
-                                clockwise.enabled=false
-
-                            }
-                        }
-                        RadioButton{
-                            id:clockwise
-                            text:"Turn clockwise"
-                            onClicked: {
-                                anticlockwise.enabled=false
-
+                                _rotationDialog.selectedwise=text
                             }
                         }
                     }
                 }
+            }
 
 
             ColumnLayout{
                 id:angle
-                Layout.preferredHeight: _rotationDialog.height/4
+                Layout.preferredHeight: _rotationDialog.height/5*2
                 Layout.preferredWidth: _rotationDialog.width
                 Text {
                     Layout.preferredHeight: angle.height/5
                     Layout.preferredWidth:angle.width
-
                     text: qsTr("Angle")
-
                 }
-                RadioButton{
-                    id:angle90
-                    Layout.preferredHeight: angle.height/5
+                ColumnLayout{
+                    Layout.preferredHeight: angle.height/6*4
                     Layout.preferredWidth:angle.width
-                    text: qsTr("90(D)")
-                }
-                RadioButton{
-                    id:angle180
-                    Layout.preferredHeight: angle.height/5
-                    Layout.preferredWidth:angle.width
-                    text: qsTr("180(E)")
-                }
-                RadioButton{
-                    id:angle270
-                    Layout.preferredHeight: angle.height/5
-                    Layout.preferredWidth:angle.width
-                    text: qsTr("270(G)")
-                }
-                RowLayout
-                {
-                    id:user
-                    Layout.preferredHeight: angle.height/5
-                    Layout.preferredWidth:angle.width
-                    RadioButton{
-                        id:userdefined
-                        Layout.preferredHeight: angle.height/5
-                        Layout.preferredWidth:angle.width/3
-                        text: qsTr("user-defined(U):")
-                        onClicked: {
-
+                    Repeater {
+                        id:anglerepeater
+                        model: ["90(D)","180(E)","270(G)","user-defined(U):"]
+                        RadioButton {
+                            Layout.preferredHeight: angle.height/6
+                            Layout.preferredWidth:angle.width
+                            text: modelData
+                            onClicked: {
+                                _rotationDialog.selectedAngle=text
+                            }
                         }
                     }
-                    Slider{
-                        id:angleslider
-                        from: 1
-                        value: 0
-                        to: 100
-                    }
-                    SpinBox {
-                        id: control
-                        validator: IntValidator {
-                            locale: control.locale.name
-                            bottom: Math.min(control.from, control.to)
-                            top: Math.max(control.from, control.to)
+                    RowLayout
+                    {
+                        id:user
+                        Layout.preferredHeight: angle.height/6
+                        Layout.preferredWidth:angle.width
+
+                        Slider {
+                            id: angleslider
+                            enabled: _rotationDialog.selectedAngle==="user-defined(U):"// 直接绑定到RadioButton的checked属性
+                            from: 0
+                            value: 0
+                            to: 360
+
+                            onValueChanged: {
+                                control.value = value
+                            }
+                        }
+                        SpinBox {
+                            id: control
+                            enabled:  _rotationDialog.selectedAngle==="user-defined(U):" // 直接绑定到RadioButton的checked属性
+                            editable: true
+                            from:0
+                            to:360
+                            validator: IntValidator {
+                                // 这里不需要设置 locale，除非你有特定的本地化需求
+                                // bottom 和 top 属性可以用来限制整数的范围
+                                bottom: 0  // 最小可接受的整数
+                                top: 360   // 最大可接受的整数
+                            }
+                            onValueChanged: {
+                                angleslider.value = value
+                            }
                         }
                     }
                 }
             }
         }
 
-
+        onAccepted:
+        {
+            if(_rotationDialog.selectedAngle==="user-defined(U):")
+                _rotationDialog.selectedAngle=control.value.toString()
+            else if(_rotationDialog.selectedAngle==="270(G)")
+                _rotationDialog.selectedAngle="270"
+            else if(_rotationDialog.selectedAngle==="180(G)")
+                _rotationDialog.selectedAngle="180"
+            else if(_rotationDialog.selectedAngle==="90(G)")
+                _rotationDialog.selectedAngle="90"
+            ActiveCtrl.rotation(_rotationDialog.selectedwise,parseFloat(_rotationDialog.selectedAngle));
+        }
+        onRejected: console.log("Cancel clicked")
     }
+
+
 
     FileDialog
     {
