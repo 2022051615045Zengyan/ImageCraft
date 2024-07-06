@@ -46,6 +46,8 @@ signals:
 
     void tempImageChanged();
 
+    void imageStatusChanged();
+
 private:
     QImage m_image;
     QString m_path;

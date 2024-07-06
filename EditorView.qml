@@ -32,6 +32,9 @@
  * Modified by RenTianxiang on 2024-6-26
  *      Complete the undo and redo of the flip and rotation
  *      Fixed a zoom bug
+ *
+ * Modified by ZhanXuecai on 2024-7-5
+ *   Replaced Muserrea with Taped(It also needs to be improved)
  */
 import QtQuick
 import QtQuick.Controls
@@ -155,6 +158,40 @@ Image
             }
         }
 
+        TapHandler{
+            id:brushhandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "画笔"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    console.log(x,y)
+                }else{
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    console.log("以完成一次画笔工具",x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                 if(pressed){
+                     var x=point.position.x
+                     var y=point.position.y
+                     x *= sourceSize.width / imageViewDragArea.width
+                     y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,false)
+                }
+            }
+        }
+
         Image {
             width: 15
             height: 15
@@ -172,76 +209,47 @@ Image
 
     }
 
-    MouseArea{
-        id:brushhandler
-        anchors.fill: parent
-        enabled: ToolCtrl.selectedTool === "画笔"
-        onPressed: {
-            requestAddBrushLayer()
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.startDrawing(x,y)
+    // Timer {
+    //     id: drawTimer
+    //     interval: 16 // 约60帧每秒
+    //     repeat: true
+    //     running: false
+    //     onTriggered: {
+    //         ToolCtrl.continueDrawing(brushhandler.point.position.x, brushhandler.point.position.y, false)
+    //     }
+    // }
+
+
+
+    TapHandler{
+        id:rectanglehandler
+        target: imageView
+        enabled:ToolCtrl.selectedTool === "矩阵"
+        gesturePolicy: TapHandler.ReleaseWithinBounds
+        onPressedChanged: {
+            if(pressed){
+                requestAddBrushLayer()
+                ToolCtrl.startDrawing(point.position.x,point.position.y)
+            }else{
+                console.log("以完成一次矩阵工具")
+                ToolCtrl.stopDrawing(point.position.x,point.position.y)
+            }
         }
-        onPositionChanged: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.continueDrawing(x,y,false)
-        }
-        onReleased: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            console.log("已完成一次画笔操作")
-            ToolCtrl.stopDrawing(x,y)
+        onPointChanged: {
+             if(pressed){
+                ToolCtrl.continueDrawing(point.position.x,point.position.y,true)
+            }
         }
     }
 
-    // TapHandler{
-    //     id:brushhandler1
-    //     target: imageView
-    //     enabled:ToolCtrl.selectedTool === "画笔"
-    //     onPressedChanged: {
-    //         if(pressed){
-    //             requestAddBrushLayer()
-    //             ToolCtrl.setShapeToFreeDraw()
-    //             ToolCtrl.startDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
-    //         }
-    //     }
-    //     onCanceled: {
-    //         console.log("以完成一次画笔工具")
-    //         ToolCtrl.stopDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
-    //     }
-    // }
-
-    // HoverHandler{
-    //     id:brushhandler2
-    //     target: imageView
-    //     onPointChanged: {
-    //         if(brushhandler1.pressed){
-    //             ToolCtrl.continueDrawing(point.position.x,point.position.y,false)
-    //         }
-    //     }
-    // }
-
-    MouseArea{
-        id:recthandler
-        anchors.fill: parent
-        enabled: ToolCtrl.selectedTool === "矩阵"
-        onPressed: {
-            requestAddBrushLayer()
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.startDrawing(x,y)
-        }
-        onPositionChanged: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.continueDrawing(x,y,true)
-        }
-        onReleased: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            console.log("已完成一次画笔操作")
-            ToolCtrl.stopDrawing(x,y)
+    TapHandler{
+        id:linehandler
+        target: imageView
+        enabled: ToolCtrl.selectedTool === "线条"
+        onTapped: {
+            if(mouse.button===Qt.LeftButton){
+                ToolCtrl.startDrawing(linehandler.point.position.x,linehandler.point.position.y)
+            }
         }
     }
 

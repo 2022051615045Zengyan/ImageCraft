@@ -24,6 +24,10 @@
  *      
  *   modified by ZhanXuecai on 2024-6-26
  *      perfected draw function and added pendraw and spraydraw
+ *      
+ *   modified by ZhanXuecai on 2024-7-6
+ *      added line function
+ *      perfected draw function
  *
  */
 #include "toolctrl.h"
@@ -72,7 +76,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
     m_modelIndex = 9;
     m_brushSize = 5;
     m_drawing = false;
-    m_brushColor = Qt::red;
+    m_brushColor = Qt::black;
     m_currentShape = FreeDraw;
     m_spraySize = 1;
 }
@@ -199,6 +203,18 @@ void ToolCtrl::setSpraySize(int newSpraySize)
     }
 
     emit spraySizeChanged();
+}
+
+void ToolCtrl::updateBrushColor()
+{
+    if (m_showcolor) {
+        QVariant colorVariant = m_showcolor->property("color");
+        if (colorVariant.isValid() && colorVariant.canConvert<QColor>()) {
+            m_brushColor = colorVariant.value<QColor>();
+        } else {
+            qDebug() << "画笔从画板获取颜色失败";
+        }
+    }
 }
 
 QObject *ToolCtrl::zoomColumnLayout() const
@@ -380,6 +396,7 @@ void ToolCtrl::getRepeaterIndex(int index)
 
 void ToolCtrl::draw(int x, int y, bool isTemporary)
 {
+    updateBrushColor();
     QImage *targetImage = isTemporary ? &m_previewImage : &m_canvasImage;
 
     QPainter painter(targetImage);
@@ -412,14 +429,17 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
     switch (m_currentShape) {
     case FreeDraw: {
         pen.setWidth(m_brushSize);
+        painter.setPen(pen);
         QPainterPath path;
         path.moveTo(m_lastPoint);
         path.lineTo(QPoint(x, y));
 
         if (m_currentCapStyle == SlashCap) {
+            qDebug() << m_currentCapStyle;
             path.moveTo(QPoint(x - 5, y));
             path.lineTo(QPoint(x, y + 5));
         } else if (m_currentCapStyle == BackSlashCap) {
+            qDebug() << m_currentCapStyle;
             path.moveTo(QPoint(x + 5, y));
             path.lineTo(QPoint(x, y - 5));
         }
@@ -437,6 +457,7 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
 
     case SprayDraw: {
         pen.setWidth(1);
+        painter.setPen(pen);
         for (int i = 0; i < m_sprayDensity; i++) {
             int offsetX = rand() % (2 * m_sprayRadius) - m_sprayRadius;
             int offsetY = rand() % (2 * m_sprayRadius) - m_sprayRadius;
@@ -448,24 +469,62 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
 
     case Rectangle:
         pen.setWidth(5);
+        painter.setPen(pen);
         painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
         break;
 
     case Ellipse:
         pen.setWidth(5);
+        painter.setPen(pen);
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
+        break;
+
+    case LineDraw:
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawLine(m_lastPoint, QPoint(x, y));
+        break;
+
+    case PolylineDraw: {
+        pen.setWidth(3);
+        painter.setPen(pen);
+
+        if (isTemporary) {
+            if (!m_points.isEmpty()) {
+                painter.drawLine(m_points.last(), QPoint(x, y));
+            }
+        } else {
+            QPoint newPoint(x, y);
+            if (!m_points.isEmpty()) {
+                painter.drawLine(m_points.last(), newPoint);
+            }
+            m_lastPoint = newPoint;
+        }
+        break;
+    }
+    case CurveDraw:
+        if (m_drawing) {
+            m_points.append(QPoint(x, y));
+        }
+        if (m_points.size() > 1) {
+            QPainterPath path;
+            path.moveTo(m_points[0]);
+            for (int i = 1; i < m_points.size(); ++i) {
+                path.quadTo(m_points[i - 1], m_points[i]);
+            }
+            painter.drawPath(path);
+        }
+        if (!isTemporary) {
+            m_lastPoint = QPoint(x, y);
+        }
         break;
     }
 
-    qDebug() << m_currentShape;
-
     // if (isTemporary) {
-    //     emit tempImageChanged();
+    //     m_canvasEditor->setImage(m_previewImage);
     // } else {
-    //     emit imageChanged();
-    // }
-
     m_canvasEditor->setImage(m_canvasImage);
+    //}
 }
 
 void ToolCtrl::startDrawing(int x, int y)
@@ -474,9 +533,10 @@ void ToolCtrl::startDrawing(int x, int y)
     m_lastPoint = QPoint(x, y);
 
     if (m_currentShape == FreeDraw | PenDraw | SprayDraw) {
-        draw(x, y, false);
-    } else {
-        draw(x, y, true);
+        continueDrawing(x, y, false);
+    } else if (m_currentShape == PolylineDraw) {
+        m_points.append(m_lastPoint);
+        continueDrawing(x, y, true);
     }
 }
 
@@ -491,6 +551,13 @@ void ToolCtrl::stopDrawing(int x, int y)
 {
     m_drawing = false;
     draw(x, y, false);
+    emit m_canvasEditor->imageStatusChanged();
+}
+
+void ToolCtrl::finishDrawing()
+{
+    m_drawing = false;
+    m_points.clear();
 }
 
 void ToolCtrl::setShapeToRectangle()
@@ -520,6 +587,24 @@ void ToolCtrl::setShapeToPenDraw()
 void ToolCtrl::setShapeToSprayDraw()
 {
     setCurrentShape(SprayDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToLineDraw()
+{
+    setCurrentShape(LineDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToPolylineDraw()
+{
+    setCurrentShape(PolylineDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToCurveDraw()
+{
+    setCurrentShape(CurveDraw);
     emit currentShapeChanged();
 }
 

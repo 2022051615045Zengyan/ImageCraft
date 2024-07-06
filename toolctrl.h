@@ -19,6 +19,10 @@
  *     perfected brush function and rectangle function
  * modified by ZhanXuecai on 2024-6-26
  *     perfected draw function and added pendraw and spraydraw
+ *     
+ * modified by ZhanXuecai on 2024-7-6
+ *     added line function
+ *     perfected draw function
  */
 #pragma once
 
@@ -74,7 +78,16 @@ class ToolCtrl : public QObject
     Q_PROPERTY(int spraySize READ spraySize WRITE setSpraySize NOTIFY spraySizeChanged FINAL)
 
 public:
-    enum Shape { FreeDraw, PenDraw, SprayDraw, Rectangle, Ellipse };
+    enum Shape {
+        FreeDraw,
+        PenDraw,
+        SprayDraw,
+        Rectangle,
+        Ellipse,
+        LineDraw,
+        PolylineDraw,
+        CurveDraw
+    };
     Q_ENUM(Shape)
 
     enum CapStyle { RoundCap, SquareCap, SlashCap, BackSlashCap };
@@ -94,15 +107,20 @@ public:
     Q_INVOKABLE void startDrawing(int x, int y);
     Q_INVOKABLE void continueDrawing(int x, int y, bool isTemporary);
     Q_INVOKABLE void stopDrawing(int x, int y);
+    Q_INVOKABLE void finishDrawing();
     Q_INVOKABLE void setShapeToRectangle();
     Q_INVOKABLE void setShapeToEllipse();
     Q_INVOKABLE void setShapeToFreeDraw();
-
     Q_INVOKABLE void setShapeToPenDraw();
     Q_INVOKABLE void setShapeToSprayDraw();
+    Q_INVOKABLE void setShapeToLineDraw();
+    Q_INVOKABLE void setShapeToPolylineDraw();
+    Q_INVOKABLE void setShapeToCurveDraw();
+
     Q_INVOKABLE void setCurrentBrushSize(int newBrushSize);
     Q_INVOKABLE void setCapStyle(int index);
     Q_INVOKABLE void setSpraySize(int newSpraySize);
+    Q_INVOKABLE void updateBrushColor();
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
@@ -220,16 +238,17 @@ private:
 
     QImage m_previewImage; //用来作为预览画布（实现绘画预览）的透明图片
     QImage m_canvasImage;  //用来作为画布（显示绘画结果）的透明图片
-    QImage m_tempImage;    //用来作为临时画布（显示绘画过程）的透明图片
 
     QPoint m_lastPoint;
     Shape m_currentShape;
     CapStyle m_currentCapStyle;
     QColor m_brushColor;
     int m_brushSize;
-    int m_sprayRadius;  //喷漆半径
-    int m_sprayDensity; //喷漆密度
-    int m_spraySize;    //喷漆大小
+    int m_sprayRadius;
+    int m_sprayDensity;
+    int m_spraySize;
+    QVector<QPoint> m_points; //记录折线和曲线的点
+
     bool m_drawing;
     Editor *m_canvasEditor = nullptr;
 };

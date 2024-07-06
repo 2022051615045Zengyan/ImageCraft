@@ -232,7 +232,6 @@ Rectangle {
         ToolCtrl.showcolor=showcolor
         ToolCtrl.pointtext=text2
         ToolCtrl.imageSize=text3
-
     }
 }
 
