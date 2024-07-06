@@ -19,6 +19,8 @@
  *     perfected brush function and rectangle function
  * modified by ZhanXuecai on 2024-6-26
  *     perfected draw function and added pendraw and spraydraw
+ * modified by Zengyan on 2024-7-6
+ *   added textbox funtion
  */
 #pragma once
 
@@ -72,6 +74,9 @@ class ToolCtrl : public QObject
     Q_PROPERTY(CapStyle currentCapStyle READ currentCapStyle WRITE setCurrentCapStyle NOTIFY
                    currentCapStyleChanged FINAL)
     Q_PROPERTY(int spraySize READ spraySize WRITE setSpraySize NOTIFY spraySizeChanged FINAL)
+    Q_PROPERTY(QObject *currentTextArea READ currentTextArea WRITE setCurrentTextArea NOTIFY
+                   currentTextAreaChanged FINAL)
+    Q_PROPERTY(QColor colorname READ colorname WRITE setColorname NOTIFY colornameChanged FINAL)
 
 public:
     enum Shape { FreeDraw, PenDraw, SprayDraw, Rectangle, Ellipse };
@@ -103,7 +108,13 @@ public:
     Q_INVOKABLE void setCurrentBrushSize(int newBrushSize);
     Q_INVOKABLE void setCapStyle(int index);
     Q_INVOKABLE void setSpraySize(int newSpraySize);
-
+    Q_INVOKABLE void setTextFamily(const QString &family);
+    Q_INVOKABLE void setWordSize(int size);
+    Q_INVOKABLE void setTextColor(const QColor &color);
+    Q_INVOKABLE void setBold(bool bold);
+    Q_INVOKABLE void setItalic(bool italic);
+    Q_INVOKABLE void setStrikeout(bool strikeout);
+    Q_INVOKABLE void setUnderline(bool underline);
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
 
@@ -160,6 +171,12 @@ public:
 
     int spraySize() const;
 
+    QObject *currentTextArea() const;
+    void setCurrentTextArea(QObject *newCurrentTextArea);
+
+    QColor colorname() const;
+    void setColorname(const QColor &newColorname);
+
 signals:
     void selectedToolChanged();
 
@@ -202,11 +219,16 @@ signals:
 
     void spraySizeChanged();
 
+    void currentTextAreaChanged();
+
+    void colornameChanged();
+
 private slots:
     void on_currentEditorViewChanged();
 
 private:
     QString m_selectedTool;
+    QColor m_colorname;
     QObject *m_showcolor = nullptr;
     QObject *m_pointtext = nullptr;
     QObject *m_imageSize = nullptr;
@@ -214,6 +236,7 @@ private:
     QObject *m_zoom_size = nullptr;
     QObject *m_zoomRepeater = nullptr;
     QObject *m_zoomColumnLayout = nullptr;
+    QObject *m_currentTextArea = nullptr; //用来设置插入文字的属性
     std::set<int> m_zoomSet;
     QStringList m_zoomList;
     int m_modelIndex;

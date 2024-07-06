@@ -24,6 +24,8 @@
  *      
  *   modified by ZhanXuecai on 2024-6-26
  *      perfected draw function and added pendraw and spraydraw
+ *      modified by Zengyan on 2024-7-6
+ *   added textbox funtion
  *
  */
 #include "toolctrl.h"
@@ -141,6 +143,32 @@ void ToolCtrl::on_currentEditorViewChanged()
     m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
 }
 
+QColor ToolCtrl::colorname() const
+{
+    return m_colorname;
+}
+
+void ToolCtrl::setColorname(const QColor &newColorname)
+{
+    if (m_colorname == newColorname)
+        return;
+    m_colorname = newColorname;
+    emit colornameChanged();
+}
+
+QObject *ToolCtrl::currentTextArea() const
+{
+    return m_currentTextArea;
+}
+
+void ToolCtrl::setCurrentTextArea(QObject *newCurrentTextArea)
+{
+    if (m_currentTextArea == newCurrentTextArea)
+        return;
+    m_currentTextArea = newCurrentTextArea;
+    emit currentTextAreaChanged();
+}
+
 int ToolCtrl::modelIndex() const
 {
     return m_modelIndex;
@@ -199,6 +227,53 @@ void ToolCtrl::setSpraySize(int newSpraySize)
     }
 
     emit spraySizeChanged();
+}
+
+void ToolCtrl::setTextFamily(const QString &family)
+{
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("chineseFontLoaderSource", family);
+    }
+    qDebug() << "Name:" << family;
+}
+
+void ToolCtrl::setWordSize(int size)
+{
+    qDebug() << "size:" << size;
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("size", size);
+    }
+}
+
+void ToolCtrl::setTextColor(const QColor &color)
+{
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("color", color);
+    }
+}
+
+void ToolCtrl::setBold(bool bold)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("bold", bold);
+}
+
+void ToolCtrl::setItalic(bool italic)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("italic", italic);
+}
+
+void ToolCtrl::setStrikeout(bool strikeout)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("strikeout", strikeout);
+}
+
+void ToolCtrl::setUnderline(bool underline)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("underline", underline);
 }
 
 QObject *ToolCtrl::zoomColumnLayout() const

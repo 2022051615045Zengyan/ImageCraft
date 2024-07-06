@@ -22,6 +22,7 @@ Rectangle {
     property alias text3: _text3
     property alias  text1: _text1
 
+
     ColumnLayout
     {
         spacing:2
@@ -54,14 +55,14 @@ Rectangle {
                         color:"transparent"
 
                         Rectangle{
-                            id: _showcolor
+                            id: _showcolor                      
                             width:height
                             height: parent.height-15
-                            color: "#ddff00"
+                            color: "white"
                             border.color: "#c0c0c0"
                             anchors.centerIn: parent
                             onColorChanged: {
-
+                                ToolCtrl.setTextColor(_showcolor.color)
                             }
                         }
                         TapHandler{
@@ -107,7 +108,6 @@ Rectangle {
                     }
 
                     GridView {
-
                         anchors.fill: parent
                         model: colorModel
                         cellWidth: parent.width/11
@@ -163,16 +163,13 @@ Rectangle {
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("x:0,y:0")
-
                 }
                 Label {
                     id: _text3
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("400*300")
-
                 }
-
             }
         }
     }
@@ -224,7 +221,6 @@ Rectangle {
             text1.text=qsTr("Zoom: Please select the multiple of your zoom.");
               break;
        }
-
     }
     }
 
@@ -232,7 +228,6 @@ Rectangle {
         ToolCtrl.showcolor=showcolor
         ToolCtrl.pointtext=text2
         ToolCtrl.imageSize=text3
-
     }
 }
 

@@ -32,6 +32,8 @@
  * Modified by RenTianxiang on 2024-6-26
  *      Complete the undo and redo of the flip and rotation
  *      Fixed a zoom bug
+ *Modified by Zengyan on 2024-7-6
+ * added textbox funtion
  */
 import QtQuick
 import QtQuick.Controls
@@ -154,7 +156,6 @@ Image
                 ToolCtrl.getPointPositon(x,y)
             }
         }
-
         Image {
             width: 15
             height: 15
@@ -171,7 +172,6 @@ Image
         }
 
     }
-
     MouseArea{
         id:brushhandler
         anchors.fill: parent
@@ -244,6 +244,88 @@ Image
             ToolCtrl.stopDrawing(x,y)
         }
     }
+    //添加文字
+    TapHandler{
+        id:_textTapHandler
+        enabled: ToolCtrl.selectedTool === "文字"
+        onTapped: {
+            // 计算点击位置相对于图片的坐标
+            var X = point.position.x - imageView.x
+            var Y = point.position.y - imageView.y
+            // 在点击位置创建文本输入框
+            var textInput = textAreaComponent.createObject(imageView);
+            textInput.x = X - textInput.width / 2;
+            textInput.y = Y - textInput.height / 2;
+            textInput.focus = true; // 自动聚焦到文本输入框
+        }
+    }
+    Component{
+        id:textAreaComponent
+        TextArea {
+            id:textArea
+            property int size: 20
+            property string family:chineseFontLoader.name
+            property bool  bold: false
+            property bool  italic: false
+            property bool  underline: false
+            property bool  strikeout: false
+            property alias chineseFontLoaderSource: chineseFontLoader.source
+            width: text.width
+            placeholderText: "输入文本"
+            font.pixelSize: size
+            font.family: family
+            color: "white"
+            font.bold: bold
+            font.italic: italic
+            font.underline: underline
+            font.strikeout: strikeout
+            background: Rectangle {
+                color: "transparent"
+                radius: 5
+            }
+            DragHandler{
+                id:textdragHandler
+                target: textArea
+                enabled: ToolCtrl.selectedTool === "文字"
+                onActiveChanged:
+                {
+                    if(!active)
+                    {
+                        saveState(ActiveCtrl.MoveLayer, {oldX: textArea.oldX, oldY: textArea.oldY, newX: textArea.x, newY: textArea.y})
+                    }else
+                    {
+                        ToolCtrl.currentTextArea=textArea
+                        oldX = x
+                        oldY = y
+                        modified()
+                    }
+                }
+            }
+            FontLoader {
+                id: chineseFontLoader
+                source:  "file:///root/ImageCraft/textfont/方正大黑_GBK.ttf" // 自定义字体文件路径
+            }
+            Component.onCompleted: ToolCtrl.currentTextArea=textArea
+        }
+
+    }
+
+
+
+
+    //设置监听器，当点击文本框之外取消其聚焦
+    TapHandler{
+
+        onTapped: {
+            for(var i=0;i<imageView.children.length;i++){
+                var child=imageView.children[i];
+                if(child.focus){
+                    child.focus=false;
+                    break;
+                }
+            }
+        }
+    }
 
     PinchHandler {
         id: handler
@@ -288,7 +370,6 @@ Image
     Component.onCompleted: {
         ActiveCtrl.currentImageView=imageView
         ActiveCtrl.getAngle(currentAngle)
-
     }
 
     onScaleChanged:
@@ -338,7 +419,6 @@ Image
         {
             return null
         }
-
         var map = undoStack.pop()
         redoStack.push(map)
         return map
