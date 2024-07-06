@@ -32,6 +32,9 @@
  * Modified by RenTianxiang on 2024-6-26
  *      Complete the undo and redo of the flip and rotation
  *      Fixed a zoom bug
+ *
+ * Modified by RenTianxiang on 2024-7-6
+ *      Complete the undo and redo of modified image and remove layer
  */
 import QtQuick
 import QtQuick.Controls
@@ -55,11 +58,14 @@ Image
     property real newAngle: 0
     property var oldImage
     property var newImage
-    property var images: _images
+    property Repeater images: _images
     property int modes: 0
     property alias flip: _flip
+    property alias yScale: _flip.yScale
+    property alias xScale: _flip.xScale
     property alias imageViewDragAreaTap: _imageViewDragAreaTap
     property alias imageViewDragArea: _imageViewDragArea
+    property alias imageViewDragAreaRTap: _imageViewDragAreaRTap
     signal modified()
     signal requestAddBrushLayer()
     signal addUndoStack()
@@ -195,6 +201,12 @@ Image
         TapHandler
         {
             id: _imageViewDragAreaTap
+        }
+
+        TapHandler
+        {
+            id: _imageViewDragAreaRTap
+            acceptedButtons: Qt.RightButton
         }
 
     }
@@ -376,15 +388,8 @@ Image
         {
             return null
         }
-        console.log(redoStack.length)
         var map = redoStack.pop()
         undoStack.push(map)
-        console.log(map["params"]["oldImage"])
-        Qt.callLater(function()
-        {
-            console.log(map["params"]["oldImage"])
-        })
-
         return map
     }
 
@@ -392,5 +397,10 @@ Image
     {
         imageView.x = x
         imageView.y = y
+    }
+
+    function popUndoStack() //用于移去撤销栈多余的数据
+    {
+        undoStack.pop()
     }
 }

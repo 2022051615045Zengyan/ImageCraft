@@ -11,6 +11,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 
 Item
 {
@@ -160,6 +161,17 @@ Item
                             {
                                 viewtags.currentIndex = index
                                 theStackL.currentView = theStackL.layers.itemAt(index)
+                            }
+                        }
+                        TapHandler
+                        {
+                            acceptedButtons: Qt.RightButton
+                            onTapped:
+                            {
+
+                                viewtags.currentIndex = index
+                                theStackL.currentView = theStackL.layers.itemAt(index)
+                                ActiveCtrl.popRightMenu(point.position.x, point.position.y)
                             }
                         }
                     }

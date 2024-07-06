@@ -11,6 +11,9 @@
  *   add Rotation selection window
  * Modified by Zengyan on 2024-6-26
  * added uesr-defined rotation function
+ *
+ * Modified by RenTianxiang on 2024-7-6
+ *      added menu with the right mouse button
  */
 import QtQuick
 import QtQuick.Dialogs
@@ -30,6 +33,7 @@ Item
     property alias failToSave: _failToSave
     property alias exportPathDialog: _exportPathDialog
     property alias askSaveDialog: _askSaveDialog
+    property alias rightMenu: _rightMenu
 
     FileDialog
     {
@@ -278,8 +282,50 @@ Item
                 break;
             }
         }
-
     }
+
+    Menu
+    {
+        id: _rightMenu
+        MenuItem
+        {
+            text: qsTr("delete")
+            onClicked:
+            {
+                ActiveCtrl.deleteLayer()
+            }
+        }
+        MenuItem
+        {
+            text: qsTr("Copy")
+            onClicked:
+            {
+                console.log("Copy")
+            }
+        }
+        MenuItem
+        {
+            text: qsTr("Cut")
+            onClicked:
+            {
+                console.log("Cut")
+            }
+        }
+        MenuItem
+        {
+            text: qsTr("Paste")
+            onClicked:
+            {
+                console.log("Paste")
+            }
+        }
+
+        function show()
+        {
+            popup()
+        }
+    }
+
 
     Component.onCompleted:
     {
@@ -290,5 +336,6 @@ Item
         ActiveCtrl.exportPathDialog = exportPathDialog
         ActiveCtrl.askSaveDialog = askSaveDialog
         ActiveCtrl.rotationDialogBox=_rotationDialog
+        ActiveCtrl.rightMenu = rightMenu
     }
 }

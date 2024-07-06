@@ -25,6 +25,9 @@
  * Modified by RenTianxiang on 2024-6-26
  *      Complete the undo and redo of the flip and rotation
  *      Fixed a zoom bug
+ *
+ * Modified by RenTianxiang on 2024-7-6
+ *      Complete the undo and redo of modified image and remove layer
  */
 
 import QtQuick
@@ -47,7 +50,8 @@ Item
     property int keys: 1
     property var undoStack: []
     property var redoStack: []
-    property var deletedStack: []
+    property var undoDeletedStack: []
+    property var redoDeletedStack: []
     property var tempStack: []
     property bool firstTaped: true
 
@@ -147,6 +151,22 @@ Item
                         }
                     }
 
+                    imageViewDragAreaRTap.onTapped:
+                    {
+                        if(tabContent.firstTaped)
+                        {
+                            tabContent.firstTaped = false
+                            tabContent.currentIndex = index
+                            ActiveCtrl.popRightMenu(imageViewDragAreaRTap.point.position.x, imageViewDragAreaRTap.point.position.y)
+
+                            //延迟修改firstTaped为true，不影响下一次使用
+                            Qt.callLater(function()
+                            {
+                                tabContent.firstTaped = true
+                            });
+                        }
+                    }
+
                     onModified:
                     {
                         tabContent.isModified = true
@@ -207,14 +227,27 @@ Item
                         return i
                     }
                 }
-                var map = tabContent.deletedStack.pop()
-                if(map["key"] === key)
+                var map
+                if(tabContent.undoDeletedStack.length > 0)
                 {
-                    tabContent.deletedStack.push(map)
-                    tabContent.tempStack = tabContent.redoStack
-                    return -2   //表示刚刚的撤销操作是销毁组件
+                    map = tabContent.undoDeletedStack.pop()
+                    tabContent.undoDeletedStack.push(map)
+                    if(map["key"] === key)
+                    {
+                        tabContent.tempStack = tabContent.redoStack
+                        return -2   //表示刚刚的操作是销毁组件
+                    }
                 }
-                tabContent.deletedStack.push(map)
+                if(tabContent.redoDeletedStack.length > 0)
+                {
+                    map = tabContent.redoDeletedStack.pop()
+                    tabContent.redoDeletedStack.push(map)
+                    if(map["key"] === key)
+                    {
+                        tabContent.tempStack = tabContent.redoStack
+                        return -2   //表示刚刚的操作是销毁组件
+                    }
+                }
                 return -1
             }
 
@@ -255,27 +288,88 @@ Item
                 return findIndexBykey(map["key"])
             }
 
-            function removeLayer(index) //移除图层
+            function removeLayer(index, isundo) //移除图层
             {
                 if(index < layers.count)
                 {
-                    tabContent.deletedStack.push({pixUrl: layers.itemAt(index).thepixUrl, index: index,key: layers.itemAt(index).key, redoStack: layers.itemAt(index).redoStack})
+                    var map = { pixUrl: layers.itemAt(index).thepixUrl,
+                                index: index,
+                                key: layers.itemAt(index).key,
+                                redoStack: layers.itemAt(index).redoStack,
+                                undoStack: layers.itemAt(index).undoStack,
+                                oldX: layers.itemAt(index).oldX,
+                                oldY: layers.itemAt(index).oldY,
+                                oldScale: layers.itemAt(index).oldScale,
+                                newScale: layers.itemAt(index).newScale,
+                                currentAngle: layers.itemAt(index).currentAngle,
+                                oldAngle: layers.itemAt(index).oldAngle,
+                                newAngle: layers.itemAt(index).newAngle,
+                                oldImage: layers.itemAt(index).oldImage,
+                                newImage: layers.itemAt(index).newImage,
+                                images: layers.itemAt(index).images,
+                                modes: layers.itemAt(index).modes,
+                                yScale: layers.itemAt(index).yScale,
+                                xScale: layers.itemAt(index).xScale,
+                                visible: layers.itemAt(index).visible}
+                    if(isundo)
+                    {
+                        tabContent.undoDeletedStack.push(map)
+                    }else
+                    {
+                        tabContent.redoDeletedStack.push(map)
+                    }
+
+
                     layerModel.remove(index, 1)
                 }
             }
 
-            function deletedStackPop()  //重新创建组件
+            function deletedStackPop(isundo)  //重新创建组件
             {
-                var map = deletedStack.pop()
-                tabContent.layerModel.insert(map["index"] ,{pixUrl: map["pixUrl"]})
+                var map
+                if(isundo)
+                {
+                    map = undoDeletedStack.pop()
+                }else
+                {
+                    map = redoDeletedStack.pop()
+                }
 
+
+                tabContent.layerModel.insert(map["index"] ,{pixUrl: map["pixUrl"]})
                 Qt.callLater(function() //等待图层创建完成  后恢复组件原有的属性和状态
                 {
                     if(layers.itemAt(map["index"]))
                     {
-                        layers.itemAt(map["index"]).key = map["key"]
-                        layers.itemAt(map["index"]).redoStack = map["redoStack"]
-                        layers.itemAt(map["index"]).redoStack.pop()
+                        var item = layers.itemAt(map["index"])
+                        item.key = map["key"]
+                        item.redoStack = map["redoStack"]
+                        item.undoStack = map["undoStack"]
+                        item.oldX = map["oldX"]
+                        item.oldY = map["oldY"]
+                        item.oldScale = map["oldScale"]
+                        item.newScale = map["newScale"]
+                        item.currentAngle = map["currentAngle"]
+                        item.oldAngle = map["oldAngle"]
+                        item.newAngle = map["newAngle"]
+                        item.oldImage = map["oldImage"]
+                        item.newImage = map["newImage"]
+                        item.modes = map["modes"]
+                        // console.log(map["images"])
+                        // item.images = map["images"]
+                        item.yScale = map["yScale"]
+                        item.xScale = map["xScale"]
+                        item.visible = map["visible"]
+                        if(isundo)
+                        {
+                            var map1 = {action: ActiveCtrl.ReMoveLayer, params: {}}
+                            item.redoStack.push(map1)
+                        }else
+                        {
+                            var map2 = {action: ActiveCtrl.AddLayer, params: {}}
+                            item.undoStack.push(map2)
+                            item.redoStack.pop()
+                        }
                         //恢复因在创建组件完成时修改的值（不是首次创建 需要恢复原来的状态）
                         tabContent.keys--
                         tabContent.redoStack = tabContent.tempStack

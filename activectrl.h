@@ -61,6 +61,7 @@ class ActiveCtrl : public QObject
     Q_PROPERTY(double anglenum READ anglenum WRITE setAnglenum NOTIFY anglenumChanged FINAL)
     Q_PROPERTY(QObject* rotationDialogBox READ rotationDialogBox WRITE setRotationDialogBox NOTIFY
                    rotationDialogBoxChanged FINAL)
+    Q_PROPERTY(QObject* rightMenu READ rightMenu WRITE setRightMenu NOTIFY rightMenuChanged FINAL)
 public:
     //图层修改类型
     enum OperationType {
@@ -98,6 +99,9 @@ public:
 
     Q_INVOKABLE void exportImage();
     Q_INVOKABLE void exitWindow();
+
+    Q_INVOKABLE void popRightMenu(QVariant x, QVariant y);
+    Q_INVOKABLE void deleteLayer();
 
     //撤销操作
     Q_INVOKABLE void undo();
@@ -163,6 +167,9 @@ public:
     QObject* rotationDialogBox() const;
     void setRotationDialogBox(QObject* newRotationDialogBox);
 
+    QObject* rightMenu() const;
+    void setRightMenu(QObject* newRightMenu);
+
 signals:
 
     void dialogBoxChanged();
@@ -214,6 +221,8 @@ signals:
 
     void rotationDialogBoxChanged();
 
+    void rightMenuChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -245,6 +254,7 @@ private:
     QObject* m_sharePage = nullptr;
     QObject* m_exportPathDialog = nullptr;
     QObject* m_askSaveDialog = nullptr;
+    QObject* m_rightMenu = nullptr;
     int m_YScale;
     int m_XScale;
     double m_anglenum;

@@ -24,6 +24,10 @@
  * added rotation function
  *  Modified by Zengyan on 2024-6-26
  * added uesr-defined rotation function
+ * 
+ * Modified by RenTianxiang on 2024-7-6
+ *      Finished modified the layer and remove the layer undo and redo
+ *      added remove layer
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -184,7 +188,7 @@ void ActiveCtrl::saveAsSlot()
                 QImage image = grabResult->image();
                 cv::Mat matImage = QImageToCvMat(image);
                 if (cv::imwrite(m_savePath.toStdString(), matImage, compression_params)) {
-                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(QVariant, false));
                     qDebug() << "Save success to: " << m_savePath;
 
                     int lastIndexOfSlash = m_savePath.lastIndexOf('/') + 1;
@@ -246,7 +250,7 @@ void ActiveCtrl::exportSlot()
                 QImage image = grabResult->image();
                 cv::Mat matImage = QImageToCvMat(image);
                 if (cv::imwrite(fileName.toStdString(), matImage, compression_params)) {
-                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(QVariant, false));
                     qDebug() << "Save success to: " << fileName;
                 } else {
                     QMetaObject::invokeMethod(m_failToSave, "open", Qt::AutoConnection);
@@ -347,6 +351,19 @@ void ActiveCtrl::setYScale(int newYScale)
 void ActiveCtrl::exitSlot()
 {
     QCoreApplication::exit();
+}
+
+QObject *ActiveCtrl::rightMenu() const
+{
+    return m_rightMenu;
+}
+
+void ActiveCtrl::setRightMenu(QObject *newRightMenu)
+{
+    if (m_rightMenu == newRightMenu)
+        return;
+    m_rightMenu = newRightMenu;
+    emit rightMenuChanged();
 }
 
 QObject *ActiveCtrl::rotationDialogBox() const
@@ -514,7 +531,7 @@ void ActiveCtrl::save()
             QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, [=, this]() {
                 QImage image = grabResult->image();
                 if (image.save(m_savePath)) {
-                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(bool, false));
+                    QMetaObject::invokeMethod(m_currentLayer, "setModified", Q_ARG(QVariant, false));
                     qDebug() << "Save success to: " << m_savePath;
                     emit saved();
                 } else {
@@ -710,6 +727,37 @@ void ActiveCtrl::exitWindow()
     closeAll();
 }
 
+void ActiveCtrl::popRightMenu(QVariant x, QVariant y)
+{
+    m_rightMenu->setProperty("x", x);
+    m_rightMenu->setProperty("y", y);
+    QMetaObject::invokeMethod(m_rightMenu, "show", Qt::AutoConnection);
+}
+
+void ActiveCtrl::deleteLayer()
+{
+    QVariant key = QQmlProperty::read(m_currentImageView, "key");
+    QVariant index;
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "findIndexBykey",
+                              qReturnArg(index),
+                              Q_ARG(QVariant, key));
+    QVariant oldModified = QQmlProperty::read(m_currentLayer, "oldModified").toBool();
+    QVariant newModified = QQmlProperty::read(m_currentLayer, "newModified").toBool();
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "saveKeyAndModified",
+                              Q_ARG(QVariant, key),
+                              Q_ARG(QVariant, oldModified),
+                              Q_ARG(QVariant, newModified));
+
+    QMetaObject::invokeMethod(m_currentImageView, "modified", Qt::AutoConnection);
+    QVariant flag = true;
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "removeLayer",
+                              Q_ARG(QVariant, index),
+                              Q_ARG(QVariant, flag));
+}
+
 //撤销
 void ActiveCtrl::undo()
 {
@@ -718,82 +766,95 @@ void ActiveCtrl::undo()
     }
     QVariant index;
     QMetaObject::invokeMethod(m_currentLayer, "undoStackPop", qReturnArg(index));
-    QVariant actionAndParams;
-    QMetaObject::invokeMethod(m_currentLayer,
-                              "getUndoActionAndParams",
-                              qReturnArg(actionAndParams),
-                              Q_ARG(QVariant, index));
-    if (actionAndParams.isNull()) {
-        return;
-    }
 
-    OperationType action;
-    QVariantMap params;
-    if (actionAndParams.isValid() && actionAndParams.canConvert(QMetaType::QVariantMap)) {
-        QVariantMap map = actionAndParams.toMap();
-        action = static_cast<OperationType>(map["action"].toInt());
-        params = map["params"].toMap();
-    }
+    if (index.toInt() == -2) //上一次撤销是删除图层的操作  特殊处理
+    {
+        QVariant flag = true;
+        QMetaObject::invokeMethod(m_currentLayer, "deletedStackPop", Q_ARG(QVariant, flag));
+    } else {
+        QVariant actionAndParams;
 
-    switch (action) {
-    case AddLayer:
-        if (index.toInt() == 0) {
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "getUndoActionAndParams",
+                                  qReturnArg(actionAndParams),
+                                  Q_ARG(QVariant, index));
+        if (actionAndParams.isNull()) {
+            return;
+        }
+
+        OperationType action;
+        QVariantMap params;
+        if (actionAndParams.isValid() && actionAndParams.canConvert(QMetaType::QVariantMap)) {
+            QVariantMap map = actionAndParams.toMap();
+            action = static_cast<OperationType>(map["action"].toInt());
+            params = map["params"].toMap();
+        }
+
+        switch (action) {
+        case AddLayer: {
+            if (index.toInt() == 0) {
+                break;
+            }
+            QVariant flag = false;
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "removeLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, flag));
             break;
         }
-        QMetaObject::invokeMethod(m_currentLayer, "removeLayer", Q_ARG(QVariant, index));
-        break;
-    case MoveLayer:
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "moveLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, params["oldX"]),
-                                  Q_ARG(QVariant, params["oldY"]));
-        break;
-    case ScaleLayer:
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "scaleLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, params["oldScale"]));
-        break;
-    case VisibleLayer:
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "setVisibleLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, params["visible"]));
-        break;
-    case FlipXLayer: {
-        int xScale = params["xScale"].toInt();
-        QVariant variantXScale = -xScale;
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "flipXLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, variantXScale));
-        break;
-    }
-    case FlipYLayer: {
-        int yScale = params["yScale"].toInt();
-        QVariant variantYScale = -yScale;
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "flipYLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, variantYScale));
-        break;
-    }
-    case SpinLayer:
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "spinLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, params["oldAngle"]));
-        break;
-    case ModifiedLayer:
-        QMetaObject::invokeMethod(m_currentLayer,
-                                  "modifiedLayer",
-                                  Q_ARG(QVariant, index),
-                                  Q_ARG(QVariant, params["oldImage"]));
-        break;
-    default:
-        qDebug() << action;
-        break;
+        case MoveLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "moveLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["oldX"]),
+                                      Q_ARG(QVariant, params["oldY"]));
+            break;
+        case ScaleLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "scaleLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["oldScale"]));
+            break;
+        case VisibleLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "setVisibleLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["visible"]));
+            break;
+        case FlipXLayer: {
+            int xScale = params["xScale"].toInt();
+            QVariant variantXScale = -xScale;
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "flipXLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, variantXScale));
+            break;
+        }
+        case FlipYLayer: {
+            int yScale = params["yScale"].toInt();
+            QVariant variantYScale = -yScale;
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "flipYLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, variantYScale));
+            break;
+        }
+        case SpinLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "spinLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["oldAngle"]));
+            break;
+        case ModifiedLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "modifiedLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["oldImage"]));
+            break;
+        default:
+            qDebug() << action;
+            break;
+        }
     }
 }
 
@@ -808,7 +869,8 @@ void ActiveCtrl::redo()
 
     if (index.toInt() == -2) //上一次撤销是删除图层的操作  特殊处理
     {
-        QMetaObject::invokeMethod(m_currentLayer, "deletedStackPop", Qt::AutoConnection);
+        QVariant flag = false;
+        QMetaObject::invokeMethod(m_currentLayer, "deletedStackPop", Q_ARG(QVariant, flag));
     } else {
         QVariant actionAndParams;
         QMetaObject::invokeMethod(m_currentLayer,
@@ -874,6 +936,15 @@ void ActiveCtrl::redo()
                                       Q_ARG(QVariant, index),
                                       Q_ARG(QVariant, params["newImage"]));
             break;
+        case ReMoveLayer: {
+            QMetaObject::invokeMethod(m_currentImageView, "popUndoStack", Qt::AutoConnection);
+            QVariant flag = true;
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "removeLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, flag));
+            break;
+        }
         default:
             qDebug() << action;
             break;
