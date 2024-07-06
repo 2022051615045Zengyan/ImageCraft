@@ -63,8 +63,8 @@
         <file>Image/tm533.6x253.6.png</file>
     </qresource>
     <qresource prefix="/new/prefix1">
-        <file>textfont/方正粗宋简体.ttf</file>
-        <file>textfont/方正大黑_GBK.ttf</file>
+        <file>textfont/FounderthickSongJanebody.ttf</file>
+        <file>textfont/Foundegbigblack _GBK.ttf</file>
         <file>textfont/bubblegum.ttf</file>
         <file>textfont/cinema.ttf</file>
     </qresource>

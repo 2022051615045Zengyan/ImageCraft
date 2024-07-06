@@ -25,8 +25,8 @@ Item
         ListModel {
             id: fontModel
 
-            ListElement { source: "file:///root/ImageCraft/textfont/方正大黑_GBK.ttf" }
-            ListElement { source: "file:///root/ImageCraft/textfont/方正粗宋简体.ttf" }
+            ListElement { source: "file:///root/ImageCraft/textfont/Foundegbigblack _GBK.ttf" }
+            ListElement { source: "file:///root/ImageCraft/textfont/FounderthickSongJanebody.ttf" }
             ListElement { source: "file:///root/ImageCraft/textfont/bubblegum.ttf" }
             ListElement { source: "file:///root/ImageCraft/textfont/cinema.ttf" }
         }

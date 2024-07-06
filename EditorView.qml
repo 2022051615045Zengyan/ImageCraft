@@ -303,7 +303,7 @@ Image
             }
             FontLoader {
                 id: chineseFontLoader
-                source:  "file:///root/ImageCraft/textfont/方正大黑_GBK.ttf" // 自定义字体文件路径
+                source:  "file:///root/ImageCraft/textfont/Foundegbigblack _GBK.ttf" // 自定义字体文件路径
             }
             Component.onCompleted: ToolCtrl.currentTextArea=textArea
         }
