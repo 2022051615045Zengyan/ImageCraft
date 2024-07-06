@@ -785,6 +785,12 @@ void ActiveCtrl::undo()
                                   Q_ARG(QVariant, index),
                                   Q_ARG(QVariant, params["oldAngle"]));
         break;
+    case ModifiedLayer:
+        QMetaObject::invokeMethod(m_currentLayer,
+                                  "modifiedLayer",
+                                  Q_ARG(QVariant, index),
+                                  Q_ARG(QVariant, params["oldImage"]));
+        break;
     default:
         qDebug() << action;
         break;
@@ -861,6 +867,12 @@ void ActiveCtrl::redo()
                                       "spinLayer",
                                       Q_ARG(QVariant, index),
                                       Q_ARG(QVariant, params["newAngle"]));
+            break;
+        case ModifiedLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "modifiedLayer",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["newImage"]));
             break;
         default:
             qDebug() << action;

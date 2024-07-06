@@ -53,6 +53,10 @@ Image
     property real currentAngle: 0 //旋转效果
     property real oldAngle: 0
     property real newAngle: 0
+    property var oldImage
+    property var newImage
+    property var images: _images
+    property int modes: 0
     property alias flip: _flip
     property alias imageViewDragAreaTap: _imageViewDragAreaTap
     property alias imageViewDragArea: _imageViewDragArea
@@ -75,12 +79,35 @@ Image
         anchors.right: parent.right
     }
 
+    //用于储存修改前的图片
+    Repeater
+    {
+        model: imageView.modes
+        id: _images
+        Item
+        {
+            property var image
+        }
+    }
+
     Connections
     {
         target: editor
         function onImageChanged()
         {
-            modified()
+            modes++
+            images.itemAt(modes - 1).image = oldImage
+            oldImage = newImage
+            newImage = editor.copyImage()
+            if(!redoOrUndo)
+            {
+                if(oldImage)
+                {
+                    saveState(ActiveCtrl.ModifiedLayer, {oldImage: oldImage, newImage: newImage})
+                }
+                modified()
+            }
+
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
         }
@@ -338,7 +365,6 @@ Image
         {
             return null
         }
-
         var map = undoStack.pop()
         redoStack.push(map)
         return map
@@ -350,8 +376,15 @@ Image
         {
             return null
         }
+        console.log(redoStack.length)
         var map = redoStack.pop()
         undoStack.push(map)
+        console.log(map["params"]["oldImage"])
+        Qt.callLater(function()
+        {
+            console.log(map["params"]["oldImage"])
+        })
+
         return map
     }
 

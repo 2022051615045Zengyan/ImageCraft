@@ -118,6 +118,7 @@ Item
                         ToolCtrl.currentEditorView = editorView
                         tabContent.currentIndex = index
                         editor.openImage(thepixUrl)
+                        console.log(thepixUrl)
                     }
                     imageViewDragAreaTap.onTapped:
                     {
@@ -339,6 +340,17 @@ Item
                 layers.itemAt(index).redoOrUndo = true
                 layers.itemAt(index).currentAngle = angle
 
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
+            }
+
+            function modifiedLayer(index, image)    //修改图层（图片资源）
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).editor.image = image
 
                 Qt.callLater(function()
                 {

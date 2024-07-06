@@ -46,6 +46,16 @@ void Editor::openImage(const QString &path)
     emit imageChanged();
 }
 
+QImage Editor::copyImage()
+{
+    QImage image;
+    if (!m_image.isNull()) {
+        image = m_image.copy();
+    }
+
+    return image;
+}
+
 QString Editor::path() const
 {
     return m_path;

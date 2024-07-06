@@ -72,7 +72,7 @@ public:
         VisibleLayer,
         FlipXLayer,
         FlipYLayer,
-        SpinLayer
+        SpinLayer,
     };
     Q_ENUM(OperationType)
 

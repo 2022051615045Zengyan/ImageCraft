@@ -26,9 +26,13 @@ public:
     QImage image() const;
     Q_INVOKABLE void setImage(QImage newImage);
     Q_INVOKABLE void openImage(const QString &path);
+    Q_INVOKABLE QImage copyImage();
 
     QString path() const;
     void setPath(const QString &newPath);
+
+    QVector<QImage> images() const;
+    void setImages(const QVector<QImage> &newImages);
 
 signals:
 
