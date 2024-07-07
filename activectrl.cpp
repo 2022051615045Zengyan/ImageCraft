@@ -736,6 +736,9 @@ void ActiveCtrl::popRightMenu(QVariant x, QVariant y)
 
 void ActiveCtrl::deleteLayer()
 {
+    if (!m_currentImageView || !m_currentLayer) {
+        return;
+    }
     QVariant key = QQmlProperty::read(m_currentImageView, "key");
     QVariant index;
     QMetaObject::invokeMethod(m_currentLayer,
@@ -756,6 +759,7 @@ void ActiveCtrl::deleteLayer()
                               "removeLayer",
                               Q_ARG(QVariant, index),
                               Q_ARG(QVariant, flag));
+    qDebug() << index << key;
 }
 
 //撤销
@@ -861,7 +865,7 @@ void ActiveCtrl::undo()
 //重做
 void ActiveCtrl::redo()
 {
-    if (!m_currentLayer) {
+    if (!m_currentLayer || !m_currentImageView) {
         return;
     }
     QVariant index;

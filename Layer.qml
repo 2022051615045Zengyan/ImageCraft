@@ -306,16 +306,18 @@ Item
                                 newAngle: layers.itemAt(index).newAngle,
                                 oldImage: layers.itemAt(index).oldImage,
                                 newImage: layers.itemAt(index).newImage,
-                                images: layers.itemAt(index).images,
-                                modes: layers.itemAt(index).modes,
                                 yScale: layers.itemAt(index).yScale,
                                 xScale: layers.itemAt(index).xScale,
                                 visible: layers.itemAt(index).visible}
                     if(isundo)
                     {
+                        console.log("111:")
+                        console.log(map["index"])
                         tabContent.undoDeletedStack.push(map)
                     }else
                     {
+                        console.log("111:")
+                        console.log(map["index"])
                         tabContent.redoDeletedStack.push(map)
                     }
 
@@ -335,7 +337,8 @@ Item
                     map = redoDeletedStack.pop()
                 }
 
-
+                console.log("222:")
+                console.log(map["index"])
                 tabContent.layerModel.insert(map["index"] ,{pixUrl: map["pixUrl"]})
                 Qt.callLater(function() //等待图层创建完成  后恢复组件原有的属性和状态
                 {
@@ -354,12 +357,21 @@ Item
                         item.newAngle = map["newAngle"]
                         item.oldImage = map["oldImage"]
                         item.newImage = map["newImage"]
-                        item.modes = map["modes"]
-                        // console.log(map["images"])
-                        // item.images = map["images"]
                         item.yScale = map["yScale"]
                         item.xScale = map["xScale"]
                         item.visible = map["visible"]
+
+                        if(item.editor.image !== map["newImage"])
+                        {
+                            item.redoOrUndo = true
+                            item.editor.image = map["newImage"]
+
+                            Qt.callLater(function()
+                            {
+                                item.redoOrUndo = false
+                            });
+                        }
+
                         if(isundo)
                         {
                             var map1 = {action: ActiveCtrl.ReMoveLayer, params: {}}
@@ -519,6 +531,7 @@ Item
         if(currentView)
         {
             ActiveCtrl.flip = currentView.flip
+            ActiveCtrl.currentImageView = currentView
             ToolCtrl.currentEditorView = currentView
             ActiveCtrl.currentEditor = currentView.editor as Editor
         }
