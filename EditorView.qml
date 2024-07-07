@@ -158,6 +158,7 @@ Image
             }
         }
 
+
         TapHandler{
             id:brushhandler
             target: imageView
@@ -182,13 +183,111 @@ Image
                 }
             }
             onPointChanged: {
-                 if(pressed){
-                     var x=point.position.x
-                     var y=point.position.y
-                     x *= sourceSize.width / imageViewDragArea.width
-                     y *= sourceSize.height / imageViewDragArea.height
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
                     ToolCtrl.continueDrawing(x,y,false)
                 }
+            }
+        }
+
+        TapHandler{
+            id:rectanglehandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "矩阵"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onTapped: {
+                if(ToolCtrl.currentShape===ToolCtrl.Polygon){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                }else{
+                    console.log("以完成一次矩阵工具")
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,true)
+                }
+            }
+        }
+
+        TapHandler{
+            id:linehandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "线条"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onTapped: {
+                if(ToolCtrl.currentShape===ToolCtrl.PolylineDraw){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                }else{
+                    console.log("以完成一次线条工具")
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,true)
+                }
+            }
+        }
+        TapHandler{
+            id:linehandlerForFinish
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "线条" ||"矩阵"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            acceptedButtons: Qt.RightButton
+            onTapped: {
+                console.log("以完成一次线条工具")
+                ToolCtrl.finishDrawing()
             }
         }
 
@@ -207,50 +306,6 @@ Image
             id: _imageViewDragAreaTap
         }
 
-    }
-
-    // Timer {
-    //     id: drawTimer
-    //     interval: 16 // 约60帧每秒
-    //     repeat: true
-    //     running: false
-    //     onTriggered: {
-    //         ToolCtrl.continueDrawing(brushhandler.point.position.x, brushhandler.point.position.y, false)
-    //     }
-    // }
-
-
-
-    TapHandler{
-        id:rectanglehandler
-        target: imageView
-        enabled:ToolCtrl.selectedTool === "矩阵"
-        gesturePolicy: TapHandler.ReleaseWithinBounds
-        onPressedChanged: {
-            if(pressed){
-                requestAddBrushLayer()
-                ToolCtrl.startDrawing(point.position.x,point.position.y)
-            }else{
-                console.log("以完成一次矩阵工具")
-                ToolCtrl.stopDrawing(point.position.x,point.position.y)
-            }
-        }
-        onPointChanged: {
-             if(pressed){
-                ToolCtrl.continueDrawing(point.position.x,point.position.y,true)
-            }
-        }
-    }
-
-    TapHandler{
-        id:linehandler
-        target: imageView
-        enabled: ToolCtrl.selectedTool === "线条"
-        onTapped: {
-            if(mouse.button===Qt.LeftButton){
-                ToolCtrl.startDrawing(linehandler.point.position.x,linehandler.point.position.y)
-            }
-        }
     }
 
     PinchHandler {

@@ -76,6 +76,8 @@ class ToolCtrl : public QObject
     Q_PROPERTY(CapStyle currentCapStyle READ currentCapStyle WRITE setCurrentCapStyle NOTIFY
                    currentCapStyleChanged FINAL)
     Q_PROPERTY(int spraySize READ spraySize WRITE setSpraySize NOTIFY spraySizeChanged FINAL)
+    Q_PROPERTY(bool fillRectangle READ fillRectangle WRITE setFillRectangle NOTIFY
+                   fillRectangleChanged FINAL)
 
 public:
     enum Shape {
@@ -84,6 +86,8 @@ public:
         SprayDraw,
         Rectangle,
         Ellipse,
+        Circle,
+        Polygon,
         LineDraw,
         PolylineDraw,
         CurveDraw
@@ -110,6 +114,8 @@ public:
     Q_INVOKABLE void finishDrawing();
     Q_INVOKABLE void setShapeToRectangle();
     Q_INVOKABLE void setShapeToEllipse();
+    Q_INVOKABLE void setShapeToCircle();
+    Q_INVOKABLE void setShapeToPolygon();
     Q_INVOKABLE void setShapeToFreeDraw();
     Q_INVOKABLE void setShapeToPenDraw();
     Q_INVOKABLE void setShapeToSprayDraw();
@@ -178,6 +184,9 @@ public:
 
     int spraySize() const;
 
+    bool fillRectangle() const;
+    Q_INVOKABLE void setFillRectangle(bool newFillRectangle);
+
 signals:
     void selectedToolChanged();
 
@@ -220,6 +229,8 @@ signals:
 
     void spraySizeChanged();
 
+    void fillRectangleChanged();
+
 private slots:
     void on_currentEditorViewChanged();
 
@@ -248,6 +259,7 @@ private:
     int m_sprayDensity;
     int m_spraySize;
     QVector<QPoint> m_points; //记录折线和曲线的点
+    bool m_fillRectangle = false;
 
     bool m_drawing;
     Editor *m_canvasEditor = nullptr;
