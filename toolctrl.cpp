@@ -171,6 +171,18 @@ void ToolCtrl::setCurrentTextArea(QObject *newCurrentTextArea)
     m_currentTextArea = newCurrentTextArea;
     emit currentTextAreaChanged();
 }
+bool ToolCtrl::fillRectangle() const
+{
+    return m_fillRectangle;
+}
+
+void ToolCtrl::setFillRectangle(bool newFillRectangle)
+{
+    if (m_fillRectangle == newFillRectangle)
+        return;
+    m_fillRectangle = newFillRectangle;
+    emit fillRectangleChanged();
+}
 
 int ToolCtrl::modelIndex() const
 {
@@ -539,15 +551,15 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
     }
 
-    case PenDraw:
+    case PenDraw: {
         pen.setWidth(3);
         painter.setPen(pen);
         painter.drawLine(m_lastPoint, QPoint(x, y));
         m_lastPoint = QPoint(x, y);
         break;
-
+    }
     case SprayDraw: {
-        pen.setWidth(1);
+        pen.setWidth(m_spraySize);
         painter.setPen(pen);
         for (int i = 0; i < m_sprayDensity; i++) {
             int offsetX = rand() % (2 * m_sprayRadius) - m_sprayRadius;
@@ -558,17 +570,50 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
     }
 
-    case Rectangle:
+    case Rectangle: {
         pen.setWidth(5);
         painter.setPen(pen);
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
         painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
         break;
+    }
 
-    case Ellipse:
+    case Ellipse: {
         pen.setWidth(5);
         painter.setPen(pen);
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
         break;
+    }
+
+    case Circle: {
+        pen.setWidth(5);
+        painter.setPen(pen);
+        int radius = qSqrt(qPow(x - m_lastPoint.x(), 2) + qPow(y - m_lastPoint.y(), 2));
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
+        painter.drawEllipse(m_lastPoint, radius, radius);
+        break;
+    }
+
+    case Polygon: {
+        if (!m_points.isEmpty()) {
+            QVector<QPoint> polygonPoints = m_points.toVector();
+            if (isTemporary) {
+                polygonPoints.append(QPoint(x, y));
+            }
+            if (m_fillRectangle) {
+                painter.setBrush(QBrush(m_brushColor));
+            }
+            painter.drawPolygon(polygonPoints);
+        }
+        break;
+    }
 
     case LineDraw:
         pen.setWidth(3);
@@ -577,38 +622,14 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
 
     case PolylineDraw: {
-        pen.setWidth(3);
-        painter.setPen(pen);
-
-        if (isTemporary) {
-            if (!m_points.isEmpty()) {
-                painter.drawLine(m_points.last(), QPoint(x, y));
+        if (!m_points.isEmpty()) {
+            for (int i = 0; i < m_points.size() - 1; ++i) {
+                painter.drawLine(m_points[i], m_points[i + 1]);
             }
-        } else {
-            QPoint newPoint(x, y);
-            if (!m_points.isEmpty()) {
-                painter.drawLine(m_points.last(), newPoint);
-            }
-            m_lastPoint = newPoint;
+            //painter.drawLine(m_points.last(), QPoint(x, y));
         }
         break;
     }
-    case CurveDraw:
-        if (m_drawing) {
-            m_points.append(QPoint(x, y));
-        }
-        if (m_points.size() > 1) {
-            QPainterPath path;
-            path.moveTo(m_points[0]);
-            for (int i = 1; i < m_points.size(); ++i) {
-                path.quadTo(m_points[i - 1], m_points[i]);
-            }
-            painter.drawPath(path);
-        }
-        if (!isTemporary) {
-            m_lastPoint = QPoint(x, y);
-        }
-        break;
     }
 
     // if (isTemporary) {
@@ -625,8 +646,10 @@ void ToolCtrl::startDrawing(int x, int y)
 
     if (m_currentShape == FreeDraw | PenDraw | SprayDraw) {
         continueDrawing(x, y, false);
-    } else if (m_currentShape == PolylineDraw) {
+    } else if (m_currentShape == PolylineDraw || Polygon) {
         m_points.append(m_lastPoint);
+        continueDrawing(x, y, false);
+    } else {
         continueDrawing(x, y, true);
     }
 }
@@ -641,7 +664,15 @@ void ToolCtrl::continueDrawing(int x, int y, bool isTemporary)
 void ToolCtrl::stopDrawing(int x, int y)
 {
     m_drawing = false;
-    draw(x, y, false);
+    if (m_currentShape != PolylineDraw && m_currentShape != Polygon) {
+        draw(x, y, false);
+        finishDrawing();
+    } else {
+        if (m_points.isEmpty() || m_points.last() != QPoint(x, y)) {
+            m_points.append(QPoint(x, y));
+        }
+        draw(x, y, false);
+    }
     emit m_canvasEditor->imageStatusChanged();
 }
 
@@ -660,6 +691,18 @@ void ToolCtrl::setShapeToRectangle()
 void ToolCtrl::setShapeToEllipse()
 {
     setCurrentShape(Ellipse);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToCircle()
+{
+    setCurrentShape(Circle);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToPolygon()
+{
+    setCurrentShape(Polygon);
     emit currentShapeChanged();
 }
 
