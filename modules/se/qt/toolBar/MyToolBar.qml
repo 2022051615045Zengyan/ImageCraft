@@ -6,11 +6,13 @@
  */
 import QtQuick
 import QtQuick.Controls
-
+import ImageCraft 1.0
 
 Item
 {
     id: toolBar
+    property bool toolbarvisible: true
+    visible:toolbarvisible
     width: parent.width
     height: topToolBar.height
     property ListView listView: leftToolBar.listView
@@ -96,6 +98,9 @@ Item
     {
         id: leftToolBar
         toolBar: toolBar
+    }
+    Component.onCompleted: {
+        ActiveCtrl.toolBar=toolBar
     }
 }
 

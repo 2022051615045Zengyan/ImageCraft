@@ -29,6 +29,9 @@
  *   modified by ZhanXuecai on 2024-7-6
  *      added line function
  *      perfected draw function
+ *   modified by Zengyan on 2024-7-8
+ *      added strawmodel,initaltextArea's color,size,family
+ *      
  *
  */
 #include "toolctrl.h"
@@ -144,6 +147,45 @@ void ToolCtrl::on_currentEditorViewChanged()
     int currentIndex = std ::distance(m_zoomSet.begin(), it);
     m_zoom_size->setProperty("currentIndex", currentIndex);
     m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
+}
+
+std::set<QString> ToolCtrl::colorSet() const
+{
+    return m_colorSet;
+}
+
+void ToolCtrl::setColorSet(const std::set<QString> &newColorSet)
+{
+    if (m_colorSet == newColorSet)
+        return;
+    m_colorSet = newColorSet;
+    emit colorSetChanged();
+}
+
+QStringList ToolCtrl::colorList() const
+{
+    return m_colorList;
+}
+
+void ToolCtrl::setColorList(const QStringList &newColorList)
+{
+    if (m_colorList == newColorList)
+        return;
+    m_colorList = newColorList;
+    emit colorListChanged();
+}
+
+QObject *ToolCtrl::straw_SampleRecords() const
+{
+    return m_straw_SampleRecords;
+}
+
+void ToolCtrl::setStraw_SampleRecords(QObject *newStraw_SampleRecords)
+{
+    if (m_straw_SampleRecords == newStraw_SampleRecords)
+        return;
+    m_straw_SampleRecords = newStraw_SampleRecords;
+    emit straw_SampleRecordsChanged();
 }
 
 QObject *ToolCtrl::wordItem() const
@@ -449,7 +491,22 @@ QColor ToolCtrl::getPixelColor(const QString &imagepath, int x, int y)
     qDebug() << color;
     m_showcolor->setProperty("color", color.name());
     qDebug() << color.name();
+    m_colorSet.insert(color.name());
+    QStringList options;
+    for (const auto &item : m_colorSet) {
+        options << item;
+    }
+    m_colorList = options;
+    m_straw_SampleRecords->setProperty("model", m_colorList);
+    int index = m_colorList.indexOf(color.name());
+    m_straw_SampleRecords->setProperty("currentIndex", index);
     return color;
+}
+
+void ToolCtrl::showcolorSet(const QColor &color)
+{
+    if (m_showcolor)
+        m_showcolor->setProperty("color", color);
 }
 
 //设置底部x,y值

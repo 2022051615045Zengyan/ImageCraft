@@ -1,69 +1,47 @@
 /** Menu_Setting.qml
  * Written by ZengYan on 2024-6-18
  * Funtion: Setting Menu
+ * modified by Zengyan on 2024-7-8
+ * finished maintoolBar,lefttoolBar...status changes
  */
 import QtQuick
 import QtQuick.Controls
+import ImageCraft 1.0
 Menu{
     width: 300
     id:setting
     title: qsTr("设置(&S)")
 
-    Menu{
-        icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
-        title: qsTr("显示工具栏")
-        CheckBox {
-            id: checkBox01
-            text:qsTr("主工具栏")
+
+ MyMenuItem{
+
+            text:qsTr("侧边工具栏")
+            icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-true.svg"
+            property bool ischecked: true
+            onTriggered:
+            {
+                ActiveCtrl.lefttoolbarDisplay()
+                ischecked = !ischecked
+                icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
+            }
         }
-        CheckBox {
-            id: checkBox02
-            text:qsTr("文本工具栏")
-        }
-        CheckBox {
-            id: checkBox03
-            text:qsTr("文本工具栏")
-        }
-    }
+
 
     MyMenuItem{
 
         text:qsTr("显示状态栏")
-        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             property bool ischecked: false
-             // enabled: false
-             onTriggered:
-             {
-
-                 ischecked = !ischecked
-                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             }
+        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-true.svg"
+        property bool ischecked: true
+        // enabled: false
+        onTriggered:
+        {
+            ActiveCtrl.footerVisible()
+            ischecked = !ischecked
+            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
+        }
 
     }
-    MyMenuItem{
-        text:qsTr("显示路径")
-        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             property bool ischecked: false
-             // enabled: false
-             onTriggered:
-             {
 
-                 ischecked = !ischecked
-                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             }
-    }
-    MyMenuItem {
-        text:qsTr("绘制时使用锯齿平滑")
-        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             property bool ischecked: false
-             // enabled: false
-             onTriggered:
-             {
-
-                 ischecked = !ischecked
-                 icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
-             }
-    }
     MenuSeparator{}
 
     MyMenuItem{

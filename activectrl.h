@@ -8,6 +8,9 @@
  * added rotation function
  * Modified by Zengyan on 2024-6-26
  * added uesr-defined rotation function
+ * modified by Zengyan on 2024-7-8
+ * finished maintoolBar,lefttoolBar...status changes function
+ *  added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
  */
 #pragma once
 
@@ -17,6 +20,7 @@
 #include <QSettings>
 #include <QStack>
 #include "editor.h"
+#include <opencv2/opencv.hpp>
 
 namespace cv {
 class Mat;
@@ -66,6 +70,9 @@ class ActiveCtrl : public QObject
         int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
     Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
                    lcenterHeightChanged FINAL)
+    Q_PROPERTY(QObject* footer READ footer WRITE setFooter NOTIFY footerChanged FINAL)
+    Q_PROPERTY(QObject* toolBar READ toolBar WRITE setToolBar NOTIFY toolBarChanged FINAL)
+
 public:
     //图层修改类型
     enum OperationType {
@@ -110,6 +117,15 @@ public:
     //撤销操作
     Q_INVOKABLE void undo();
     Q_INVOKABLE void redo();
+
+    //图片颜色操作
+    Q_INVOKABLE void oppositedColor();
+    Q_INVOKABLE void convertToGray();
+    Q_INVOKABLE void convertToMonochromeDithered();
+    Q_INVOKABLE void applyGaussianBlur();
+    Q_INVOKABLE void footerVisible();
+    Q_INVOKABLE void lefttoolbarDisplay();
+    // Q_INVOKABLE void maintoolbarDisplay();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -186,6 +202,12 @@ public:
     int lcenterHeight() const;
     void setLcenterHeight(int newLcenterHeight);
 
+    QObject* footer() const;
+    void setFooter(QObject* newFooter);
+
+    QObject* toolBar() const;
+    void setToolBar(QObject* newToolBar);
+
 signals:
 
     void dialogBoxChanged();
@@ -243,6 +265,10 @@ signals:
 
     void lcenterHeightChanged();
 
+    void footerChanged();
+
+    void toolBarChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -282,8 +308,11 @@ private:
     double m_anglenum;
     QObject* m_flip = nullptr;
     QObject* m_currentImageView = nullptr;
+    QObject* m_footer = nullptr;
+    QObject* m_toolBar = nullptr;
 
     void loadRecentFiles();
     void saveRecentFiles();
     cv::Mat QImageToCvMat(const QImage& image);
+    QImage matToQImage(const cv::Mat& mat);
 };

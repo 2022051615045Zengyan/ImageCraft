@@ -26,10 +26,10 @@ Item
         // 创建一个 ListModel 用于管理多个 FontLoader
         ListModel {
             id: fontModel
-            ListElement { source: "file:///root/ImageCraft/textfont/Foundegbigblack _GBK.ttf" }
-            ListElement { source: "file:///root/ImageCraft/textfont/FounderthickSongJanebody.ttf" }
-            ListElement { source: "file:///root/ImageCraft/textfont/bubblegum.ttf" }
-            ListElement { source: "file:///root/ImageCraft/textfont/cinema.ttf" }
+            ListElement { source: "qrc:/new/prefix1/textfont/Foundegbigblack _GBK.ttf" }
+            ListElement { source: "qrc:/new/prefix1/textfont/FounderthickSongJanebody.ttf" }
+            ListElement { source: "qrc:/new/prefix1/textfont/bubblegum.ttf" }
+            ListElement { source: "qrc:/new/prefix1/textfont/cinema.ttf" }
         }
         ComboBox
         {

@@ -68,11 +68,9 @@ Item {
             delegate:ItemDelegate {
                 text: modelData + "%"
             }
-
             Layout.fillWidth: true
             Layout.minimumWidth: 0
         }
-
         Button {
             id: _zoom_in
             Layout.preferredWidth: parent.height*3
@@ -93,7 +91,6 @@ Item {
                 }
             }
         }
-
         Item {
             Layout.fillWidth: true
             Layout.preferredWidth: 1000

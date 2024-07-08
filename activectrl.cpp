@@ -28,6 +28,9 @@
  * Modified by RenTianxiang on 2024-7-6
  *      Finished modified the layer and remove the layer undo and redo
  *      added remove layer
+ * modified by Zengyan on 2024-7-8
+ * finished maintoolBar,lefttoolBar...status changes
+ * added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
  */
 #include "activectrl.h"
 #include <QDesktopServices>
@@ -35,11 +38,13 @@
 #include <QGuiApplication>
 #include <QJSValue>
 #include <QMetaObject>
+#include <QPainter>
 #include <QPixmap>
 #include <QQmlProperty>
 #include <QQuickItemGrabResult>
 #include <QScreen>
 #include <QStandardPaths>
+#include <QtTypes>
 #include <opencv4/opencv2/opencv.hpp>
 
 ActiveCtrl::ActiveCtrl(QObject *parent)
@@ -351,6 +356,32 @@ void ActiveCtrl::setYScale(int newYScale)
 void ActiveCtrl::exitSlot()
 {
     QCoreApplication::exit();
+}
+
+QObject *ActiveCtrl::toolBar() const
+{
+    return m_toolBar;
+}
+
+void ActiveCtrl::setToolBar(QObject *newToolBar)
+{
+    if (m_toolBar == newToolBar)
+        return;
+    m_toolBar = newToolBar;
+    emit toolBarChanged();
+}
+
+QObject *ActiveCtrl::footer() const
+{
+    return m_footer;
+}
+
+void ActiveCtrl::setFooter(QObject *newFooter)
+{
+    if (m_footer == newFooter)
+        return;
+    m_footer = newFooter;
+    emit footerChanged();
 }
 
 int ActiveCtrl::lcenterHeight() const
@@ -982,6 +1013,90 @@ void ActiveCtrl::redo()
     }
 }
 
+void ActiveCtrl::oppositedColor()
+{
+    if (m_currentEditor) {
+        QImage invertedImage(m_currentEditor->image());
+
+        for (int y = 0; y < invertedImage.height(); ++y) {
+            for (int x = 0; x < invertedImage.width(); ++x) {
+                QRgb pixel = invertedImage.pixel(x, y);
+                invertedImage.setPixel(x,
+                                       y,
+                                       qRgb(255 - qRed(pixel),
+                                            255 - qGreen(pixel),
+                                            255 - qBlue(pixel)));
+            }
+        }
+
+        m_currentEditor->setImage(invertedImage);
+    }
+}
+
+void ActiveCtrl::convertToGray()
+{
+    if (m_currentEditor) {
+        QImage grayImage(m_currentEditor->image().size(), QImage::Format_Grayscale8);
+        QPainter painter(&grayImage);
+        painter.drawImage(0, 0, m_currentEditor->image());
+        painter.end();
+        m_currentEditor->setImage(grayImage);
+    }
+}
+
+void ActiveCtrl::convertToMonochromeDithered()
+{
+    if (m_currentEditor) {
+        QImage monoImage(m_currentEditor->image().size(), QImage::Format_Mono);
+        QPainter painter(&monoImage);
+        painter.drawImage(0, 0, m_currentEditor->image().convertToFormat(QImage::Format_Mono));
+        m_currentEditor->setImage(monoImage);
+    }
+}
+
+void ActiveCtrl::applyGaussianBlur()
+{
+    if (m_currentEditor) {
+        QImage inputImage(m_currentEditor->image());
+        // Convert QImage to Mat
+        cv::Mat inputMat = QImageToCvMat(inputImage);
+        // Apply Gaussian blur using OpenCV
+        cv::Mat blurredMat;
+        int radius = 25;
+        cv::GaussianBlur(inputMat,
+                         blurredMat,
+                         cv::Size(2 * radius + 1, 2 * radius + 1),
+                         radius / 2.0);
+
+        // Convert Mat back to QImage
+        QImage outputImage = matToQImage(blurredMat);
+        m_currentEditor->setImage(outputImage);
+    }
+}
+
+void ActiveCtrl::footerVisible()
+{
+    if (m_footer) {
+        bool vis = m_footer->property("statusvisible").value<bool>();
+        if (vis)
+            m_footer->setProperty("statusvisible", false);
+        else
+            m_footer->setProperty("statusvisible", true);
+    }
+}
+
+void ActiveCtrl::lefttoolbarDisplay()
+{
+    if (m_toolBar) {
+        bool vis = m_toolBar->property("toolbarvisible").value<bool>();
+        if (vis) {
+            m_toolBar->setProperty("toolbarvisible", false);
+        } else {
+            m_toolBar->setProperty("toolbarvisible", true);
+        }
+    }
+}
+
 cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)
 {
     cv::Mat mat;
@@ -1030,5 +1145,23 @@ cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)
         qDebug() << "QImage format not supported for conversion to cv::Mat:" << image.format();
         break;
     }
+
     return mat;
+}
+
+QImage ActiveCtrl::matToQImage(const cv::Mat &mat)
+{
+    // Convert the OpenCV Mat to QImage
+    QImage image(mat.cols, mat.rows, QImage::Format_RGB888);
+    uchar *data = image.bits();
+    int channels = mat.channels();
+    for (int y = 0; y < mat.rows; ++y) {
+        uchar *row_ptr = const_cast<uchar *>(mat.ptr<const uchar>(y));
+        for (int x = 0; x < mat.cols; ++x) {
+            for (int c = 0; c < channels; ++c) {
+                data[y * mat.cols * channels + x * channels + c] = row_ptr[x * channels + c];
+            }
+        }
+    }
+    return image;
 }

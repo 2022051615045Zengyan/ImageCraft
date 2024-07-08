@@ -25,32 +25,7 @@ Menu{
             console.log("这是什么已被点击")
         }
     }
-    MyMenuItem{
-        text:qsTr("查找操作...")
-        icon.name:"edit-find"
-        sequence: "Ctrl+Alt+l"
 
-        onTriggered: {
-            console.log("查找操作已被点击")
-        }
-    }
-    MyMenuItem{
-        text:qsTr("查找操作...")
-        icon.name:"edit-find"
-
-        onTriggered: {
-            console.log("查找操作已被点击")
-        }
-    }
-    MenuSeparator{}
-    MyMenuItem{
-        text:qsTr("报告程序缺陷(&R)...")
-        icon.name:"edit-find"
-
-        onTriggered: {
-            console.log("查找操作已被点击")
-        }
-    }
     MenuSeparator{}
     MyMenuItem{
         text:qsTr("捐款(&D)")

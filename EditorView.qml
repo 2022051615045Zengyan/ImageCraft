@@ -53,6 +53,7 @@ Image
 {
     id: imageView
 
+
     property Editor editor: editor1
     property int key   //标识符
     property var undoStack: []

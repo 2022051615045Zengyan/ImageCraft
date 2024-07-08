@@ -7,6 +7,8 @@
  * added rotation function
  * Modified by Zengyan on 2024-6-26
  * added uesr-defined rotation function
+ *   modified by Zengyan on 2024-7-8
+ *      added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
  */
 
 import QtQuick
@@ -104,19 +106,6 @@ Menu{
             ActiveCtrl.openDialog()
         }
     }
-
-    MenuSeparator{}
-
-    MyMenuItem
-    {
-        text: qsTr("斜切变形(&K)...")
-        sequence: "Ctrl+K"
-        onTriggered:
-        {
-            console.log("斜切变形")
-        }
-    }
-
     MenuSeparator{}
 
     MyMenuItem
@@ -124,6 +113,7 @@ Menu{
         text: qsTr("色彩降为单色(抖动)(&N)")
         onTriggered:
         {
+            ActiveCtrl.convertToMonochromeDithered();
             console.log("色彩降为单色(抖动)")
         }
     }
@@ -133,6 +123,7 @@ Menu{
         text: qsTr("色彩降为灰阶(&G)")
         onTriggered:
         {
+            ActiveCtrl.convertToGray();
             console.log("色彩降为灰阶")
         }
     }
@@ -142,17 +133,8 @@ Menu{
         text: qsTr("模糊处理")
         onTriggered:
         {
+             ActiveCtrl.applyGaussianBlur()
             console.log("模糊处理")
-        }
-    }
-
-    MyMenuItem
-    {
-        text: qsTr("更多效果(&M)...")
-        sequence: "Ctrl+M"
-        onTriggered:
-        {
-            console.log("更多效果")
         }
     }
 
@@ -164,7 +146,7 @@ Menu{
         sequence: "Ctrl+I"
         onTriggered:
         {
-            console.log("颜色反相")
+            ActiveCtrl.oppositedColor()
         }
     }
 
@@ -192,15 +174,6 @@ Menu{
             console.log("清除")
             ischecked = !ischecked
             icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-        }
-    }
-
-    MyMenuItem
-    {
-        text: qsTr("设置颜色近似阈值...")
-        onTriggered:
-        {
-            console.log("设置颜色近似阈值")
         }
     }
 }

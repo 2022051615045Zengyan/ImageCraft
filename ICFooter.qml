@@ -7,6 +7,8 @@
  *       added colorrectangles
  * modified by Zengyan on 2024-6-24
  * added choicecolorfunction, rightbottomtextshow
+ *   modified by Zengyan on 2024-7-8
+ *      added zoomstrawmodel[currentindex] and showcolor'color for binding
  */
 import QtQuick
 import QtQuick.Controls
@@ -16,6 +18,7 @@ import ImageCraft 1.0
 
 Rectangle {
     id: footer
+
     width:parent.width
     property alias showcolor: _showcolor
     property alias text2: _text2
@@ -147,6 +150,8 @@ Rectangle {
         }
         Rectangle{
             id:bottomshow
+            property bool statusvisible: true
+            visible: statusvisible
             Layout.preferredWidth:footer.width
             Layout.preferredHeight: footer.height/6
             /*footer.height-texttext.height-colorshow.height*/
@@ -226,6 +231,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
+        ActiveCtrl.footer=bottomshow
         ToolCtrl.showcolor=showcolor
         ToolCtrl.pointtext=text2
         ToolCtrl.imageSize=text3

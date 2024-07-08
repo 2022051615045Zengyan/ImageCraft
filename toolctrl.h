@@ -27,7 +27,8 @@
  * modified by ZhanXuecai on 2024-7-6
  *     added line function
  *     perfected draw function
-
+ *   modified by Zengyan on 2024-7-8
+ *      added strawmodel,initaltextArea's color,size,family
  */
 #pragma once
 
@@ -88,6 +89,11 @@ class ToolCtrl : public QObject
 
     Q_PROPERTY(bool fillRectangle READ fillRectangle WRITE setFillRectangle NOTIFY
                    fillRectangleChanged FINAL)
+    Q_PROPERTY(QObject *straw_SampleRecords READ straw_SampleRecords WRITE setStraw_SampleRecords
+                   NOTIFY straw_SampleRecordsChanged FINAL)
+    Q_PROPERTY(QStringList colorList READ colorList WRITE setColorList NOTIFY colorListChanged FINAL)
+    Q_PROPERTY(
+        std::set<QString> colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged FINAL)
 
 public:
     enum Shape {
@@ -113,6 +119,7 @@ public:
     void setInitialFamily();
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
+    Q_INVOKABLE void showcolorSet(const QColor &color);
     Q_INVOKABLE void getPointPositon(int x, int y);
     Q_INVOKABLE void setScaleFactor(const float &Scalemultiple, int index);
     Q_INVOKABLE void returnScale(double Scalenumber);
@@ -215,6 +222,15 @@ public:
     bool fillRectangle() const;
     Q_INVOKABLE void setFillRectangle(bool newFillRectangle);
 
+    QObject *straw_SampleRecords() const;
+    void setStraw_SampleRecords(QObject *newStraw_SampleRecords);
+
+    QStringList colorList() const;
+    void setColorList(const QStringList &newColorList);
+
+    std::set<QString> colorSet() const;
+    void setColorSet(const std::set<QString> &newColorSet);
+
 signals:
     void selectedToolChanged();
 
@@ -263,11 +279,18 @@ signals:
 
     void fillRectangleChanged();
 
+    void straw_SampleRecordsChanged();
+
+    void colorListChanged();
+
+    void colorSetChanged();
+
 private slots:
     void on_currentEditorViewChanged();
 
 private:
     QString m_selectedTool;
+    QObject *m_straw_SampleRecords = nullptr;
     QObject *m_wordItem = nullptr;
     QObject *m_showcolor = nullptr;
     QObject *m_pointtext = nullptr;
@@ -277,8 +300,12 @@ private:
     QObject *m_zoomRepeater = nullptr;
     QObject *m_zoomColumnLayout = nullptr;
     QObject *m_currentTextArea = nullptr; //用来设置插入文字的属性
-    std::set<int> m_zoomSet;
+    std::set<int> m_zoomSet; 
     QStringList m_zoomList;
+
+    std::set<QString> m_colorSet;
+    QStringList m_colorList;
+
     int m_modelIndex;
 
     QImage m_previewImage; //用来作为预览画布（实现绘画预览）的透明图片
