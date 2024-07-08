@@ -37,7 +37,7 @@ Item {
                 _line_beeline_size.currentIndex = 2;
             }
             onCurrentIndexChanged: {
-                ToolCtrl.setCurrentBrushSize(currentIndex)
+                ToolCtrl.setLineSize(currentIndex)
             }
 
             Layout.fillWidth: true
@@ -66,10 +66,10 @@ Item {
             Layout.preferredWidth:parent.height*3
             model: ["细","较细","均衡","较粗","粗"]
             Component.onCompleted: {
-                _line_beeline_size.currentIndex = 2;
+                _line_polyline_size.currentIndex = 2;
             }
             onCurrentIndexChanged: {
-                ToolCtrl.setCurrentBrushSize(currentIndex)
+                ToolCtrl.setPolyLineSize(currentIndex)
             }
 
             Layout.fillWidth: true

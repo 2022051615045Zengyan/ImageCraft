@@ -12,23 +12,18 @@ Item {
         width: parent.width
         height: parent.height
         spacing: 5
-
         Label{
             text: "取样记录:"
         }
-
         ComboBox {
             id: _straw_SampleRecords
             Layout.preferredWidth:parent.height*3
             model: ["样本1","样本2"]
-
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
         }
-
         Item {
             Layout.fillWidth: true  // 添加一个空的Item填充剩余空间
-
             Layout.preferredWidth:1000
         }
 
