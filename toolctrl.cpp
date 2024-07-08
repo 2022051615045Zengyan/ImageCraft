@@ -8,11 +8,9 @@
  *   modified by ZhanXuecai on 2024-6-21
  *      move brush function and rectangle function to here
  *   modified by Zengyan on 2024-6-22
-
  *   perfected zoom function  
  *   Modified by Zengyan on 2024-6-25
  * added rotation function 
-
  *      perfected zoom function   
  *   modified by ZhanXuecai on 2024-6-24
  *      perfected brush rectangle function
@@ -24,6 +22,13 @@
  *      
  *   modified by ZhanXuecai on 2024-6-26
  *      perfected draw function and added pendraw and spraydraw
+
+ *      modified by Zengyan on 2024-7-6
+ *   added textbox funtion
+ *      
+ *   modified by ZhanXuecai on 2024-7-6
+ *      added line function
+ *      perfected draw function
  *
  */
 #include "toolctrl.h"
@@ -72,7 +77,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
     m_modelIndex = 9;
     m_brushSize = 5;
     m_drawing = false;
-    m_brushColor = Qt::red;
+    m_brushColor = Qt::black;
     m_currentShape = FreeDraw;
     m_spraySize = 1;
 }
@@ -141,6 +146,44 @@ void ToolCtrl::on_currentEditorViewChanged()
     m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
 }
 
+QObject *ToolCtrl::wordItem() const
+{
+    return m_wordItem;
+}
+
+void ToolCtrl::setWordItem(QObject *newWordItem)
+{
+    if (m_wordItem == newWordItem)
+        return;
+    m_wordItem = newWordItem;
+    emit wordItemChanged();
+}
+
+QObject *ToolCtrl::currentTextArea() const
+{
+    return m_currentTextArea;
+}
+
+void ToolCtrl::setCurrentTextArea(QObject *newCurrentTextArea)
+{
+    if (m_currentTextArea == newCurrentTextArea)
+        return;
+    m_currentTextArea = newCurrentTextArea;
+    emit currentTextAreaChanged();
+}
+bool ToolCtrl::fillRectangle() const
+{
+    return m_fillRectangle;
+}
+
+void ToolCtrl::setFillRectangle(bool newFillRectangle)
+{
+    if (m_fillRectangle == newFillRectangle)
+        return;
+    m_fillRectangle = newFillRectangle;
+    emit fillRectangleChanged();
+}
+
 int ToolCtrl::modelIndex() const
 {
     return m_modelIndex;
@@ -199,6 +242,82 @@ void ToolCtrl::setSpraySize(int newSpraySize)
     }
 
     emit spraySizeChanged();
+}
+void ToolCtrl::setTextFamily(const QString &family)
+{
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("chineseFontLoaderSource", family);
+    }
+}
+void ToolCtrl::setWordSize(int size)
+{
+    qDebug() << "size:" << size;
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("size", size);
+    }
+}
+void ToolCtrl::setTextColor(const QColor &color)
+{
+    if (m_currentTextArea) {
+        m_currentTextArea->setProperty("color", color);
+    }
+}
+
+void ToolCtrl::setBold(bool bold)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("bold", bold);
+}
+
+void ToolCtrl::setItalic(bool italic)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("italic", italic);
+}
+
+void ToolCtrl::setStrikeout(bool strikeout)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("strikeout", strikeout);
+}
+
+void ToolCtrl::setUnderline(bool underline)
+{
+    if (m_currentTextArea)
+        m_currentTextArea->setProperty("underline", underline);
+}
+
+void ToolCtrl::updateBrushColor()
+{
+    if (m_showcolor) {
+        QVariant colorVariant = m_showcolor->property("color");
+        if (colorVariant.isValid() && colorVariant.canConvert<QColor>()) {
+            m_brushColor = colorVariant.value<QColor>();
+        } else {
+            qDebug() << "画笔从画板获取颜色失败";
+        }
+    }
+}
+
+QColor ToolCtrl::initalColor()
+{
+    if (m_currentTextArea) {
+        return m_showcolor->property("color").value<QColor>();
+    }
+}
+
+QUrl ToolCtrl::initalSource()
+{
+    if (m_wordItem) {
+        return m_wordItem->property("familySource").value<QUrl>();
+    }
+}
+
+int ToolCtrl::initalSize()
+{
+    if (m_wordItem) {
+        return m_wordItem->property("size").value<int>();
+    }
 }
 
 QObject *ToolCtrl::zoomColumnLayout() const
@@ -380,6 +499,7 @@ void ToolCtrl::getRepeaterIndex(int index)
 
 void ToolCtrl::draw(int x, int y, bool isTemporary)
 {
+    updateBrushColor();
     QImage *targetImage = isTemporary ? &m_previewImage : &m_canvasImage;
 
     QPainter painter(targetImage);
@@ -412,14 +532,17 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
     switch (m_currentShape) {
     case FreeDraw: {
         pen.setWidth(m_brushSize);
+        painter.setPen(pen);
         QPainterPath path;
         path.moveTo(m_lastPoint);
         path.lineTo(QPoint(x, y));
 
         if (m_currentCapStyle == SlashCap) {
+            qDebug() << m_currentCapStyle;
             path.moveTo(QPoint(x - 5, y));
             path.lineTo(QPoint(x, y + 5));
         } else if (m_currentCapStyle == BackSlashCap) {
+            qDebug() << m_currentCapStyle;
             path.moveTo(QPoint(x + 5, y));
             path.lineTo(QPoint(x, y - 5));
         }
@@ -428,15 +551,16 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
     }
 
-    case PenDraw:
+    case PenDraw: {
         pen.setWidth(3);
         painter.setPen(pen);
         painter.drawLine(m_lastPoint, QPoint(x, y));
         m_lastPoint = QPoint(x, y);
         break;
-
+    }
     case SprayDraw: {
-        pen.setWidth(1);
+        pen.setWidth(m_spraySize);
+        painter.setPen(pen);
         for (int i = 0; i < m_sprayDensity; i++) {
             int offsetX = rand() % (2 * m_sprayRadius) - m_sprayRadius;
             int offsetY = rand() % (2 * m_sprayRadius) - m_sprayRadius;
@@ -446,26 +570,73 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
     }
 
-    case Rectangle:
+    case Rectangle: {
         pen.setWidth(5);
+        painter.setPen(pen);
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
         painter.drawRect(QRect(m_lastPoint, QPoint(x, y)));
         break;
+    }
 
-    case Ellipse:
+    case Ellipse: {
         pen.setWidth(5);
+        painter.setPen(pen);
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
         painter.drawEllipse(QRect(m_lastPoint, QPoint(x, y)));
         break;
     }
 
-    qDebug() << m_currentShape;
+    case Circle: {
+        pen.setWidth(5);
+        painter.setPen(pen);
+        int radius = qSqrt(qPow(x - m_lastPoint.x(), 2) + qPow(y - m_lastPoint.y(), 2));
+        if (m_fillRectangle) {
+            painter.setBrush(QBrush(m_brushColor));
+        }
+        painter.drawEllipse(m_lastPoint, radius, radius);
+        break;
+    }
+
+    case Polygon: {
+        if (!m_points.isEmpty()) {
+            QVector<QPoint> polygonPoints = m_points.toVector();
+            if (isTemporary) {
+                polygonPoints.append(QPoint(x, y));
+            }
+            if (m_fillRectangle) {
+                painter.setBrush(QBrush(m_brushColor));
+            }
+            painter.drawPolygon(polygonPoints);
+        }
+        break;
+    }
+
+    case LineDraw:
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawLine(m_lastPoint, QPoint(x, y));
+        break;
+
+    case PolylineDraw: {
+        if (!m_points.isEmpty()) {
+            for (int i = 0; i < m_points.size() - 1; ++i) {
+                painter.drawLine(m_points[i], m_points[i + 1]);
+            }
+            //painter.drawLine(m_points.last(), QPoint(x, y));
+        }
+        break;
+    }
+    }
 
     // if (isTemporary) {
-    //     emit tempImageChanged();
+    //     m_canvasEditor->setImage(m_previewImage);
     // } else {
-    //     emit imageChanged();
-    // }
-
     m_canvasEditor->setImage(m_canvasImage);
+    //}
 }
 
 void ToolCtrl::startDrawing(int x, int y)
@@ -474,9 +645,12 @@ void ToolCtrl::startDrawing(int x, int y)
     m_lastPoint = QPoint(x, y);
 
     if (m_currentShape == FreeDraw | PenDraw | SprayDraw) {
-        draw(x, y, false);
+        continueDrawing(x, y, false);
+    } else if (m_currentShape == PolylineDraw || Polygon) {
+        m_points.append(m_lastPoint);
+        continueDrawing(x, y, false);
     } else {
-        draw(x, y, true);
+        continueDrawing(x, y, true);
     }
 }
 
@@ -490,7 +664,22 @@ void ToolCtrl::continueDrawing(int x, int y, bool isTemporary)
 void ToolCtrl::stopDrawing(int x, int y)
 {
     m_drawing = false;
-    draw(x, y, false);
+    if (m_currentShape != PolylineDraw && m_currentShape != Polygon) {
+        draw(x, y, false);
+        finishDrawing();
+    } else {
+        if (m_points.isEmpty() || m_points.last() != QPoint(x, y)) {
+            m_points.append(QPoint(x, y));
+        }
+        draw(x, y, false);
+    }
+    emit m_canvasEditor->imageStatusChanged();
+}
+
+void ToolCtrl::finishDrawing()
+{
+    m_drawing = false;
+    m_points.clear();
 }
 
 void ToolCtrl::setShapeToRectangle()
@@ -502,6 +691,18 @@ void ToolCtrl::setShapeToRectangle()
 void ToolCtrl::setShapeToEllipse()
 {
     setCurrentShape(Ellipse);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToCircle()
+{
+    setCurrentShape(Circle);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToPolygon()
+{
+    setCurrentShape(Polygon);
     emit currentShapeChanged();
 }
 
@@ -520,6 +721,24 @@ void ToolCtrl::setShapeToPenDraw()
 void ToolCtrl::setShapeToSprayDraw()
 {
     setCurrentShape(SprayDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToLineDraw()
+{
+    setCurrentShape(LineDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToPolylineDraw()
+{
+    setCurrentShape(PolylineDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToCurveDraw()
+{
+    setCurrentShape(CurveDraw);
     emit currentShapeChanged();
 }
 

@@ -1,11 +1,14 @@
 /** Line_toolBar.qml
  * Written by ZhanXuecai on 2024-6-19
  * Funtion: Line toolBar 绘制线条
+ *
+ * Written by ZhanXuecai on 2024-7-6
+ * added line selected function
  */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import ImageCraft 1.0
 Item {
     id: line_toolBar
     anchors.fill: parent
@@ -20,12 +23,22 @@ Item {
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToLineDraw()
+            }
+
         }
 
         ComboBox{
             id: _line_beeline_size
             Layout.preferredWidth:parent.height*3
-            model: ["极细","细","较细","均衡","较粗","粗","极粗"]
+            model: ["细","较细","均衡","较粗","粗"]
+            Component.onCompleted: {
+                _line_beeline_size.currentIndex = 2;
+            }
+            onCurrentIndexChanged: {
+                ToolCtrl.setCurrentBrushSize(currentIndex)
+            }
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -42,17 +55,22 @@ Item {
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
-            property bool isclicked:true
-            enabled: isclicked
             onClicked: {
-                enabled=!isclicked
+                ToolCtrl.setShapeToPolylineDraw()
             }
+
         }
 
         ComboBox{
             id: _line_polyline_size
             Layout.preferredWidth:parent.height*3
-            model: ["极细","细","较细","均衡","较粗","粗","极粗"]
+            model: ["细","较细","均衡","较粗","粗"]
+            Component.onCompleted: {
+                _line_beeline_size.currentIndex = 2;
+            }
+            onCurrentIndexChanged: {
+                ToolCtrl.setCurrentBrushSize(currentIndex)
+            }
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -68,6 +86,9 @@ Item {
             Layout.preferredWidth:parent.height*3
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToCurveDraw()
+            }
         }
 
         ComboBox{
@@ -76,6 +97,12 @@ Item {
             model: ["极细","细","较细","均衡","较粗","粗","极粗"]
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
+            Component.onCompleted: {
+                _line_beeline_size.currentIndex = 2;
+            }
+            onCurrentIndexChanged: {
+                ToolCtrl.setCurrentBrushSize(currentIndex)
+            }
         }
 
         Item {

@@ -38,6 +38,12 @@
  *
  * modified by RenTianxiang on 2024-7-7
  *      added select fuction
+ *
+ *Modified by Zengyan on 2024-7-6
+ * added textbox funtion
+ *
+ * Modified by ZhanXuecai on 2024-7-5
+ *   Replaced Muserrea with Taped(It also needs to be improved)
  */
 import QtQuick
 import QtQuick.Controls
@@ -191,15 +197,141 @@ Image
             }
         }
 
-        Image
-        {
-            width: 15
-            height: 15
-            z: 100
-            id: strawcursor
-            source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-            visible:ToolCtrl.selectedTool === "吸管" && hoverhandler.hovered
+        TapHandler{
+            id:brushhandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "画笔"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    console.log(x,y)
+                }else{
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    console.log("以完成一次画笔工具",x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,false)
+                }
+            }
         }
+
+
+        TapHandler{
+            id:rectanglehandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "矩阵"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onTapped: {
+                if(ToolCtrl.currentShape===ToolCtrl.Polygon){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                }else{
+                    console.log("以完成一次矩阵工具")
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,true)
+                }
+            }
+        }
+
+        TapHandler{
+            id:linehandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "线条"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onTapped: {
+                if(ToolCtrl.currentShape===ToolCtrl.PolylineDraw){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                }else{
+                    console.log("以完成一次线条工具")
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,true)
+                }
+            }
+        }
+        TapHandler{
+            id:linehandlerForFinish
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "线条" ||"矩阵"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            acceptedButtons: Qt.RightButton
+            onTapped: {
+                console.log("以完成一次线条工具")
+                ToolCtrl.finishDrawing()
+            }
+        }
+
+
+
 
         //吸管移动
         TapHandler
@@ -214,78 +346,89 @@ Image
         }
     }
 
-    // MouseArea{
-    //     id:brushhandler
-    //     anchors.fill: parent
-    //     enabled: ToolCtrl.selectedTool === "画笔"
-    //     onPressed: {
-    //         requestAddBrushLayer()
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         ToolCtrl.startDrawing(x,y)
-    //     }
-    //     onPositionChanged: {
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         ToolCtrl.continueDrawing(x,y,false)
-    //     }
-    //     onReleased: {
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         console.log("已完成一次画笔操作")
-    //         ToolCtrl.stopDrawing(x,y)
-    //     }
-    // }
+    //添加文字
+    TapHandler{
+        id:_textTapHandler
+        enabled: ToolCtrl.selectedTool === "文字"
+        onTapped: {
+            // 计算点击位置相对于图片的坐标
+            var X = point.position.x - imageView.x
+            var Y = point.position.y - imageView.y
+            // 在点击位置创建文本输入框
+            var textInput = textAreaComponent.createObject(imageView);
+            textInput.x = X - textInput.width / 2;
+            textInput.y = Y - textInput.height / 2;
+            textInput.focus = true; // 自动聚焦到文本输入框
+        }
+    }
+    Component{
+        id:textAreaComponent
+        TextArea {
+            id:textArea
+            property int size
+            property string family:chineseFontLoader.name
+            property bool  bold: false
+            property bool  italic: false
+            property bool  underline: false
+            property bool  strikeout: false
+            property alias chineseFontLoaderSource: chineseFontLoader.source
+            width: text.width
+            placeholderText: "输入文本"
+            font.pixelSize: size
+            font.family: family
+            font.bold: bold
+            font.italic: italic
+            font.underline: underline
+            font.strikeout: strikeout
+            background: Rectangle {
+                color: "transparent"
+                radius: 5
+            }
+            DragHandler{
+                id:textdragHandler
+                target: textArea
+                enabled: ToolCtrl.selectedTool === "文字"
+                onActiveChanged:
+                {
+                    if(!active)
+                    {
+                        saveState(ActiveCtrl.MoveLayer, {oldX: textArea.oldX, oldY: textArea.oldY, newX: textArea.x, newY: textArea.y})
+                    }else
+                    {
+                        ToolCtrl.currentTextArea=textArea
+                        oldX = x
+                        oldY = y
+                        modified()
+                    }
+                }
+            }
+            FontLoader {
+                id: chineseFontLoader
+                //source:  "file:///root/ImageCraft/textfont/Foundegbigblack _GBK.ttf" // 自定义字体文件路径
+            }
+            Component.onCompleted:
+            {
+                ToolCtrl.currentTextArea=textArea
+                color=ToolCtrl.initalColor()
+                chineseFontLoaderSource=ToolCtrl.initalSource()
+                size=ToolCtrl.initalSize()
 
-    // TapHandler{
-    //     id:brushhandler1
-    //     target: imageView
-    //     enabled:ToolCtrl.selectedTool === "画笔"
-    //     onPressedChanged: {
-    //         if(pressed){
-    //             requestAddBrushLayer()
-    //             ToolCtrl.setShapeToFreeDraw()
-    //             ToolCtrl.startDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
-    //         }
-    //     }
-    //     onCanceled: {
-    //         console.log("以完成一次画笔工具")
-    //         ToolCtrl.stopDrawing(brushhandler1.point.position.x,brushhandler1.point.position.y)
-    //     }
-    // }
+            }
+        }
 
-    // HoverHandler{
-    //     id:brushhandler2
-    //     target: imageView
-    //     onPointChanged: {
-    //         if(brushhandler1.pressed){
-    //             ToolCtrl.continueDrawing(point.position.x,point.position.y,false)
-    //         }
-    //     }
-    // }
-
-    // MouseArea{
-    //     id:recthandler
-    //     anchors.fill: parent
-    //     enabled: ToolCtrl.selectedTool === "矩阵"
-    //     onPressed: {
-    //         requestAddBrushLayer()
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         ToolCtrl.startDrawing(x,y)
-    //     }
-    //     onPositionChanged: {
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         ToolCtrl.continueDrawing(x,y,true)
-    //     }
-    //     onReleased: {
-    //         var x = mouseX / imageView.width * sourceSize.width
-    //         var y = mouseY / imageView.height * sourceSize.height
-    //         console.log("已完成一次画笔操作")
-    //         ToolCtrl.stopDrawing(x,y)
-    //     }
-    // }
+    }
+    //设置监听器，当点击文本框之外取消其聚焦
+    TapHandler{
+        onTapped: {
+            for(var i=0;i<imageView.children.length;i++){
+                var child=imageView.children[i];
+                if(child.focus){
+                    child.focus=false;
+                    break;
+                }
+            }
+        }
+    }
 
     PinchHandler {
         id: handler
@@ -417,9 +560,16 @@ Image
         imageView.x = x
         imageView.y = y
     }
-
     function popUndoStack() //用于移去撤销栈多余的数据
     {
         undoStack.pop()
+    }
+    Image {
+        width: 15
+        height: 15
+        z:1
+        id: strawcursor
+        source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
+        visible:ToolCtrl.selectedTool === "吸管" && hoverhandler.hovered
     }
 }

@@ -22,6 +22,7 @@ Rectangle {
     property alias text3: _text3
     property alias  text1: _text1
 
+
     ColumnLayout
     {
         spacing:2
@@ -57,11 +58,11 @@ Rectangle {
                             id: _showcolor
                             width:height
                             height: parent.height-15
-                            color: "#ddff00"
+                            color: "white"
                             border.color: "#c0c0c0"
                             anchors.centerIn: parent
                             onColorChanged: {
-
+                                ToolCtrl.setTextColor(_showcolor.color)
                             }
                         }
                         TapHandler{
@@ -107,7 +108,6 @@ Rectangle {
                     }
 
                     GridView {
-
                         anchors.fill: parent
                         model: colorModel
                         cellWidth: parent.width/11
@@ -163,76 +163,72 @@ Rectangle {
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("x:0,y:0")
-
                 }
                 Label {
                     id: _text3
                     Layout.preferredWidth:bottomshow.width/7
                     Layout.preferredHeight: bottomshow.height
                     text: qsTr("400*300")
-
                 }
-
             }
         }
     }
     Connections{
-    target: ToolCtrl
-   function onSelectedToolChanged(){
-       switch(ToolCtrl.selectedTool)
-       {
-       case "选择":
-           text1.text=qsTr("Select: Select the layer that you want.");
-           break;
-        case "图框":
-            text1.text=qsTr("Picture box: You are using the picture box function.");
-              break;
-        case "移动":
-            text1.text=qsTr("Move: Please move your picture.");
-              break;
-        case "抓手":
-            text1.text=qsTr("Gripper: You are using the grip function.");
-              break;
-        case "框选":
-            text1.text=qsTr("Box selection: Please select the box operation.");
-              break;
-        case "套索工具":
-            text1.text=qsTr("Lasso tool: Please select the area where you want to perform the lasso.");
-              break;
-        case "裁剪":
-            text1.text=qsTr("Crop: Please select the area you want to crop.");
-              break;
-        case "文字":
-            text1.text=qsTr("Text: You are using the Add text feature.");
-              break;
-        case "吸管":
-            text1.text=qsTr("Sucker: You choose the color point you want to absorb.");
-              break;
-        case "矩阵":
-            text1.text=qsTr("Matrix: Please draw the matrix you want.");
-              break;
-        case "线条":
-            text1.text=qsTr("Lines: Please draw the lines you want.");
-              break;
-        case "画笔":
-            text1.text=qsTr("Brush: You are painting using a paintbrush.");
-              break;
-        case "橡皮擦":
-            text1.text=qsTr("Eraser: You are using the eraser to erase the selected area.");
-              break;
-        case "缩放":
-            text1.text=qsTr("Zoom: Please select the multiple of your zoom.");
-              break;
-       }
 
-    }
+        target: ToolCtrl
+        function onSelectedToolChanged(){
+            switch(ToolCtrl.selectedTool)
+            {
+            case "选择":
+                text1.text=qsTr("Select: Select the layer that you want.");
+                break;
+            case "图框":
+                text1.text=qsTr("Picture box: You are using the picture box function.");
+                break;
+            case "移动":
+                text1.text=qsTr("Move: Please move your picture.");
+                break;
+            case "抓手":
+                text1.text=qsTr("Gripper: You are using the grip function.");
+                break;
+            case "框选":
+                text1.text=qsTr("Box selection: Please select the box operation.");
+                break;
+            case "套索工具":
+                text1.text=qsTr("Lasso tool: Please select the area where you want to perform the lasso.");
+                break;
+            case "裁剪":
+                text1.text=qsTr("Crop: Please select the area you want to crop.");
+                break;
+            case "文字":
+                text1.text=qsTr("Text: You are using the Add text feature.");
+                break;
+            case "吸管":
+                text1.text=qsTr("Sucker: You choose the color point you want to absorb.");
+                break;
+            case "矩阵":
+                text1.text=qsTr("Matrix: Please draw the matrix you want.");
+                break;
+            case "线条":
+                text1.text=qsTr("Lines: Please draw the lines you want.");
+                break;
+            case "画笔":
+                text1.text=qsTr("Brush: You are painting using a paintbrush.");
+                break;
+            case "橡皮擦":
+                text1.text=qsTr("Eraser: You are using the eraser to erase the selected area.");
+                break;
+            case "缩放":
+                text1.text=qsTr("Zoom: Please select the multiple of your zoom.");
+                break;
+            }
+        }
     }
 
     Component.onCompleted: {
         ToolCtrl.showcolor=showcolor
         ToolCtrl.pointtext=text2
         ToolCtrl.imageSize=text3
-
     }
 }
 
