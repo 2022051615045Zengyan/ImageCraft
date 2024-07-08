@@ -247,6 +247,9 @@ Item
                         }else if(ToolCtrl.selectedTool === "矩阵")
                         {
                             ToolCtrl.setShapeToRectangle()
+                        }else if(ToolCtrl.selectedTool === "线条")
+                        {
+                            ToolCtrl.setShapeToLineDraw()
                         }
                     }
                 }

@@ -19,8 +19,15 @@
  *     perfected brush function and rectangle function
  * modified by ZhanXuecai on 2024-6-26
  *     perfected draw function and added pendraw and spraydraw
+
  * modified by Zengyan on 2024-7-6
  *   added textbox funtion
+
+ *     
+ * modified by ZhanXuecai on 2024-7-6
+ *     added line function
+ *     perfected draw function
+
  */
 #pragma once
 
@@ -76,10 +83,19 @@ class ToolCtrl : public QObject
     Q_PROPERTY(int spraySize READ spraySize WRITE setSpraySize NOTIFY spraySizeChanged FINAL)
     Q_PROPERTY(QObject *currentTextArea READ currentTextArea WRITE setCurrentTextArea NOTIFY
                    currentTextAreaChanged FINAL)
-    Q_PROPERTY(QColor colorname READ colorname WRITE setColorname NOTIFY colornameChanged FINAL)
+    Q_PROPERTY(QObject *wordItem READ wordItem WRITE setWordItem NOTIFY wordItemChanged FINAL)
 
 public:
-    enum Shape { FreeDraw, PenDraw, SprayDraw, Rectangle, Ellipse };
+    enum Shape {
+        FreeDraw,
+        PenDraw,
+        SprayDraw,
+        Rectangle,
+        Ellipse,
+        LineDraw,
+        PolylineDraw,
+        CurveDraw
+    };
     Q_ENUM(Shape)
 
     enum CapStyle { RoundCap, SquareCap, SlashCap, BackSlashCap };
@@ -88,6 +104,7 @@ public:
     explicit ToolCtrl(QObject *parent = nullptr);
     QString selectedTool() const;
     void setSelectedTool(const QString &newSelectedTool);
+    void setInitialFamily();
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
     Q_INVOKABLE void getPointPositon(int x, int y);
@@ -99,15 +116,20 @@ public:
     Q_INVOKABLE void startDrawing(int x, int y);
     Q_INVOKABLE void continueDrawing(int x, int y, bool isTemporary);
     Q_INVOKABLE void stopDrawing(int x, int y);
+    Q_INVOKABLE void finishDrawing();
     Q_INVOKABLE void setShapeToRectangle();
     Q_INVOKABLE void setShapeToEllipse();
     Q_INVOKABLE void setShapeToFreeDraw();
-
     Q_INVOKABLE void setShapeToPenDraw();
     Q_INVOKABLE void setShapeToSprayDraw();
+    Q_INVOKABLE void setShapeToLineDraw();
+    Q_INVOKABLE void setShapeToPolylineDraw();
+    Q_INVOKABLE void setShapeToCurveDraw();
+
     Q_INVOKABLE void setCurrentBrushSize(int newBrushSize);
     Q_INVOKABLE void setCapStyle(int index);
     Q_INVOKABLE void setSpraySize(int newSpraySize);
+
     Q_INVOKABLE void setTextFamily(const QString &family);
     Q_INVOKABLE void setWordSize(int size);
     Q_INVOKABLE void setTextColor(const QColor &color);
@@ -115,6 +137,11 @@ public:
     Q_INVOKABLE void setItalic(bool italic);
     Q_INVOKABLE void setStrikeout(bool strikeout);
     Q_INVOKABLE void setUnderline(bool underline);
+    Q_INVOKABLE void updateBrushColor();
+    Q_INVOKABLE QColor initalColor();
+    Q_INVOKABLE QUrl initalSource();
+    Q_INVOKABLE int initalSize();
+
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
 
@@ -174,8 +201,8 @@ public:
     QObject *currentTextArea() const;
     void setCurrentTextArea(QObject *newCurrentTextArea);
 
-    QColor colorname() const;
-    void setColorname(const QColor &newColorname);
+    QObject *wordItem() const;
+    void setWordItem(QObject *newWordItem);
 
 signals:
     void selectedToolChanged();
@@ -221,14 +248,14 @@ signals:
 
     void currentTextAreaChanged();
 
-    void colornameChanged();
+    void wordItemChanged();
 
 private slots:
     void on_currentEditorViewChanged();
 
 private:
     QString m_selectedTool;
-    QColor m_colorname;
+    QObject *m_wordItem = nullptr;
     QObject *m_showcolor = nullptr;
     QObject *m_pointtext = nullptr;
     QObject *m_imageSize = nullptr;
@@ -243,16 +270,17 @@ private:
 
     QImage m_previewImage; //用来作为预览画布（实现绘画预览）的透明图片
     QImage m_canvasImage;  //用来作为画布（显示绘画结果）的透明图片
-    QImage m_tempImage;    //用来作为临时画布（显示绘画过程）的透明图片
 
     QPoint m_lastPoint;
     Shape m_currentShape;
     CapStyle m_currentCapStyle;
     QColor m_brushColor;
     int m_brushSize;
-    int m_sprayRadius;  //喷漆半径
-    int m_sprayDensity; //喷漆密度
-    int m_spraySize;    //喷漆大小
+    int m_sprayRadius;
+    int m_sprayDensity;
+    int m_spraySize;
+    QVector<QPoint> m_points; //记录折线和曲线的点
+
     bool m_drawing;
     Editor *m_canvasEditor = nullptr;
 };

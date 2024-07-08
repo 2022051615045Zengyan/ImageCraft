@@ -85,7 +85,7 @@ Item
 
                     property var thepixUrl: pixUrl
 
-                    fillMode: thepixUrl === "/Image/tm533.6x253.6.png" ? Image.Stretch : Image.PreserveAspectFit
+                    fillMode: thepixUrl === "/Image/tm533.6x253.6.png" ? Image.PreserveAspectFit : Image.PreserveAspectFit
 
                     width: tabContent.width / 5 * 4
                     height: tabContent.height / 5 * 4
@@ -162,8 +162,8 @@ Item
                             {
                                 console.log(index)
                                 ToolCtrl.canvasImage=layers.itemAt(index).editor.image
-                                ToolCtrl.canvasEditor=layers.itemAt(index).editor
                                 ToolCtrl.previewImage=layers.itemAt(index).editor.image
+                                ToolCtrl.canvasEditor=layers.itemAt(index).editor
                             }
                         }
                     }

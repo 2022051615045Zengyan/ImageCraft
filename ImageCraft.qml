@@ -19,7 +19,7 @@ ApplicationWindow
     height: 500
     visible: true
     title: qsTr("ImageCraft")
-    color: "pink"
+   color:"#dad0d0"
     minimumWidth: 800  // 设置最小宽度为800像素
     minimumHeight: 400
 

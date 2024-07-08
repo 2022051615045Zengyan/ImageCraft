@@ -61,6 +61,9 @@
         <file>icon/save.svg</file>
         <file>icon/img.svg</file>
         <file>Image/tm533.6x253.6.png</file>
+        <file>Image/tm1000x1000.png</file>
+        <file>Image/tm1000x1200.png</file>
+        <file>Image/tm1500x1500.png</file>
     </qresource>
     <qresource prefix="/new/prefix1">
         <file>textfont/FounderthickSongJanebody.ttf</file>
