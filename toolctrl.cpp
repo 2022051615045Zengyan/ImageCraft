@@ -83,6 +83,9 @@ ToolCtrl::ToolCtrl(QObject *parent)
     m_brushColor = Qt::black;
     m_currentShape = FreeDraw;
     m_spraySize = 1;
+    m_eraserSize = 5;
+    m_eraserOpacity = 255;
+    m_fillRectangle = true;
 }
 
 QString ToolCtrl::selectedTool() const
@@ -187,6 +190,96 @@ void ToolCtrl::setStraw_SampleRecords(QObject *newStraw_SampleRecords)
     m_straw_SampleRecords = newStraw_SampleRecords;
     emit straw_SampleRecordsChanged();
 }
+int ToolCtrl::PolyLineSize() const
+{
+    return m_PolyLineSize;
+}
+
+void ToolCtrl::setPolyLineSize(int newPolyLineSize)
+{
+    switch (newPolyLineSize) {
+    case 0:
+        m_PolyLineSize = 1;
+        break;
+    case 1:
+        m_PolyLineSize = 3;
+        break;
+    case 2:
+        m_PolyLineSize = 5;
+        break;
+    case 3:
+        m_PolyLineSize = 8;
+        break;
+    case 4:
+        m_PolyLineSize = 10;
+        break;
+    }
+    emit PolyLineSizeChanged();
+}
+
+int ToolCtrl::lineSize() const
+{
+    return m_lineSize;
+}
+
+void ToolCtrl::setLineSize(int newLineSize)
+{
+    switch (newLineSize) {
+    case 0:
+        m_lineSize = 1;
+        break;
+    case 1:
+        m_lineSize = 3;
+        break;
+    case 2:
+        m_lineSize = 5;
+        break;
+    case 3:
+        m_lineSize = 8;
+        break;
+    case 4:
+        m_lineSize = 10;
+        break;
+    }
+    emit lineSizeChanged();
+}
+
+int ToolCtrl::eraserOpacity() const
+{
+    return m_eraserOpacity;
+}
+
+void ToolCtrl::setEraserOpacity(int newEraserOpacity)
+{
+    if (m_eraserOpacity == newEraserOpacity)
+        return;
+    m_eraserOpacity = newEraserOpacity;
+    emit eraserOpacityChanged();
+}
+
+int ToolCtrl::eraserSize() const
+{
+    return m_eraserSize;
+}
+
+void ToolCtrl::setEraserSize(int newEraserSize)
+{
+    // if (m_eraserSize == newEraserSize)
+    //     return;
+    // m_eraserSize = newEraserSize;
+    switch (newEraserSize) {
+    case 0:
+        m_eraserSize = 5;
+        break;
+    case 1:
+        m_eraserSize = 10;
+        break;
+    case 2:
+        m_eraserSize = 15;
+        break;
+    }
+    emit eraserSizeChanged();
+}
 
 QObject *ToolCtrl::wordItem() const
 {
@@ -257,27 +350,27 @@ void ToolCtrl::setSpraySize(int newSpraySize)
         m_sprayDensity = 3;
         break;
     case 1:
-        m_brushSize = 1;
+        m_spraySize = 1;
         m_sprayRadius = 10;
         m_sprayDensity = 6;
         break;
     case 2:
-        m_brushSize = 1;
+        m_spraySize = 1;
         m_sprayRadius = 10;
         m_sprayDensity = 9;
         break;
     case 3:
-        m_brushSize = 1;
+        m_spraySize = 1;
         m_sprayRadius = 20;
         m_sprayDensity = 10;
         break;
     case 4:
-        m_brushSize = 1;
+        m_spraySize = 1;
         m_sprayRadius = 20;
         m_sprayDensity = 15;
         break;
     case 5:
-        m_brushSize = 1;
+        m_spraySize = 1;
         m_sprayRadius = 20;
         m_sprayDensity = 20;
         break;
@@ -558,9 +651,7 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
 {
     updateBrushColor();
     QImage *targetImage = isTemporary ? &m_previewImage : &m_canvasImage;
-
     QPainter painter(targetImage);
-
     painter.setRenderHint(QPainter::Antialiasing, true);
     QPen pen(m_brushColor, m_brushSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
@@ -596,12 +687,12 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
 
         if (m_currentCapStyle == SlashCap) {
             qDebug() << m_currentCapStyle;
-            path.moveTo(QPoint(x - 5, y));
-            path.lineTo(QPoint(x, y + 5));
+            path.moveTo(QPoint(x - m_brushSize, y));
+            path.lineTo(QPoint(x, y + m_brushSize));
         } else if (m_currentCapStyle == BackSlashCap) {
             qDebug() << m_currentCapStyle;
-            path.moveTo(QPoint(x + 5, y));
-            path.lineTo(QPoint(x, y - 5));
+            path.moveTo(QPoint(x + m_brushSize, y));
+            path.lineTo(QPoint(x, y - m_brushSize));
         }
         painter.drawPath(path);
         m_lastPoint = QPoint(x, y);
@@ -659,6 +750,8 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
     }
 
     case Polygon: {
+        pen.setWidth(5);
+        painter.setPen(pen);
         if (!m_points.isEmpty()) {
             QVector<QPoint> polygonPoints = m_points.toVector();
             if (isTemporary) {
@@ -672,19 +765,48 @@ void ToolCtrl::draw(int x, int y, bool isTemporary)
         break;
     }
 
-    case LineDraw:
-        pen.setWidth(3);
+    case LineDraw: {
+        pen.setWidth(m_lineSize);
         painter.setPen(pen);
         painter.drawLine(m_lastPoint, QPoint(x, y));
         break;
+    }
 
     case PolylineDraw: {
+        pen.setWidth(m_PolyLineSize);
+        painter.setPen(pen);
         if (!m_points.isEmpty()) {
             for (int i = 0; i < m_points.size() - 1; ++i) {
                 painter.drawLine(m_points[i], m_points[i + 1]);
             }
-            //painter.drawLine(m_points.last(), QPoint(x, y));
         }
+        break;
+    }
+
+    case Eraser: {
+        pen.setWidth(m_eraserSize);
+        QColor eraserColor = QColor(Qt::transparent);
+        eraserColor.setAlpha(m_eraserOpacity);
+        QBrush eraserBrush(eraserColor);
+        pen.setColor(eraserColor);
+        painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        painter.setPen(pen);
+        painter.setBrush(eraserBrush);
+        painter.drawEllipse(QPoint(x, y), m_brushSize / 2, m_brushSize / 2);
+
+        break;
+    }
+
+    case ColoredEraser: {
+        pen.setWidth(m_eraserSize);
+        QColor eraserColor = m_brushColor;
+        eraserColor.setAlpha(m_eraserOpacity);
+        QBrush eraserBrush(eraserColor);
+        pen.setColor(eraserColor);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.setPen(pen);
+        painter.setBrush(eraserBrush);
+        painter.drawEllipse(QPoint(x, y), m_brushSize / 2, m_brushSize / 2);
         break;
     }
     }
@@ -701,7 +823,7 @@ void ToolCtrl::startDrawing(int x, int y)
     m_drawing = true;
     m_lastPoint = QPoint(x, y);
 
-    if (m_currentShape == FreeDraw | PenDraw | SprayDraw) {
+    if (m_currentShape == FreeDraw || PenDraw || SprayDraw || Eraser || ColoredEraser) {
         continueDrawing(x, y, false);
     } else if (m_currentShape == PolylineDraw || Polygon) {
         m_points.append(m_lastPoint);
@@ -796,6 +918,18 @@ void ToolCtrl::setShapeToPolylineDraw()
 void ToolCtrl::setShapeToCurveDraw()
 {
     setCurrentShape(CurveDraw);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToEraser()
+{
+    setCurrentShape(Eraser);
+    emit currentShapeChanged();
+}
+
+void ToolCtrl::setShapeToColoredEraser()
+{
+    setCurrentShape(ColoredEraser);
     emit currentShapeChanged();
 }
 

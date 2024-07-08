@@ -250,6 +250,9 @@ Item
                         }else if(ToolCtrl.selectedTool === "线条")
                         {
                             ToolCtrl.setShapeToLineDraw()
+                        }else if(ToolCtrl.selectedTool === "橡皮擦")
+                        {
+                            ToolCtrl.setShapeToEraser()
                         }
                     }
                 }

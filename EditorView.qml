@@ -111,18 +111,18 @@ Image
         target: editor
         function onImageChanged()
         {
-            modes++
-            images.itemAt(modes - 1).image = oldImage
-            oldImage = newImage
-            newImage = editor.copyImage()
-            if(!redoOrUndo)
-            {
-                if(oldImage)
-                {
-                    saveState(ActiveCtrl.ModifiedLayer, {oldImage: oldImage, newImage: newImage})
-                }
-                modified()
-            }
+            // modes++
+            // images.itemAt(modes - 1).image = oldImage
+            // oldImage = newImage
+            // newImage = editor.copyImage()
+            // if(!redoOrUndo)
+            // {
+            //     if(oldImage)
+            //     {
+            //         saveState(ActiveCtrl.ModifiedLayer, {oldImage: oldImage, newImage: newImage})
+            //     }
+            //     modified()
+            // }
 
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
@@ -328,6 +328,39 @@ Image
             onTapped: {
                 console.log("以完成一次线条工具")
                 ToolCtrl.finishDrawing()
+            }
+        }
+
+        TapHandler{
+            id:eraserhandler
+            target: imageView
+            enabled:ToolCtrl.selectedTool === "橡皮擦"
+            gesturePolicy: TapHandler.ReleaseWithinBounds
+            onPressedChanged: {
+                if(pressed){
+                    requestAddBrushLayer()
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.startDrawing(x,y)
+                }else{
+                    x=point.position.x
+                    y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    console.log("以完成一次橡皮擦工具")
+                    ToolCtrl.stopDrawing(x,y)
+                }
+            }
+            onPointChanged: {
+                if(pressed){
+                    var x=point.position.x
+                    var y=point.position.y
+                    x *= sourceSize.width / imageViewDragArea.width
+                    y *= sourceSize.height / imageViewDragArea.height
+                    ToolCtrl.continueDrawing(x,y,false)
+                }
             }
         }
 

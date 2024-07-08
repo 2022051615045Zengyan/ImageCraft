@@ -18,9 +18,11 @@ Item {
         Label{
                    text: "取样记录:"
                }
-        ComboBox {           
+        ComboBox {
             id: _straw_SampleRecords
             Layout.preferredWidth:parent.height*3
+            model: [" "]
+
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
             onCurrentIndexChanged: {
@@ -28,14 +30,13 @@ Item {
                       ToolCtrl.showcolorSet(model[index]);
                   }
         }
+
         Component.onCompleted: {
             ToolCtrl.straw_SampleRecords=_straw_SampleRecords
         }
 
-
         Item {
             Layout.fillWidth: true  // 添加一个空的Item填充剩余空间
-
             Layout.preferredWidth:1000
         }
 

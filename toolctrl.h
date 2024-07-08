@@ -89,12 +89,20 @@ class ToolCtrl : public QObject
 
     Q_PROPERTY(bool fillRectangle READ fillRectangle WRITE setFillRectangle NOTIFY
                    fillRectangleChanged FINAL)
+<<<<<<< HEAD
     Q_PROPERTY(QObject *straw_SampleRecords READ straw_SampleRecords WRITE setStraw_SampleRecords
                    NOTIFY straw_SampleRecordsChanged FINAL)
     Q_PROPERTY(QStringList colorList READ colorList WRITE setColorList NOTIFY colorListChanged FINAL)
     Q_PROPERTY(
         std::set<QString> colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged FINAL)
 
+    Q_PROPERTY(int eraserSize READ eraserSize WRITE setEraserSize NOTIFY eraserSizeChanged FINAL)
+
+    Q_PROPERTY(int eraserOpacity READ eraserOpacity WRITE setEraserOpacity NOTIFY
+                   eraserOpacityChanged FINAL)
+    Q_PROPERTY(int lineSize READ lineSize WRITE setLineSize NOTIFY lineSizeChanged FINAL)
+    Q_PROPERTY(
+        int PolyLineSize READ PolyLineSize WRITE setPolyLineSize NOTIFY PolyLineSizeChanged FINAL)
 public:
     enum Shape {
         FreeDraw,
@@ -106,7 +114,9 @@ public:
         Polygon,
         LineDraw,
         PolylineDraw,
-        CurveDraw
+        CurveDraw,
+        Eraser,
+        ColoredEraser
     };
     Q_ENUM(Shape)
 
@@ -140,10 +150,13 @@ public:
     Q_INVOKABLE void setShapeToLineDraw();
     Q_INVOKABLE void setShapeToPolylineDraw();
     Q_INVOKABLE void setShapeToCurveDraw();
+    Q_INVOKABLE void setShapeToEraser();
+    Q_INVOKABLE void setShapeToColoredEraser();
 
     Q_INVOKABLE void setCurrentBrushSize(int newBrushSize);
     Q_INVOKABLE void setCapStyle(int index);
     Q_INVOKABLE void setSpraySize(int newSpraySize);
+    Q_INVOKABLE void setEraserSize(int newEraserSize);
 
     Q_INVOKABLE void setTextFamily(const QString &family);
     Q_INVOKABLE void setWordSize(int size);
@@ -156,6 +169,10 @@ public:
     Q_INVOKABLE QColor initalColor();
     Q_INVOKABLE QUrl initalSource();
     Q_INVOKABLE int initalSize();
+    Q_INVOKABLE void setFillRectangle(bool newFillRectangle);
+    Q_INVOKABLE void setEraserOpacity(int newEraserOpacity);
+    Q_INVOKABLE void setLineSize(int newLineSize);
+    Q_INVOKABLE void setPolyLineSize(int newPolyLineSize);
 
     QObject *showcolor() const;
     void setShowcolor(QObject *newShowcolor);
@@ -220,7 +237,14 @@ public:
     void setWordItem(QObject *newWordItem);
 
     bool fillRectangle() const;
-    Q_INVOKABLE void setFillRectangle(bool newFillRectangle);
+
+    int eraserSize() const;
+
+    int eraserOpacity() const;
+
+    int lineSize() const;
+
+    int PolyLineSize() const;
 
     QObject *straw_SampleRecords() const;
     void setStraw_SampleRecords(QObject *newStraw_SampleRecords);
@@ -285,6 +309,14 @@ signals:
 
     void colorSetChanged();
 
+    void eraserSizeChanged();
+
+    void eraserOpacityChanged();
+
+    void lineSizeChanged();
+
+    void PolyLineSizeChanged();
+
 private slots:
     void on_currentEditorViewChanged();
 
@@ -319,8 +351,12 @@ private:
     int m_sprayRadius;
     int m_sprayDensity;
     int m_spraySize;
+    int m_eraserSize;
+    int m_eraserOpacity;
+    int m_lineSize;
+    int m_PolyLineSize;
     QVector<QPoint> m_points; //记录折线和曲线的点
-    bool m_fillRectangle = false;
+    bool m_fillRectangle = true;
 
     bool m_drawing;
     Editor *m_canvasEditor = nullptr;

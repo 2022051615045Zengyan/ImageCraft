@@ -45,7 +45,10 @@
 #include <QScreen>
 #include <QStandardPaths>
 #include <QtTypes>
+#include <opencv4/opencv2/core.hpp>
+#include <opencv4/opencv2/imgproc.hpp>
 #include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/xphoto.hpp>
 
 ActiveCtrl::ActiveCtrl(QObject *parent)
     : QObject{parent}
@@ -560,6 +563,7 @@ void ActiveCtrl::setCurrentEditor(Editor *newCurrentEditor)
     if (m_currentEditor == newCurrentEditor)
         return;
     m_currentEditor = newCurrentEditor;
+    m_originalImage = QImage();
     emit currentEditorChanged();
 }
 
@@ -1164,4 +1168,651 @@ QImage ActiveCtrl::matToQImage(const cv::Mat &mat)
         }
     }
     return image;
+}
+QImage ActiveCtrl::CvMatToQImage(const cv::Mat &mat)
+{
+    cv::Mat matRGBA;
+    cv::cvtColor(mat, matRGBA, cv::COLOR_BGR2BGRA);
+    return QImage(matRGBA.data, matRGBA.cols, matRGBA.rows, matRGBA.step, QImage::Format_RGBA8888);
+}
+
+ActiveCtrl::Filter ActiveCtrl::getCurrentFilter() const
+{
+    return m_currentFilter;
+}
+
+void ActiveCtrl::setCurrentFilter(ActiveCtrl::Filter newCurrentFilter)
+{
+    if (m_currentFilter == newCurrentFilter)
+        return;
+    m_currentFilter = newCurrentFilter;
+    emit currentFilterChanged();
+}
+
+//浮雕效果
+void ActiveCtrl::applyEmbossFilter()
+{
+    m_currentFilter = EmbossFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat gray, dst;
+        cv::cvtColor(srcMat, gray, cv::COLOR_BGR2GRAY);
+        //定义浮雕效果的卷积核
+        cv::Mat kernel = (cv::Mat_<float>(3, 3) << -2, -1, 0, -1, 1, 1, 0, 1, 2);
+        //对灰度图像应用卷积核
+        cv::filter2D(gray, dst, CV_32F, kernel);
+        //结果归一化到0-255范围
+        cv::normalize(dst, dst, 0, 255, cv::NORM_MINMAX, CV_8U);
+        cv::cvtColor(dst, dst, cv::COLOR_GRAY2BGR);
+
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyOilPaintFilter()
+{
+    m_currentFilter = OilPaintFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dstMat;
+        cv::xphoto::oilPainting(srcMat,
+                                dstMat,
+                                5,
+                                2.5); //邻域大小(越大越模糊），动态比例应该是色彩的交叠程度）
+        // 调整颜色，更贴合原图颜色
+        cv::Mat correctedMat, srcLab;
+        cv::cvtColor(dstMat, correctedMat, cv::COLOR_BGR2Lab);
+        cv::cvtColor(srcMat, srcLab, cv::COLOR_BGR2Lab);
+
+        std::vector<cv::Mat> channels;
+        cv::split(correctedMat, channels);
+        std::vector<cv::Mat> srcChannels;
+        cv::split(srcLab, srcChannels);
+
+        // 使用原图的 a 和 b 通道替换油画滤镜结果的 a 和 b 通道
+        channels[1] = srcChannels[1];
+        channels[2] = srcChannels[2];
+
+        cv::merge(channels, correctedMat);
+        cv::cvtColor(correctedMat, dstMat, cv::COLOR_Lab2BGR);
+
+        QImage resultImage = CvMatToQImage(dstMat);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyOverexposureFilter()
+{
+    m_currentFilter = OilPaintFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dstMat;
+        srcMat.convertTo(dstMat, -1, 1.5, 50);
+        QImage resultImage = CvMatToQImage(dstMat);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyDiffusionFilter()
+{
+    m_currentFilter = DiffusionFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dstMat = srcMat.clone();
+        int radius = 5; // 扩散半径，可调节大小以改变扩散效果
+        // 确保随机数生成器的种子值唯一
+        std::srand(std::time(nullptr));
+        // 遍历每个像素并随机选择一个相邻的像素值
+        for (int y = 0; y < srcMat.rows; y++) {
+            for (int x = 0; x < srcMat.cols; x++) {
+                int randX = x + (std::rand() % (2 * radius + 1)) - radius;
+                int randY = y + (std::rand() % (2 * radius + 1)) - radius;
+                // 确保随机坐标在图像边界内
+                randX = std::min(std::max(randX, 0), srcMat.cols - 1);
+                randY = std::min(std::max(randY, 0), srcMat.rows - 1);
+                dstMat.at<cv::Vec3b>(y, x) = srcMat.at<cv::Vec3b>(randY, randX);
+            }
+        }
+        QImage resultImage = CvMatToQImage(dstMat);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyGaussianBlurFilter()
+{
+    m_currentFilter = GaussianBlurFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst;
+
+        // 应用高斯模糊
+        int kernelSize = 15; // 可以调整这个值来改变模糊的强度
+        double sigmaX = 0;   // 计算高斯核的标准差。如果为0它会自动计算
+        cv::GaussianBlur(srcMat, dst, cv::Size(kernelSize, kernelSize), sigmaX);
+
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyMotionBlurFilter()
+{
+    m_currentFilter = MotionBlurFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst;
+
+        // 动感模糊卷积核
+        int kernelSize = 15; // 可以调整这个值来改变模糊的强度
+        cv::Mat kernel = cv::Mat::zeros(kernelSize, kernelSize, CV_32F);
+        for (int i = 0; i < kernelSize; ++i) {
+            kernel.at<float>(i, i) = 1.0 / kernelSize;
+        }
+
+        // 应用动感模糊卷积核
+        cv::filter2D(srcMat, dst, -1, kernel);
+
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyEnhancedBlurFilter()
+{
+    m_currentFilter = EnhancedBlurFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    cv::Mat dst;
+    QImage resultImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        // 多次更强烈的高斯模糊来模拟进一步模糊
+        for (int i = 0; i < 3; i++) {
+            cv::GaussianBlur(srcMat, dst, cv::Size(31, 31), 0);
+        }
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    resultImage = CvMatToQImage(dst);
+    m_currentEditor->setImage(resultImage);
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyLensBlurFilter()
+{
+    m_currentFilter = LensBlurFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone(); // Clone srcMat to dst
+        // 中心点和模糊强度
+        cv::Point center(srcMat.cols / 2, srcMat.rows / 2);
+        int strength = 15; // 模糊强度，可以根据需要调整
+        // 创建径向模糊效果
+        for (int i = 0; i < strength; ++i) {
+            double alpha = (double) i / strength;
+            cv::addWeighted(srcMat, alpha, dst, 1 - alpha, 0, dst); // Update dst in-place
+        }
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+        emit m_currentEditor->imageStatusChanged();
+    }
+}
+
+void ActiveCtrl::applyWaveFilter()
+{
+    m_currentFilter = WaveFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst = srcMat.clone();
+        // 波浪效果参数
+        int waveLength = 20; // 波长
+        int amplitude = 15;  // 振幅
+        // 应用波浪效果
+        for (int y = 0; y < srcMat.rows; ++y) {
+            for (int x = 0; x < srcMat.cols; ++x) {
+                int newX = x + amplitude * sin(2 * CV_PI * y / waveLength);
+                int newY = y + amplitude * sin(2 * CV_PI * x / waveLength);
+                if (newX >= 0 && newX < srcMat.cols && newY >= 0 && newY < srcMat.rows) {
+                    dst.at<cv::Vec3b>(newY, newX) = srcMat.at<cv::Vec3b>(y, x);
+                }
+            }
+        }
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyRippleFilter()
+{
+    m_currentFilter = RippleFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst = srcMat.clone();
+        // 波纹效果参数
+        double amplitude = 20.0; // 振幅
+        double frequency = 20.0; // 频率
+        // 应用水平波纹效果
+        for (int y = 0; y < srcMat.rows; ++y) {
+            for (int x = 0; x < srcMat.cols; ++x) {
+                int newX = x + amplitude * sin(2 * CV_PI * y / frequency);
+                int newY = y;
+
+                if (newX >= 0 && newX < srcMat.cols) {
+                    dst.at<cv::Vec3b>(newY, newX) = srcMat.at<cv::Vec3b>(y, x);
+                }
+            }
+        }
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applySqueezeFilter()
+{
+    m_currentFilter = SqueezeFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst = srcMat.clone();
+        double factor = 0.2; // 挤压因子，调整挤压的强度
+        int centerX = srcMat.cols / 2;
+        int squeezeWidth = srcMat.cols * factor;
+        for (int y = 0; y < srcMat.rows; ++y) {
+            for (int x = 0; x < srcMat.cols; ++x) {
+                int newX;
+                if (x < centerX) {
+                    newX = x + static_cast<int>(factor * x);
+                } else {
+                    newX = x + static_cast<int>(factor * (x - srcMat.cols));
+                }
+                if (newX >= 0 && newX < srcMat.cols) {
+                    dst.at<cv::Vec3b>(y, newX) = srcMat.at<cv::Vec3b>(y, x);
+                }
+            }
+        }
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyShearFilter()
+{
+    m_currentFilter = ShearFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+        // 定义仿射变换矩阵
+        cv::Mat M = cv::Mat::eye(2, 3, CV_32F);
+        // 设置切变方向和切变因子
+        int shearDirection = 0;   // 选择沿x轴正向切变
+        float shearFactor = 0.2f; // 设置切变因子
+        // 根据切变方向设置仿射变换参数
+        switch (shearDirection) {
+        case 0: // 沿x轴正向切变
+            M.at<float>(0, 1) = shearFactor;
+            break;
+        case 1: // 沿x轴负向切变
+            M.at<float>(0, 1) = -shearFactor;
+            break;
+        case 2: // 沿y轴正向切变
+            M.at<float>(1, 0) = shearFactor;
+            break;
+        case 3: // 沿y轴负向切变
+            M.at<float>(1, 0) = -shearFactor;
+            break;
+        }
+        // 应用仿射变换
+        cv::warpAffine(srcMat, dst, M, srcMat.size());
+
+        // 转换为QImage并设置给编辑器
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyWaterRippleFilter()
+{
+    m_currentFilter = WaterRippleFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+        // 定义水波参数
+        float amplitude = 10.0f; // 振幅
+        float frequency = 0.1f;  // 频率
+        float phaseShift = 0.0f; // 相位偏移
+        // 创建和初始化输出图像
+        dst = cv::Mat::zeros(srcMat.size(), srcMat.type());
+        // 循环遍历图像每个像素，模拟波动效果
+        for (int i = 0; i < dst.rows; ++i) {
+            for (int j = 0; j < dst.cols; ++j) {
+                // 计算波浪效果的偏移量
+                float offset_x = amplitude * sin(2 * CV_PI * i * frequency + phaseShift);
+                float offset_y = amplitude * cos(2 * CV_PI * j * frequency + phaseShift);
+                // 计算波浪后的像素位置
+                int new_i = i + offset_x;
+                int new_j = j + offset_y;
+                if (new_i >= 0 && new_i < srcMat.rows && new_j >= 0 && new_j < srcMat.cols) {
+                    dst.at<cv::Vec3b>(i, j) = srcMat.at<cv::Vec3b>(new_i, new_j);
+                }
+            }
+        }
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyUSMSharpeningFilter()
+{
+    m_currentFilter = USMSharpeningFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+
+        // 先高斯模糊
+        cv::Mat blurred;
+        double sigma = 1.5; // Adjust sigma value as needed
+        cv::GaussianBlur(srcMat, blurred, cv::Size(0, 0), sigma);
+        // 计算细节图像
+        cv::Mat detailImage = srcMat - blurred;
+        // 把细节图像乘增强因子，得到锐化后的图片
+        double k = 1.5;
+        cv::Mat sharpened = srcMat + k * detailImage;
+        cv::normalize(sharpened, sharpened, 0, 255, cv::NORM_MINMAX);
+        resultImage = CvMatToQImage(sharpened);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyEdgeSharpeningFilter()
+{
+    m_currentFilter = EdgeSharpeningFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        //转换为灰度图片
+        cv::Mat gray;
+        cv::cvtColor(srcMat, gray, cv::COLOR_BGR2GRAY);
+        //应用拉普拉斯算子检测图片边缘
+        cv::Mat edges;
+        cv::Laplacian(gray, edges, CV_16S, 3);
+        cv::convertScaleAbs(edges, edges);
+        // 把边缘转换为BGR格式
+        cv::Mat edgesBGR;
+        cv::cvtColor(edges, edgesBGR, cv::COLOR_GRAY2BGR);
+        // 添加边缘到原图
+        cv::Mat sharpened = srcMat + edgesBGR;
+        resultImage = CvMatToQImage(sharpened);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyStabilizationFilter()
+{
+    m_currentFilter = StabilizationFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        //用平滑的高斯模糊减少噪点
+        cv::GaussianBlur(srcMat, dst, cv::Size(5, 5), 0);
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyPixelationFilter()
+{
+    m_currentFilter = PixelationFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+        int blockSize = 5; // 彩块大小，根据需要调整
+        for (int y = 0; y < srcMat.rows; y += blockSize) {
+            for (int x = 0; x < srcMat.cols; x += blockSize) {
+                // 计算当前块的平均颜色
+                cv::Rect rect(x, y, blockSize, blockSize);
+                rect = rect & cv::Rect(0, 0, srcMat.cols, srcMat.rows); // 确保不越界
+                cv::Mat block = srcMat(rect);
+                cv::Scalar avgColor = cv::mean(block);
+                // 将平均颜色填充到当前块中
+                dst(rect).setTo(avgColor);
+            }
+        }
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyCrystallizeFilter()
+{
+    m_currentFilter = CrystallizeFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+
+        int cellSize = 20; // 晶格大小，可以根据需要调整
+        for (int y = 0; y < srcMat.rows; y += cellSize) {
+            for (int x = 0; x < srcMat.cols; x += cellSize) {
+                // 计算当前晶格的中心点
+                int centerX = x + cellSize / 2;
+                int centerY = y + cellSize / 2;
+                // 确保中心点在图像边界内
+                if (centerX >= srcMat.cols)
+                    centerX = srcMat.cols - 1;
+                if (centerY >= srcMat.rows)
+                    centerY = srcMat.rows - 1;
+                // 获取中心点的颜色
+                cv::Vec3b centerColor = srcMat.at<cv::Vec3b>(centerY, centerX);
+                // 填充当前晶格
+                for (int i = y; i < y + cellSize && i < srcMat.rows; ++i) {
+                    for (int j = x; j < x + cellSize && j < srcMat.cols; ++j) {
+                        dst.at<cv::Vec3b>(i, j) = centerColor;
+                    }
+                }
+            }
+        }
+        resultImage = CvMatToQImage(dst);
+        currentEditor()->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyMosaicFilter()
+{
+    m_currentFilter = MosaicFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dstMat = srcMat.clone();
+        int mosaicSize = 10; // 拼接块的大小，可调整
+        // 遍历每个块
+        for (int y = 0; y < srcMat.rows; y += mosaicSize) {
+            for (int x = 0; x < srcMat.cols; x += mosaicSize) {
+                // 确定当前块的宽度和高度（处理边缘情况）
+                int blockWidth = std::min(mosaicSize, srcMat.cols - x);
+                int blockHeight = std::min(mosaicSize, srcMat.rows - y);
+                // 计算块的平均颜色
+                cv::Rect blockRect(x, y, blockWidth, blockHeight);
+                cv::Mat block = srcMat(blockRect);
+                cv::Scalar blockMeanColor = cv::mean(block);
+                // 将当前块设置为平均颜色
+                dstMat(blockRect).setTo(blockMeanColor);
+            }
+        }
+        QImage resultImage = CvMatToQImage(dstMat);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::resetToOriginalImage()
+{
+    if (!m_originalImage.isNull() && m_currentEditor) {
+        m_currentEditor->setImage(m_originalImage);
+        emit m_currentEditor->imageStatusChanged();
+    }
+}
+
+void ActiveCtrl::resetToPreviousFilter()
+{
+    switch (m_currentFilter) {
+    case EmbossFilter:
+        applyEmbossFilter();
+        break;
+    case OilPaintFilter:
+        applyOilPaintFilter();
+        break;
+    case OverexposureFilter:
+        applyOverexposureFilter();
+        break;
+    case DiffusionFilter:
+        applyDiffusionFilter();
+        break;
+    case GaussianBlurFilter:
+        applyGaussianBlurFilter();
+        break;
+    case MotionBlurFilter:
+        applyMotionBlurFilter();
+        break;
+    case EnhancedBlurFilter:
+        applyEnhancedBlurFilter();
+        break;
+    case LensBlurFilter:
+        applyLensBlurFilter();
+        break;
+    case WaveFilter:
+        applyWaveFilter();
+        break;
+    case RippleFilter:
+        applyRippleFilter();
+        break;
+    case WaterRippleFilter:
+        applyWaterRippleFilter();
+        break;
+    case SqueezeFilter:
+        applySqueezeFilter();
+        break;
+    case ShearFilter:
+        applyShearFilter();
+        break;
+    case USMSharpeningFilter:
+        applyUSMSharpeningFilter();
+        break;
+    case StabilizationFilter:
+        applyStabilizationFilter();
+        break;
+    case EdgeSharpeningFilter:
+        applyEdgeSharpeningFilter();
+        break;
+    case PixelationFilter:
+        applyPixelationFilter();
+        break;
+    case MosaicFilter:
+        applyMosaicFilter();
+        break;
+    }
+    emit m_currentEditor->imageStatusChanged();
 }

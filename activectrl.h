@@ -20,7 +20,10 @@
 #include <QSettings>
 #include <QStack>
 #include "editor.h"
+
 #include <opencv2/opencv.hpp>
+
+#include <opencv4/opencv2/core/mat.hpp>
 
 namespace cv {
 class Mat;
@@ -70,8 +73,12 @@ class ActiveCtrl : public QObject
         int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
     Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
                    lcenterHeightChanged FINAL)
+
     Q_PROPERTY(QObject* footer READ footer WRITE setFooter NOTIFY footerChanged FINAL)
     Q_PROPERTY(QObject* toolBar READ toolBar WRITE setToolBar NOTIFY toolBarChanged FINAL)
+
+    Q_PROPERTY(Filter currentFilter READ getCurrentFilter WRITE setCurrentFilter NOTIFY
+                   currentFilterChanged FINAL)
 
 public:
     //图层修改类型
@@ -85,8 +92,33 @@ public:
         FlipXLayer,
         FlipYLayer,
         SpinLayer,
+
     };
+
+    enum Filter {
+        EmbossFilter,
+        OilPaintFilter,
+        OverexposureFilter,
+        DiffusionFilter,
+        GaussianBlurFilter,
+        MotionBlurFilter,
+        EnhancedBlurFilter,
+        LensBlurFilter,
+        WaveFilter,
+        RippleFilter,
+        WaterRippleFilter,
+        SqueezeFilter,
+        ShearFilter,
+        USMSharpeningFilter,
+        StabilizationFilter,
+        EdgeSharpeningFilter,
+        PixelationFilter,
+        CrystallizeFilter,
+        MosaicFilter
+    };
+
     Q_ENUM(OperationType)
+    Q_ENUM(Filter)
 
     explicit ActiveCtrl(QObject* parent = nullptr);
 
@@ -113,6 +145,29 @@ public:
 
     Q_INVOKABLE void popRightMenu(QVariant x, QVariant y);
     Q_INVOKABLE void deleteLayer();
+
+    Q_INVOKABLE void applyEmbossFilter();
+    Q_INVOKABLE void applyOilPaintFilter();
+    Q_INVOKABLE void applyOverexposureFilter();
+    Q_INVOKABLE void applyDiffusionFilter();
+    Q_INVOKABLE void applyMosaicFilter();
+    Q_INVOKABLE void applyGaussianBlurFilter();
+    Q_INVOKABLE void applyMotionBlurFilter();
+    Q_INVOKABLE void applyEnhancedBlurFilter();
+    Q_INVOKABLE void applyLensBlurFilter();
+    Q_INVOKABLE void applyWaveFilter();
+    Q_INVOKABLE void applyRippleFilter();
+    Q_INVOKABLE void applySqueezeFilter();
+    Q_INVOKABLE void applyShearFilter();
+    Q_INVOKABLE void applyWaterRippleFilter();
+    Q_INVOKABLE void applyUSMSharpeningFilter();
+    Q_INVOKABLE void applyEdgeSharpeningFilter();
+    Q_INVOKABLE void applyStabilizationFilter();
+    Q_INVOKABLE void applyPixelationFilter();
+    Q_INVOKABLE void applyCrystallizeFilter();
+
+    Q_INVOKABLE void resetToOriginalImage();
+    Q_INVOKABLE void resetToPreviousFilter();
 
     //撤销操作
     Q_INVOKABLE void undo();
@@ -208,6 +263,8 @@ public:
     QObject* toolBar() const;
     void setToolBar(QObject* newToolBar);
 
+    Filter getCurrentFilter() const;
+
 signals:
 
     void dialogBoxChanged();
@@ -269,6 +326,8 @@ signals:
 
     void toolBarChanged();
 
+    void currentFilterChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -314,5 +373,11 @@ private:
     void loadRecentFiles();
     void saveRecentFiles();
     cv::Mat QImageToCvMat(const QImage& image);
+
     QImage matToQImage(const cv::Mat& mat);
+
+    QImage CvMatToQImage(const cv::Mat& mat);
+
+    QImage m_originalImage;
+    Filter m_currentFilter;
 };
