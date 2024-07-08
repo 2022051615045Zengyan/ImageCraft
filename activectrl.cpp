@@ -353,6 +353,32 @@ void ActiveCtrl::exitSlot()
     QCoreApplication::exit();
 }
 
+int ActiveCtrl::lcenterHeight() const
+{
+    return m_lcenterHeight;
+}
+
+void ActiveCtrl::setLcenterHeight(int newLcenterHeight)
+{
+    if (m_lcenterHeight == newLcenterHeight)
+        return;
+    m_lcenterHeight = newLcenterHeight;
+    emit lcenterHeightChanged();
+}
+
+int ActiveCtrl::lcenterWidth() const
+{
+    return m_lcenterWidth;
+}
+
+void ActiveCtrl::setLcenterWidth(int newLcenterWidth)
+{
+    if (m_lcenterWidth == newLcenterWidth)
+        return;
+    m_lcenterWidth = newLcenterWidth;
+    emit lcenterWidthChanged();
+}
+
 QObject *ActiveCtrl::rightMenu() const
 {
     return m_rightMenu;

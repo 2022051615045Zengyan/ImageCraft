@@ -68,5 +68,21 @@ Item
                 ActiveCtrl.savePath = filePath
             });
         }
+
+        onHeightChanged:
+        {
+            ActiveCtrl.lcenterHeight = height
+        }
+
+        onWidthChanged:
+        {
+            ActiveCtrl.lcenterWidth = width
+        }
+
+        Component.onCompleted:
+        {
+            ActiveCtrl.lcenterWidth = width
+            ActiveCtrl.lcenterHeight = height
+        }
     }
 }

@@ -85,7 +85,8 @@ qt_add_qml_module(
   toolctrl.cpp
   toolctrl.h
   SOURCES
-  QML_FILES Layer.qml)
+  QML_FILES Layer.qml
+  QML_FILES SelectBox.qml)
 
 target_compile_features(appImageCraft PRIVATE cxx_std_20)
 

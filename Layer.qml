@@ -28,6 +28,10 @@
  *
  * Modified by RenTianxiang on 2024-7-6
  *      Complete the undo and redo of modified image and remove layer
+ *
+ * modified by RenTianxiang on 2024-7-7
+ *      added select fuction
+ *      Be able to enlarge the display box freely
  */
 
 import QtQuick
@@ -67,6 +71,8 @@ Item
         clip: true
         color: "white"
         anchors.centerIn: parent
+        property double heightRatio: height / ActiveCtrl.lcenterHeight
+        property double widthRatio: width / ActiveCtrl.lcenterWidth
 
         Rectangle
         {
@@ -293,22 +299,22 @@ Item
                 if(index < layers.count)
                 {
                     var map = { pixUrl: layers.itemAt(index).thepixUrl,
-                                index: index,
-                                key: layers.itemAt(index).key,
-                                redoStack: layers.itemAt(index).redoStack,
-                                undoStack: layers.itemAt(index).undoStack,
-                                oldX: layers.itemAt(index).oldX,
-                                oldY: layers.itemAt(index).oldY,
-                                oldScale: layers.itemAt(index).oldScale,
-                                newScale: layers.itemAt(index).newScale,
-                                currentAngle: layers.itemAt(index).currentAngle,
-                                oldAngle: layers.itemAt(index).oldAngle,
-                                newAngle: layers.itemAt(index).newAngle,
-                                oldImage: layers.itemAt(index).oldImage,
-                                newImage: layers.itemAt(index).newImage,
-                                yScale: layers.itemAt(index).yScale,
-                                xScale: layers.itemAt(index).xScale,
-                                visible: layers.itemAt(index).visible}
+                        index: index,
+                        key: layers.itemAt(index).key,
+                        redoStack: layers.itemAt(index).redoStack,
+                        undoStack: layers.itemAt(index).undoStack,
+                        oldX: layers.itemAt(index).oldX,
+                        oldY: layers.itemAt(index).oldY,
+                        oldScale: layers.itemAt(index).oldScale,
+                        newScale: layers.itemAt(index).newScale,
+                        currentAngle: layers.itemAt(index).currentAngle,
+                        oldAngle: layers.itemAt(index).oldAngle,
+                        newAngle: layers.itemAt(index).newAngle,
+                        oldImage: layers.itemAt(index).oldImage,
+                        newImage: layers.itemAt(index).newImage,
+                        yScale: layers.itemAt(index).yScale,
+                        xScale: layers.itemAt(index).xScale,
+                        visible: layers.itemAt(index).visible}
                     if(isundo)
                     {
                         console.log("111:")
@@ -463,6 +469,300 @@ Item
                     layers.itemAt(index).redoOrUndo = false
                 });
             }
+        }
+
+        onXChanged:
+        {
+            topBorder.x = display_rect.x
+            bottomBorder.x = display_rect.x
+            leftBorder.x = display_rect.x - 5
+            rightBorder.x = display_rect.x + display_rect.width
+            topLeftBorder.x = display_rect.x - 5
+            topRightBorder.x = display_rect.x + display_rect.width
+            bottomLeftBorder.x = display_rect.x - 5
+            bottomRightBorder.x = display_rect.x + display_rect.width
+        }
+
+        onYChanged:
+        {
+            topBorder.y = display_rect.y - 5
+            bottomBorder.y = display_rect.y + display_rect.height
+            leftBorder.y = display_rect.y
+            rightBorder.y = display_rect.y
+            topLeftBorder.y = display_rect.y - 5
+            topRightBorder.y = display_rect.y - 5
+            bottomLeftBorder.y = display_rect.y + display_rect.height
+            bottomRightBorder.y = display_rect.y + display_rect.height
+        }
+
+        onWidthChanged:
+        {
+            layer.width = width
+            topBorder.x = display_rect.x
+            bottomBorder.x = display_rect.x
+            leftBorder.x = display_rect.x - 5
+            rightBorder.x = display_rect.x + display_rect.width
+            topLeftBorder.x = display_rect.x - 5
+            topRightBorder.x = display_rect.x + display_rect.width
+            bottomLeftBorder.x = display_rect.x - 5
+            bottomRightBorder.x = display_rect.x + display_rect.width
+            topBorder.y = display_rect.y - 5
+            bottomBorder.y = display_rect.y + display_rect.height
+            leftBorder.y = display_rect.y
+            rightBorder.y = display_rect.y
+            topLeftBorder.y = display_rect.y - 5
+            topRightBorder.y = display_rect.y - 5
+            bottomLeftBorder.y = display_rect.y + display_rect.height
+            bottomRightBorder.y = display_rect.y + display_rect.height
+            widthRatio =  width / ActiveCtrl.lcenterWidth
+        }
+
+        onHeightChanged:
+        {
+            layer.height = height
+            topBorder.x = display_rect.x
+            bottomBorder.x = display_rect.x
+            leftBorder.x = display_rect.x - 5
+            rightBorder.x = display_rect.x + display_rect.width
+            topLeftBorder.x = display_rect.x - 5
+            topRightBorder.x = display_rect.x + display_rect.width
+            bottomLeftBorder.x = display_rect.x - 5
+            bottomRightBorder.x = display_rect.x + display_rect.width
+            topBorder.y = display_rect.y - 5
+            bottomBorder.y = display_rect.y + display_rect.height
+            leftBorder.y = display_rect.y
+            rightBorder.y = display_rect.y
+            topLeftBorder.y = display_rect.y - 5
+            topRightBorder.y = display_rect.y - 5
+            bottomLeftBorder.y = display_rect.y + display_rect.height
+            bottomRightBorder.y = display_rect.y + display_rect.height
+            heightRatio = height / ActiveCtrl.lcenterHeight
+        }
+
+        Connections
+        {
+            target: ActiveCtrl
+
+            function onLcenterHeightChanged()
+            {
+                display_rect.height = ActiveCtrl.lcenterHeight * display_rect.heightRatio
+            }
+        }
+        Connections
+        {
+            target: ActiveCtrl
+
+            function onLcenterWidthChanged()
+            {
+                display_rect.width = ActiveCtrl.lcenterWidth * display_rect.widthRatio
+            }
+        }
+    }
+
+    Rectangle
+    {
+        id: topBorder
+        width: display_rect.width
+        height: 5
+        x: display_rect.x
+        y: display_rect.y - 5
+        color: "#3daee9"
+        property int mouseOffsetY: 0
+
+        HoverHandler
+        {
+            cursorShape: Qt.SizeVerCursor
+        }
+        DragHandler
+        {
+            xAxis.enabled: false
+            yAxis.minimum: 0
+            yAxis.maximum: display_rect.y + display_rect.height / 2
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (display_rect.y - 5 - y) * 2
+        }
+    }
+    Rectangle
+    {
+        id: bottomBorder
+        width: display_rect.width
+        height: 5
+        x: display_rect.x
+        y: display_rect.y + display_rect.height
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeVerCursor
+        }
+        DragHandler
+        {
+            xAxis.enabled: false
+            yAxis.minimum: display_rect.y + display_rect.height / 2
+            yAxis.maximum: ActiveCtrl.lcenterHeight - 4
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (y - (display_rect.y + display_rect.height)) * 2
+        }
+    }
+    Rectangle
+    {
+        id: leftBorder
+        width: 5
+        height: display_rect.height
+        x: display_rect.x - 5
+        y: display_rect.y
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeHorCursor
+        }
+        DragHandler
+        {
+            yAxis.enabled: false
+            xAxis.minimum: 0
+            xAxis.maximum: display_rect.x + display_rect.width / 2
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (display_rect.x - 5 - x) * 2
+        }
+    }
+    Rectangle
+    {
+        id: rightBorder
+        width: 5
+        height: display_rect.height
+        x: display_rect.x + display_rect.width
+        y: display_rect.y
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeHorCursor
+        }
+        DragHandler
+        {
+            yAxis.enabled: false
+            xAxis.minimum: display_rect.x + display_rect.width / 2
+            xAxis.maximum: ActiveCtrl.lcenterWidth - 5
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (x - display_rect.x - display_rect.width) * 2
+        }
+    }
+    Rectangle
+    {
+        id: topLeftBorder
+        width: 5
+        height: 5
+        x: display_rect.x - 5
+        y: display_rect.y - 5
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeFDiagCursor
+        }
+        DragHandler
+        {
+            xAxis.minimum: 0
+            xAxis.maximum: display_rect.x + display_rect.width / 2
+            yAxis.minimum: 0
+            yAxis.maximum: display_rect.y + display_rect.height / 2
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (display_rect.x - 5 - x) * 2
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (display_rect.y - 5 - y) * 2
+        }
+    }
+    Rectangle
+    {
+        id: topRightBorder
+        width: 5
+        height: 5
+        x: display_rect.x + display_rect.width
+        y: display_rect.y - 5
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeBDiagCursor
+        }
+        DragHandler
+        {
+            yAxis.minimum: 0
+            yAxis.maximum: display_rect.y + display_rect.height / 2
+            xAxis.minimum: display_rect.x + display_rect.width / 2
+            xAxis.maximum: ActiveCtrl.lcenterWidth - 5
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (x - display_rect.x - display_rect.width) * 2
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (display_rect.y - 5 - y) * 2
+        }
+    }
+    Rectangle
+    {
+        id: bottomLeftBorder
+        width: 5
+        height: 5
+        x: display_rect.x - 5
+        y: display_rect.y + display_rect.height
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeBDiagCursor
+        }
+        DragHandler
+        {
+            xAxis.minimum: 0
+            xAxis.maximum: display_rect.x + display_rect.width / 2
+            yAxis.minimum: display_rect.y + display_rect.height / 2
+            yAxis.maximum: ActiveCtrl.lcenterHeight - 4
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (y - (display_rect.y + display_rect.height)) * 2
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (display_rect.x - 5 - x) * 2
+        }
+    }
+    Rectangle
+    {
+        id: bottomRightBorder
+        width: 5
+        height: 5
+        x: display_rect.x + display_rect.width
+        y: display_rect.y + display_rect.height
+        color: "#3daee9"
+        HoverHandler
+        {
+            cursorShape: Qt.SizeFDiagCursor
+        }
+        DragHandler
+        {
+            xAxis.minimum: display_rect.x + display_rect.width / 2
+            xAxis.maximum: ActiveCtrl.lcenterWidth - 5
+            yAxis.minimum: display_rect.y + display_rect.height / 2
+            yAxis.maximum: ActiveCtrl.lcenterHeight - 4
+        }
+        onYChanged:
+        {
+            display_rect.height = display_rect.height + (y - (display_rect.y + display_rect.height)) * 2
+        }
+        onXChanged:
+        {
+            display_rect.width = display_rect.width + (x - display_rect.x - display_rect.width) * 2
         }
     }
 

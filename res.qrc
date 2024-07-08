@@ -61,5 +61,6 @@
         <file>icon/save.svg</file>
         <file>icon/img.svg</file>
         <file>Image/tm533.6x253.6.png</file>
+        <file>icon/board.svg</file>
     </qresource>
 </RCC>

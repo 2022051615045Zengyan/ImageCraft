@@ -62,6 +62,10 @@ class ActiveCtrl : public QObject
     Q_PROPERTY(QObject* rotationDialogBox READ rotationDialogBox WRITE setRotationDialogBox NOTIFY
                    rotationDialogBoxChanged FINAL)
     Q_PROPERTY(QObject* rightMenu READ rightMenu WRITE setRightMenu NOTIFY rightMenuChanged FINAL)
+    Q_PROPERTY(
+        int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
+    Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
+                   lcenterHeightChanged FINAL)
 public:
     //图层修改类型
     enum OperationType {
@@ -170,6 +174,18 @@ public:
     QObject* rightMenu() const;
     void setRightMenu(QObject* newRightMenu);
 
+    int windowHeight() const;
+    void setWindowHeight(int newWindowHeight);
+
+    int windowWidth() const;
+    void setWindowWidth(int newWindowWidth);
+
+    int lcenterWidth() const;
+    void setLcenterWidth(int newLcenterWidth);
+
+    int lcenterHeight() const;
+    void setLcenterHeight(int newLcenterHeight);
+
 signals:
 
     void dialogBoxChanged();
@@ -223,6 +239,10 @@ signals:
 
     void rightMenuChanged();
 
+    void lcenterWidthChanged();
+
+    void lcenterHeightChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -242,6 +262,8 @@ private:
     QSettings m_setting;
     QScreen* m_screen;
     int m_currentIndex;
+    int m_lcenterHeight;
+    int m_lcenterWidth;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;

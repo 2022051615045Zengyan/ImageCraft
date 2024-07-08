@@ -35,6 +35,9 @@
  *
  * Modified by RenTianxiang on 2024-7-6
  *      Complete the undo and redo of modified image and remove layer
+ *
+ * modified by RenTianxiang on 2024-7-7
+ *      added select fuction
  */
 import QtQuick
 import QtQuick.Controls
@@ -188,10 +191,11 @@ Image
             }
         }
 
-        Image {
+        Image
+        {
             width: 15
             height: 15
-            z:1
+            z: 100
             id: strawcursor
             source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
             visible:ToolCtrl.selectedTool === "吸管" && hoverhandler.hovered
@@ -208,31 +212,30 @@ Image
             id: _imageViewDragAreaRTap
             acceptedButtons: Qt.RightButton
         }
-
     }
 
-    MouseArea{
-        id:brushhandler
-        anchors.fill: parent
-        enabled: ToolCtrl.selectedTool === "画笔"
-        onPressed: {
-            requestAddBrushLayer()
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.startDrawing(x,y)
-        }
-        onPositionChanged: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.continueDrawing(x,y,false)
-        }
-        onReleased: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            console.log("已完成一次画笔操作")
-            ToolCtrl.stopDrawing(x,y)
-        }
-    }
+    // MouseArea{
+    //     id:brushhandler
+    //     anchors.fill: parent
+    //     enabled: ToolCtrl.selectedTool === "画笔"
+    //     onPressed: {
+    //         requestAddBrushLayer()
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         ToolCtrl.startDrawing(x,y)
+    //     }
+    //     onPositionChanged: {
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         ToolCtrl.continueDrawing(x,y,false)
+    //     }
+    //     onReleased: {
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         console.log("已完成一次画笔操作")
+    //         ToolCtrl.stopDrawing(x,y)
+    //     }
+    // }
 
     // TapHandler{
     //     id:brushhandler1
@@ -261,28 +264,28 @@ Image
     //     }
     // }
 
-    MouseArea{
-        id:recthandler
-        anchors.fill: parent
-        enabled: ToolCtrl.selectedTool === "矩阵"
-        onPressed: {
-            requestAddBrushLayer()
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.startDrawing(x,y)
-        }
-        onPositionChanged: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            ToolCtrl.continueDrawing(x,y,true)
-        }
-        onReleased: {
-            var x = mouseX / imageView.width * sourceSize.width
-            var y = mouseY / imageView.height * sourceSize.height
-            console.log("已完成一次画笔操作")
-            ToolCtrl.stopDrawing(x,y)
-        }
-    }
+    // MouseArea{
+    //     id:recthandler
+    //     anchors.fill: parent
+    //     enabled: ToolCtrl.selectedTool === "矩阵"
+    //     onPressed: {
+    //         requestAddBrushLayer()
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         ToolCtrl.startDrawing(x,y)
+    //     }
+    //     onPositionChanged: {
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         ToolCtrl.continueDrawing(x,y,true)
+    //     }
+    //     onReleased: {
+    //         var x = mouseX / imageView.width * sourceSize.width
+    //         var y = mouseY / imageView.height * sourceSize.height
+    //         console.log("已完成一次画笔操作")
+    //         ToolCtrl.stopDrawing(x,y)
+    //     }
+    // }
 
     PinchHandler {
         id: handler
@@ -323,11 +326,27 @@ Image
             origin.x: imageView.width / 2
             origin.y: imageView.height / 2
             angle:imageView.currentAngle
+        }, Scale
+        {
+            id: _flipXY
+            origin.x:imageView.width/2
+            origin.y:imageView.height/2
         }]
-    Component.onCompleted: {
+
+
+    SelectBox
+    {
+        id: selectBox
+        anchors.fill: parent
+        dragRect: imageViewDragArea
+        z: 1
+        visible: ToolCtrl.selectedTool === "选择" && ToolCtrl.currentEditorView === imageView
+    }
+
+    Component.onCompleted:
+    {
         ActiveCtrl.currentImageView=imageView
         ActiveCtrl.getAngle(currentAngle)
-
     }
 
     onScaleChanged:
