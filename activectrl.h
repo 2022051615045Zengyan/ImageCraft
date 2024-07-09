@@ -73,6 +73,7 @@ class ActiveCtrl : public QObject
         int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
     Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
                    lcenterHeightChanged FINAL)
+    Q_PROPERTY(QImage pasteImage READ pasteImage WRITE setPasteImage NOTIFY pasteImageChanged FINAL)
 
     Q_PROPERTY(QObject* footer READ footer WRITE setFooter NOTIFY footerChanged FINAL)
     Q_PROPERTY(QObject* toolBar READ toolBar WRITE setToolBar NOTIFY toolBarChanged FINAL)
@@ -92,6 +93,10 @@ public:
         FlipXLayer,
         FlipYLayer,
         SpinLayer,
+<<<<<<< HEAD
+=======
+        ScaleXYLayer,
+>>>>>>> origin/main
     };
 
     enum Filter {
@@ -190,6 +195,11 @@ public:
     Q_INVOKABLE void undo();
     Q_INVOKABLE void redo();
 
+    //复制粘贴剪切
+    Q_INVOKABLE void copyImagetoClipboard();
+    Q_INVOKABLE void pasteImageFromClipboard();
+    Q_INVOKABLE void cutImagetoClipboard();
+
     //图片颜色操作
     Q_INVOKABLE void oppositedColor();
     Q_INVOKABLE void convertToGray();
@@ -274,6 +284,9 @@ public:
     int lcenterHeight() const;
     void setLcenterHeight(int newLcenterHeight);
 
+    QImage pasteImage() const;
+    void setPasteImage(const QImage& newPasteImage);
+
     QObject* footer() const;
     void setFooter(QObject* newFooter);
 
@@ -344,6 +357,8 @@ signals:
 
     void lcenterHeightChanged();
 
+    void pasteImageChanged();
+
     void footerChanged();
 
     void toolBarChanged();
@@ -371,6 +386,7 @@ private:
     int m_currentIndex;
     int m_lcenterHeight;
     int m_lcenterWidth;
+    QImage m_pasteImage;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;

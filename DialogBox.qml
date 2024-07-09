@@ -299,7 +299,7 @@ Item
             text: qsTr("Copy")
             onClicked:
             {
-                console.log("Copy")
+                ActiveCtrl.copyImagetoClipboard()
             }
         }
         MenuItem
@@ -307,7 +307,7 @@ Item
             text: qsTr("Cut")
             onClicked:
             {
-                console.log("Cut")
+                ActiveCtrl.cutImagetoClipboard()
             }
         }
         MenuItem
@@ -315,7 +315,7 @@ Item
             text: qsTr("Paste")
             onClicked:
             {
-                console.log("Paste")
+                ActiveCtrl.pasteImageFromClipboard()
             }
         }
 

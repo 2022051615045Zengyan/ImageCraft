@@ -63,6 +63,7 @@ Item
                     model: parent.layerListModel
                     height: parent.height
                     width: 100
+                    property int pasteNum: 0
                     delegate: Rectangle
                     {
                         property string pixUrl_: pixUrl
@@ -151,6 +152,15 @@ Item
                                         anchors.centerIn: parent
                                         color: "black"
                                         text: viewtext.text
+                                    }
+                                }
+
+                                Component.onCompleted:
+                                {
+                                    if(text === "paste.png")
+                                    {
+                                        text = "pastedLayer" + viewtags.pasteNum.toString()
+                                        viewtags.pasteNum++
                                     }
                                 }
                             }
