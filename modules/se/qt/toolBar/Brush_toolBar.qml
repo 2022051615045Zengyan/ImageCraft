@@ -22,7 +22,7 @@ Item {
         Button {
             id: _brush_Paintbrush
             icon.source: "qrc:/modules/se/qt/toolBar/Icon/huabi.png"
-            text:"画笔"
+            text: qsTr("Brush")
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -32,13 +32,13 @@ Item {
         }
 
         Label{
-            text:"画笔大小:"
+            text:qsTr("Brush Size:")
         }
 
         ComboBox{
             id: _brush_Paintbrush_Size
             Layout.preferredWidth:parent.height*3
-            model: ["细","较细","均衡","较粗","粗"]
+            model: [qsTr("Thin"),qsTr("Thinner"),qsTr("Equilibrium"),qsTr("Coarser"),qsTr("Coarse")]
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
             Component.onCompleted: {
@@ -50,7 +50,7 @@ Item {
         }
 
         Label{
-            text:"画笔类型:"
+            text: qsTr("Brush Type:")
         }
 
         ComboBox{
@@ -71,7 +71,7 @@ Item {
 
         Button {
             id: _brush_Pen
-            text: "钢笔"
+            text: qsTr("Pen")
             icon.source: "qrc:/modules/se/qt/toolBar/Icon/gangbi.png"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
@@ -87,7 +87,7 @@ Item {
 
         Button {
             id: _line_spray
-            text: "喷漆"
+            text: qsTr("Spray")
             icon.source: "qrc:/modules/se/qt/toolBar/Icon/penqi.png"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
@@ -98,13 +98,13 @@ Item {
         }
 
         Label{
-            text:"喷漆大小:"
+            text: qsTr("Spray Size:")
         }
 
         ComboBox{
             id: _line_spray_size
             Layout.preferredWidth:parent.height*3
-            model: ["微喷","轻喷","精喷","散喷","均喷","密喷"]
+            model: [qsTr("Micro Sprat"),qsTr("Light Spray"),qsTr("Fine Spray"),qsTr("Disperse Spray"),qsTr("Average Sprat"),qsTr("Dense Spray")]
 
             Component.onCompleted: {
                 _line_spray_size.currentIndex = 0;

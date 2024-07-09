@@ -144,7 +144,7 @@ Item
                             tabContent.firstTaped = false
                             tabContent.currentIndex = index
 
-                            if(ToolCtrl.selectedTool === "吸管")
+                            if(ToolCtrl.selectedTool === 3)     //吸管
                             {                // 获取鼠标点击位置的坐标
                                 var x = parseInt(editorView.imageViewDragAreaTap.point.position.x)
                                 var y = parseInt(editorView.imageViewDragAreaTap.point.position.y)

@@ -21,7 +21,7 @@ Item
         property bool isPressed: false
         color: "grey"
         width: listView.width
-        height: Window.height / 4 * 3 + 20
+        height: Window.height / 2
         y: topToolBar.height + menuBar.height - 20
         radius: 10
         clip: true
@@ -93,85 +93,55 @@ Item
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/choose.svg"
-                    name: "选择"
-                }
-
-                ListElement
-                {
-                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/frame.svg"
-                    name: "图框"
+                    name: qsTr("Choice")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/move.svg"
-                    name: "移动"
-                }
-
-                ListElement
-                {
-                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Grip.svg"
-                    name: "抓手"
-                }
-
-                ListElement
-                {
-                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/box.svg"
-                    name: "框选"
-                }
-
-                ListElement
-                {
-                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/lasso.svg"
-                    name: "套索工具"
-                }
-
-                ListElement
-                {
-                    btnIcon: "qrc:/modules/se/qt/toolBar/Icon/tailor.svg"
-                    name: "裁剪"
+                    name: qsTr("Move")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/word.svg"
-                    name: "文字"
+                    name: qsTr("Word")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-                    name: "吸管"
+                    name: qsTr("Straw")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Matrix.svg"
-                    name: "矩阵"
+                    name: qsTr("Matrix")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/Line.svg"
-                    name: "线条"
+                    name: qsTr("Line")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/brush.svg"
-                    name: "画笔"
+                    name: qsTr("Brush")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/eraser.svg"
-                    name: "橡皮擦"
+                    name: qsTr("Eraser")
                 }
 
                 ListElement
                 {
                     btnIcon: "qrc:/modules/se/qt/toolBar/Icon/zoom.svg"
-                    name: "缩放"
+                    name: qsTr("Zoom")
                 }
             }
             delegate: listViewDelegate
@@ -241,16 +211,16 @@ Item
                     onTapped:
                     {
                         listView.currentIndex = index
-                        ToolCtrl.selectedTool = name
-                        if(ToolCtrl.selectedTool === "画笔"){
+                        ToolCtrl.selectedTool = index
+                        if(ToolCtrl.selectedTool === 6){    //画笔
                             ToolCtrl.setShapeToFreeDraw()
-                        }else if(ToolCtrl.selectedTool === "矩阵")
+                        }else if(ToolCtrl.selectedTool === 4)   //矩阵
                         {
                             ToolCtrl.setShapeToRectangle()
-                        }else if(ToolCtrl.selectedTool === "线条")
+                        }else if(ToolCtrl.selectedTool === 5)   //线条
                         {
                             ToolCtrl.setShapeToLineDraw()
-                        }else if(ToolCtrl.selectedTool === "橡皮擦")
+                        }else if(ToolCtrl.selectedTool === 7)   //橡皮擦
                         {
                             ToolCtrl.setShapeToEraser()
                         }

@@ -23,7 +23,7 @@ Item {
 
         RadioButton{
             id:_rectanle_Fill
-            text:qsTr("填充")
+            text:qsTr("Fill")
             checked: true
             onCheckedChanged: {
                 ToolCtrl.setFillRectangle(true)
@@ -32,7 +32,7 @@ Item {
 
         RadioButton{
             id:_rectanle_Stroke
-            text:qsTr("描边")
+            text:qsTr("Stroke")
             checked: false
             onCheckedChanged: {
                 ToolCtrl.setFillRectangle(false)
@@ -45,12 +45,12 @@ Item {
 
 
         Label{
-            text: "形状:"
+            text: qsTr("Shape:")
         }
 
         Button{
             id:_rectangle_Rect
-            text:qsTr("矩阵")
+            text:qsTr("Rectangle")
             icon.name: "draw-rectangle"
             onClicked: {
                 ToolCtrl.setShapeToRectangle()
@@ -59,7 +59,7 @@ Item {
 
         Button{
             id:_boxselect_Elliptical
-            text:qsTr("椭圆")
+            text:qsTr("Ellipse")
             icon.name: "draw-ellipse"
             onClicked: {
                 ToolCtrl.setShapeToEllipse()
@@ -68,7 +68,7 @@ Item {
 
         Button{
             id:_boxselect_Circle
-            text:qsTr("正圆")
+            text:qsTr("Circle")
             icon.name: "draw-circle"
             onClicked: {
                 ToolCtrl.setShapeToCircle()
@@ -77,7 +77,7 @@ Item {
 
         Button{
             id:_boxselect_Polygon
-            text:qsTr("多边形")
+            text:qsTr("Polygon")
             icon.name: "draw-polygon"
             onClicked: {
                 ToolCtrl.setShapeToPolygon()
@@ -90,5 +90,3 @@ Item {
         }
     }
 }
-//     }
-// }

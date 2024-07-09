@@ -22,11 +22,9 @@ MenuBar
         sharePage: menuBar.sharePage
     }
     Menu_Edit{}
-    Menu_Layer{}
     Menu_Graphics{}
     Menu_Setting{}
     Menu_Filter{}
     Menu_View{}
-    Menu_Swatches{}
     Menu_Help{}
 }

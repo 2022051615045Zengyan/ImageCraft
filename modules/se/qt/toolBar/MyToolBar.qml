@@ -28,69 +28,44 @@ Item
             visible: listView.currentIndex === 0 ? true : false
         }
 
-        Frame_toolBar
-        {
-            visible: listView.currentIndex === 1 ? true:false
-        }
-
         Move_toolBar
         {
-            visible: listView.currentIndex === 2 ? true : false
-        }
-
-        Grip_toolBar
-        {
-            visible: listView.currentIndex === 3 ? true : false
-        }
-
-        Boxselect_toolBar
-        {
-            visible: listView.currentIndex === 4 ? true : false
-        }
-
-        Lasso_toolBar
-        {
-            visible: listView.currentIndex === 5 ? true : false
-        }
-
-        Cutout_toolBar
-        {
-            visible: listView.currentIndex === 6 ? true : false
+            visible: listView.currentIndex === 1 ? true : false
         }
 
         Word_toolBar
         {
-            visible: listView.currentIndex === 7 ? true : false
+            visible: listView.currentIndex === 2 ? true : false
         }
 
         Straw_toolBar
         {
-            visible: listView.currentIndex === 8 ? true : false
+            visible: listView.currentIndex === 3 ? true : false
         }
 
         Rectangle_toolBar
         {
-            visible: listView.currentIndex === 9 ? true : false
+            visible: listView.currentIndex === 4 ? true : false
         }
 
         Line_toolBar
         {
-            visible: listView.currentIndex === 10 ? true : false
+            visible: listView.currentIndex === 5 ? true : false
         }
 
         Brush_toolBar
         {
-            visible: listView.currentIndex === 11 ? true : false
+            visible: listView.currentIndex === 6 ? true : false
         }
 
         Eraser_toolBar
         {
-            visible: listView.currentIndex === 12 ? true : false
+            visible: listView.currentIndex === 7 ? true : false
         }
 
         Zoom_toolBar
         {
-            visible: listView.currentIndex === 13 ? true : false
+            visible: listView.currentIndex === 8 ? true : false
         }
 
     }

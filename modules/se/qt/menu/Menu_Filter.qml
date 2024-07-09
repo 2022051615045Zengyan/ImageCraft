@@ -8,18 +8,18 @@ import ImageCraft 1.0
 
 Menu {
     width:300
-    title: qsTr("滤镜（&T)")
+    title: qsTr("Filter(&T)")
 
     //上次滤镜操作
     MyMenuItem {
-        text: "上次滤镜操作(&F)"
+        text: "Last Filter Operation(&F)"
         sequence: "Ctrl+F"
         onTriggered: {
             ActiveCtrl.resetToPreviousFilter()
         }
     }
     MyMenuItem {
-        text: "复原图片(&S)"
+        text: "Restored picture(&S)"
         sequence: "Ctrl+S"
         onTriggered: {
             ActiveCtrl.resetToOriginalImage()

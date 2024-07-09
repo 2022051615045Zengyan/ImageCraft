@@ -21,12 +21,12 @@ Menu
 {
     id: file
     width: 250
-    title: qsTr("文件(&F)")
+    title: qsTr("File(&F)")
     required property ListModel sharePage
 
     MyMenuItem
     {
-        text: qsTr("新建(&N)")
+        text: qsTr("New(&N)")
         sequence: "Ctrl+N"
         icon.name: "document-new-symbolic"
         onTriggered:
@@ -37,7 +37,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("打开(&O)...")
+        text: qsTr("Open(&O)...")
         sequence: "Ctrl+O"
         icon.name: "document-open"
         onTriggered:
@@ -50,7 +50,7 @@ Menu
     {
         id: recentFileMenu
         icon.name: "document-open-recent"
-        title: qsTr("最近打开文件(&T)")
+        title: qsTr("Open recent(&T)")
         Repeater
         {
             model: ActiveCtrl.recentFiles
@@ -91,7 +91,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("捕获屏幕截图")
+        text: qsTr("Capture screen shot")
         onTriggered:
         {
             ActiveCtrl.takeAFullScreenshot()
@@ -102,7 +102,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("关闭(&C)")
+        text: qsTr("Close(&C)")
         sequence: "Ctrl+W"
         icon.name: "document-close"
         onTriggered:
@@ -113,7 +113,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("关闭全部")
+        text: qsTr("CloseAll")
         sequence: "Alt+Ctrl+W"
         icon.name: "geany-close-all"
         onTriggered:
@@ -124,7 +124,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("保存(&S)")
+        text: qsTr("Save(&S)")
         sequence: "Ctrl+S"
         icon.name: "document-save"
         onTriggered:
@@ -135,7 +135,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("保存为(&A)...")
+        text: qsTr("SaveAs(&A)...")
         sequence: "Shift+Ctrl+S"
         icon.name: "document-save-as"
         onTriggered:
@@ -146,7 +146,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("导出(&X)...")
+        text: qsTr("Export(&X)...")
         icon.name: "document-export"
         onTriggered:
         {
@@ -159,7 +159,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("重新加载(&D)")
+        text: qsTr("Refresh(&D)")
         sequence: "F5"
         icon.name: "view-refresh"
         onTriggered:
@@ -172,7 +172,7 @@ Menu
 
     MyMenuItem
     {
-        text: qsTr("退出(&X)")
+        text: qsTr("Exit(&X)")
         sequence: "Ctrl+Q"
         icon.name: "application-exit"
         onTriggered:

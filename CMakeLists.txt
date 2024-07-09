@@ -39,23 +39,23 @@ qt_add_qml_module(
   modules/se/qt/toolBar/MoveToolBar.qml
   modules/se/qt/toolBar/Move_toolBar.qml
   modules/se/qt/toolBar/Line_toolBar.qml
-  modules/se/qt/toolBar/Lasso_toolBar.qml
-  modules/se/qt/toolBar/Grip_toolBar.qml
-  modules/se/qt/toolBar/Frame_toolBar.qml
+
+
+
   modules/se/qt/toolBar/Eraser_toolBar.qml
-  modules/se/qt/toolBar/Cutout_toolBar.qml
+
   modules/se/qt/toolBar/Choice_toolBar.qml
   modules/se/qt/toolBar/Brush_toolBar.qml
-  modules/se/qt/toolBar/Boxselect_toolBar.qml
+
   RESOURCES
   modules/se/qt/menu/qmldir
   QML_FILES
   modules/se/qt/menu/MyMenuItem.qml
   modules/se/qt/menu/MyMenu.qml
   modules/se/qt/menu/Menu_View.qml
-  modules/se/qt/menu/Menu_Swatches.qml
+
   modules/se/qt/menu/Menu_Setting.qml
-  modules/se/qt/menu/Menu_Layer.qml
+
   modules/se/qt/menu/Menu_Help.qml
   modules/se/qt/menu/Menu_Graphics.qml
   modules/se/qt/menu/Menu_Filter.qml

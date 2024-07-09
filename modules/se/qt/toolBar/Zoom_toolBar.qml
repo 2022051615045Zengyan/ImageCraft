@@ -26,7 +26,7 @@ Item {
         Button {
             id: _zoom_out
             Layout.preferredWidth: parent.height*3
-            text: "缩小"
+            text: qsTr("Zoom Out")
             icon.name: "file-zoom-out"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -74,7 +74,7 @@ Item {
         Button {
             id: _zoom_in
             Layout.preferredWidth: parent.height*3
-            text: "放大"
+            text: qsTr("Zoom In")
             icon.name: "file-zoom-in"
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

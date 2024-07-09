@@ -86,11 +86,7 @@ ToolCtrl::ToolCtrl(QObject *parent)
     m_eraserSize = 5;
     m_eraserOpacity = 255;
     m_fillRectangle = true;
-}
-
-QString ToolCtrl::selectedTool() const
-{
-    return m_selectedTool;
+    m_selectedTool = 0;
 }
 
 QObject *ToolCtrl::showcolor() const
@@ -150,6 +146,19 @@ void ToolCtrl::on_currentEditorViewChanged()
     int currentIndex = std ::distance(m_zoomSet.begin(), it);
     m_zoom_size->setProperty("currentIndex", currentIndex);
     m_zoomColumnLayout->setProperty("currentIndex", currentIndex);
+}
+
+int ToolCtrl::selectedTool() const
+{
+    return m_selectedTool;
+}
+
+void ToolCtrl::setSelectedTool(int newSelectedTool)
+{
+    if (m_selectedTool == newSelectedTool)
+        return;
+    m_selectedTool = newSelectedTool;
+    emit selectedToolChanged();
 }
 
 std::set<QString> ToolCtrl::colorSet() const
@@ -557,15 +566,6 @@ void ToolCtrl::setZoom_size(QObject *newZoom_size)
         return;
     m_zoom_size = newZoom_size;
     emit zoom_sizeChanged();
-}
-
-//选择工具
-void ToolCtrl::setSelectedTool(const QString &newSelectedTool)
-{
-    if (m_selectedTool == newSelectedTool)
-        return;
-    m_selectedTool = newSelectedTool;
-    emit selectedToolChanged();
 }
 
 //捕获图片点击点的颜色

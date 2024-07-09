@@ -46,8 +46,6 @@ class ToolCtrl : public QObject
     QML_SINGLETON
     QML_NAMED_ELEMENT(ToolCtrl)
 
-    Q_PROPERTY(QString selectedTool READ selectedTool WRITE setSelectedTool NOTIFY
-                   selectedToolChanged FINAL)
     Q_PROPERTY(QObject *showcolor READ showcolor WRITE setShowcolor NOTIFY showcolorChanged FINAL)
     Q_PROPERTY(QObject *pointtext READ pointtext WRITE setPointtext NOTIFY pointtextChanged FINAL)
 
@@ -103,6 +101,8 @@ class ToolCtrl : public QObject
     Q_PROPERTY(int lineSize READ lineSize WRITE setLineSize NOTIFY lineSizeChanged FINAL)
     Q_PROPERTY(
         int PolyLineSize READ PolyLineSize WRITE setPolyLineSize NOTIFY PolyLineSizeChanged FINAL)
+    Q_PROPERTY(
+        int selectedTool READ selectedTool WRITE setSelectedTool NOTIFY selectedToolChanged FINAL)
 public:
     enum Shape {
         FreeDraw,
@@ -124,8 +124,6 @@ public:
     Q_ENUM(CapStyle)
 
     explicit ToolCtrl(QObject *parent = nullptr);
-    QString selectedTool() const;
-    void setSelectedTool(const QString &newSelectedTool);
     void setInitialFamily();
 
     Q_INVOKABLE QColor getPixelColor(const QString &imagepath, int x, int y);
@@ -255,9 +253,10 @@ public:
     std::set<QString> colorSet() const;
     void setColorSet(const std::set<QString> &newColorSet);
 
-signals:
-    void selectedToolChanged();
+    int selectedTool() const;
+    void setSelectedTool(int newSelectedTool);
 
+signals:
     void showcolorChanged();
 
     void pointtextChanged();
@@ -317,11 +316,13 @@ signals:
 
     void PolyLineSizeChanged();
 
+    void selectedToolChanged();
+
 private slots:
     void on_currentEditorViewChanged();
 
 private:
-    QString m_selectedTool;
+    int m_selectedTool;
     QObject *m_straw_SampleRecords = nullptr;
     QObject *m_wordItem = nullptr;
     QObject *m_showcolor = nullptr;

@@ -14,13 +14,13 @@ Item {
         width: parent.width
         height: parent.height
         Label{
-            text:"橡皮类型："
+            text:qsTr("Eraser Type:")
         }
 
         Button {
             id: _eraser
             icon.name: "draw-eraser"
-            text:"橡皮擦"
+            text:"Eraser"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -32,7 +32,7 @@ Item {
         Button{
             id:_eraser_colored
             icon.name: "tool_color_eraser"
-            text:"彩色橡皮擦"
+            text: qsTr("Color Eraser:")
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -42,13 +42,13 @@ Item {
         }
 
         Label{
-            text:"橡皮大小:"
+            text:qsTr("Eraser Size:")
         }
 
         ComboBox {
             id: eraser_size
             Layout.preferredWidth:parent.height*3
-            model: ["小","中","大"]
+            model: [qsTr("Small"),qsTr("Middle"),qsTr("big")]
             Component.onCompleted: {
                 eraser_size.currentIndex = 0;
             }
@@ -64,7 +64,7 @@ Item {
         ToolSeparator {height: parent.height}
 
         Label{
-            text:"摩擦力:"+eraser_opacities.value+"%"
+            text:qsTr("Friction Force:")+eraser_opacities.value+"%"
         }
 
         Slider{

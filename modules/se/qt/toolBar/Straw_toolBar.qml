@@ -16,8 +16,8 @@ Item {
         height: parent.height
         spacing: 5
         Label{
-                   text: "取样记录:"
-               }
+            text: qsTr("Sampling Records:")
+        }
         ComboBox {
             id: _straw_SampleRecords
             Layout.preferredWidth:parent.height*3
@@ -26,9 +26,9 @@ Item {
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
             onCurrentIndexChanged: {
-                      var index = currentIndex
-                      ToolCtrl.showcolorSet(model[index]);
-                  }
+                var index = currentIndex
+                ToolCtrl.showcolorSet(model[index]);
+            }
         }
 
         Component.onCompleted: {
@@ -41,8 +41,6 @@ Item {
         }
 
     }
-
-
 }
 
 

@@ -10,38 +10,10 @@ Item {
     id: choice
 
     anchors.fill: parent
-    RowLayout{
-        width: parent.width
-        height: parent.height
-        spacing: 5
-
-        RadioButton{
-            id:_choice_keepAspect
-            text:qsTr("保持比例")
-            checked: true
-        }
-
-        RadioButton{
-            id:_choice_freeScale
-            text:qsTr("自由缩放")
-            checked: false
-        }
-
-        ToolSeparator{Layout.preferredHeight: parent.height}
-
-        Button {
-            id: _choice_CounterSelection
-            Layout.preferredWidth:parent.height*3
-            text: qsTr("反选")
-            icon.source: "qrc:/modules/se/qt/toolBar/Icon/fanxuan.svg"
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.height
-        }
-
-
-        Item {
-            Layout.fillWidth: true  // 添加一个空的Item填充剩余空间
-            Layout.preferredWidth:1000
-        }
+    Label{
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        id:_choice_freeScale
+        text:qsTr("Free Scaling")
     }
 }

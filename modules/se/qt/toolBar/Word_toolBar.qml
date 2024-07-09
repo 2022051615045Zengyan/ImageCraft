@@ -20,7 +20,7 @@ Item
         spacing: 5
 
         Label{
-            text: "字体:"
+            text: qsTr("Font:")
         }
 
         // 创建一个 ListModel 用于管理多个 FontLoader
@@ -45,15 +45,15 @@ Item
                     // 当用户改变选项时触发
                     var familyname = fontModel.get(currentIndex).source;
                     familySource=familyname;
-                    // 调用 ToolCtrl.setTextFamily() 并传递选中项的值            
-                     ToolCtrl.setTextFamily(familyname);
-                     console.log(familyname);
+                    // 调用 ToolCtrl.setTextFamily() 并传递选中项的值
+                    ToolCtrl.setTextFamily(familyname);
+                    console.log(familyname);
                 });
             }
 
         }
         Label{
-            text: "字号:"
+            text: qsTr("Font Size:")
         }
 
         ComboBox
@@ -71,7 +71,7 @@ Item
                     // 当用户改变选项时触发
                     var wordsizestr = _text_size.model[currentIndex]
                     // 调用 ToolCtrl.setWordSize() 并传递选中项的值
-                        var wordsize = parseInt(wordsizestr);
+                    var wordsize = parseInt(wordsizestr);
                     size=wordsize;
                     console.log(wordsize);
                     ToolCtrl.setWordSize(wordsize);
@@ -161,10 +161,10 @@ Item
         }
     }
 
-Component.onCompleted:
-{
-    ToolCtrl.wordItem=word
-}
+    Component.onCompleted:
+    {
+        ToolCtrl.wordItem=word
+    }
 }
 
 

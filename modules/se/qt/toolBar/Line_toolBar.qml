@@ -32,7 +32,7 @@ Item {
         ComboBox{
             id: _line_beeline_size
             Layout.preferredWidth:parent.height*3
-            model: ["细","较细","均衡","较粗","粗"]
+            model: [qsTr("Thin"),qsTr("Thinner"),qsTr("Equilibrium"),qsTr("Coarser"),qsTr("Coarse")]
             Component.onCompleted: {
                 _line_beeline_size.currentIndex = 2;
             }
@@ -64,7 +64,7 @@ Item {
         ComboBox{
             id: _line_polyline_size
             Layout.preferredWidth:parent.height*3
-            model: ["细","较细","均衡","较粗","粗"]
+            model: [qsTr("Thin"),qsTr("Thinner"),qsTr("Equilibrium"),qsTr("Coarser"),qsTr("Coarse")]
             Component.onCompleted: {
                 _line_polyline_size.currentIndex = 2;
             }
@@ -74,35 +74,6 @@ Item {
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
-        }
-
-        ToolSeparator {
-            Layout.preferredHeight: parent.height
-        }
-
-        Button {
-            id: _line_curve
-            icon.source: "qrc:/modules/se/qt/toolBar/Icon/quxian.png"
-            Layout.preferredWidth:parent.height*3
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.height
-            onClicked: {
-                ToolCtrl.setShapeToCurveDraw()
-            }
-        }
-
-        ComboBox{
-            id: _line_curve_size
-            Layout.preferredWidth:parent.height*3
-            model: ["极细","细","较细","均衡","较粗","粗","极粗"]
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.height
-            Component.onCompleted: {
-                _line_beeline_size.currentIndex = 2;
-            }
-            onCurrentIndexChanged: {
-                ToolCtrl.setCurrentBrushSize(currentIndex)
-            }
         }
 
         Item {

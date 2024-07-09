@@ -152,7 +152,7 @@ Image
         {
             id:dragHandler
             target: imageView
-            enabled: ToolCtrl.selectedTool === "移动"
+            enabled: ToolCtrl.selectedTool === 1    //移动
             onActiveChanged:
             {
                 if(!active)
@@ -173,19 +173,14 @@ Image
             onHoveredChanged: {
                 if(hovered)
                 {
-                    if(ToolCtrl.selectedTool === "移动")
+                    if(ToolCtrl.selectedTool === 1) //移动
                     {
                         cursorShape=Qt.SizeAllCursor
-                    }else if(ToolCtrl.selectedTool === "吸管")
+                    }else if(ToolCtrl.selectedTool === 3)   //吸管
                     {
                         cursorShape=Qt.BlankCursor
-                    }else if(ToolCtrl.selectedTool === "抓手")
-                    {
-                        cursorShape=Qt.OpenHandCursor
-                    }else if(ToolCtrl.selectedTool === "套索工具"||
-                             ToolCtrl.selectedTool === "框选"||
-                             ToolCtrl.selectedTool === "裁剪"||
-                             ToolCtrl.selectedTool === "文字")
+                    }
+                    else if(ToolCtrl.selectedTool === 2)   //文字
                     {
                         cursorShape=Qt.CrossCursor
                     }
@@ -207,7 +202,7 @@ Image
         TapHandler{
             id:brushhandler
             target: imageView
-            enabled:ToolCtrl.selectedTool === "画笔"
+            enabled:ToolCtrl.selectedTool === 6     //画笔
             gesturePolicy: TapHandler.ReleaseWithinBounds
             onPressedChanged: {
                 if(pressed){
@@ -242,7 +237,7 @@ Image
         TapHandler{
             id:rectanglehandler
             target: imageView
-            enabled:ToolCtrl.selectedTool === "矩阵"
+            enabled:ToolCtrl.selectedTool === 4     //矩阵
             gesturePolicy: TapHandler.ReleaseWithinBounds
             onTapped: {
                 if(ToolCtrl.currentShape===ToolCtrl.Polygon){
@@ -285,7 +280,7 @@ Image
         TapHandler{
             id:linehandler
             target: imageView
-            enabled:ToolCtrl.selectedTool === "线条"
+            enabled:ToolCtrl.selectedTool === 5     //线条
             gesturePolicy: TapHandler.ReleaseWithinBounds
             onTapped: {
                 if(ToolCtrl.currentShape===ToolCtrl.PolylineDraw){
@@ -328,7 +323,7 @@ Image
         TapHandler{
             id:linehandlerForFinish
             target: imageView
-            enabled:ToolCtrl.selectedTool === "线条" ||"矩阵"
+            enabled:ToolCtrl.selectedTool === 5 || 4 //线条或矩阵
             gesturePolicy: TapHandler.ReleaseWithinBounds
             acceptedButtons: Qt.RightButton
             onTapped: {
@@ -341,7 +336,7 @@ Image
         TapHandler{
             id:eraserhandler
             target: imageView
-            enabled:ToolCtrl.selectedTool === "橡皮擦"
+            enabled:ToolCtrl.selectedTool === 7 //橡皮擦
             gesturePolicy: TapHandler.ReleaseWithinBounds
             onPressedChanged: {
                 if(pressed){
@@ -387,7 +382,7 @@ Image
     //添加文字
     TapHandler{
         id:_textTapHandler
-        enabled: ToolCtrl.selectedTool === "文字"
+        enabled: ToolCtrl.selectedTool === 2    //文字
         onTapped: {
             // 计算点击位置相对于图片的坐标
             var X = point.position.x - imageView.x
@@ -411,7 +406,7 @@ Image
             property bool  strikeout: false
             property alias chineseFontLoaderSource: chineseFontLoader.source
             width: text.width
-            placeholderText: "输入文本"
+            placeholderText: qsTr("Enter text")
             font.pixelSize: size
             font.family: family
             font.bold: bold
@@ -425,7 +420,7 @@ Image
             DragHandler{
                 id:textdragHandler
                 target: textArea
-                enabled: ToolCtrl.selectedTool === "文字"
+                enabled: ToolCtrl.selectedTool === 2    //文字
                 onActiveChanged:
                 {
                     if(!active)
@@ -469,7 +464,7 @@ Image
 
     PinchHandler {
         id: handler
-        enabled: ToolCtrl.selectedTool==="缩放"
+        enabled: ToolCtrl.selectedTool === 8 //缩放
     }
     //翻转效果
     transform: [
@@ -522,7 +517,7 @@ Image
         anchors.fill: parent
         dragRect: imageViewDragArea
         z: 1
-        visible: ToolCtrl.selectedTool === "选择" && ToolCtrl.currentEditorView === imageView
+        visible: ToolCtrl.selectedTool === 0 /*选择*/ && ToolCtrl.currentEditorView === imageView
     }
 
     Component.onCompleted:

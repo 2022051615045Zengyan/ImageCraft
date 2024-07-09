@@ -62,7 +62,7 @@ ApplicationWindow
         id: strawImage
         x: mousePostion.point.position.x
         y: mousePostion.point.position.y
-        visible:ToolCtrl.selectedTool === "吸管" && ToolCtrl.currentEditorView && ToolCtrl.currentEditorView.hoverhandler.hovered
+        visible:ToolCtrl.selectedTool === 3 /*吸管*/ && ToolCtrl.currentEditorView && ToolCtrl.currentEditorView.hoverhandler.hovered
     }
 
     HoverHandler    //用于获取鼠标实时位置

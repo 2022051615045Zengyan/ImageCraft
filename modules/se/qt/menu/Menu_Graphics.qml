@@ -18,44 +18,11 @@ import ImageCraft 1.0
 Menu{
     width: 300
     id:graphics
-    title: qsTr("图像(&I)")
+    title: qsTr("Image(&I)")
 
     MyMenuItem
     {
-        text: qsTr("裁剪图像到选区大小(&T)")
-        sequence: "Ctrl+T"
-        enabled: false
-        onTriggered:
-        {
-            console.log("裁剪图像到选区大小")
-        }
-    }
-
-    MyMenuItem
-    {
-        text: qsTr("自动裁剪(&O)")
-        sequence: "Ctrl+U"
-        onTriggered:
-        {
-            console.log("自动裁剪")
-        }
-    }
-
-    MenuSeparator{}
-
-    MyMenuItem
-    {
-        text: qsTr("更改大小/缩放(&E)")
-        sequence: "Ctrl+E"
-        onTriggered:
-        {
-            console.log("更改大小/缩放")
-        }
-    }
-
-    MyMenuItem
-    {
-        text: qsTr("翻转(垂直)(&F)")
+        text: qsTr("Flip (Vertical)(&F)")
         sequence: "Ctrl+F"
         onTriggered:
         {
@@ -65,7 +32,7 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("翻转(水平)")
+        text: qsTr("Flip (Horizontal)")
         onTriggered:
         {
             ActiveCtrl.horizontallyFlip();
@@ -76,7 +43,7 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("旋转(向左)(&L)")
+        text: qsTr("Rotate (Left)(&L)")
         icon.name: "object-rotate-left"
         sequence: "Ctrl+Shift+left"
         onTriggered:
@@ -87,7 +54,7 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("旋转(向右)(&T)")
+        text: qsTr("Rotate (Right)(&T)")
         icon.name: "object-rotate-right"
         sequence: "Ctrl+Shift+right"
         onTriggered:
@@ -98,7 +65,7 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("旋转(&R)...")
+        text: qsTr("Revolve(&R)...")
         icon.name: "transform-rotate"
         sequence: "Ctrl+R"
         onTriggered:
@@ -110,31 +77,28 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("色彩降为单色(抖动)(&N)")
+        text: qsTr("Color downgraded to monochrome (Dithering)(&N)")
         onTriggered:
         {
             ActiveCtrl.convertToMonochromeDithered();
-            console.log("色彩降为单色(抖动)")
         }
     }
 
     MyMenuItem
     {
-        text: qsTr("色彩降为灰阶(&G)")
+        text: qsTr("The color is reduced to grayscale(&G)")
         onTriggered:
         {
             ActiveCtrl.convertToGray();
-            console.log("色彩降为灰阶")
         }
     }
 
     MyMenuItem
     {
-        text: qsTr("模糊处理")
+        text: qsTr("Blurring")
         onTriggered:
         {
              ActiveCtrl.applyGaussianBlur()
-            console.log("模糊处理")
         }
     }
 
@@ -142,7 +106,7 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("颜色反相(&I)")
+        text: qsTr("The color is inverted(&I)")
         sequence: "Ctrl+I"
         onTriggered:
         {
@@ -150,28 +114,17 @@ Menu{
         }
     }
 
-    MyMenuItem
-    {
-        text: qsTr("清除(&L)")
-        sequence: "Ctrl+Shift+N"
-        onTriggered:
-        {
-            console.log("清除")
-        }
-    }
-
     MenuSeparator{}
 
 
     MyMenuItem
     {
-        text: qsTr("选区背景不透明(&D)")
+        text: qsTr("The selection background is opaque(&D)")
         icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
         property bool ischecked: false
         enabled: false
         onTriggered:
         {
-            console.log("清除")
             ischecked = !ischecked
             icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
         }
