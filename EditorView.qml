@@ -44,6 +44,12 @@
  *
  * Modified by ZhanXuecai on 2024-7-5
  *   Replaced Muserrea with Taped(It also needs to be improved)
+ *
+ * Modified by RenTianxiang on 2024-7-8
+ *      Added free scaling for selection
+ *
+ * Modified by RenTianXiang on 2024-7-9
+ *      Added copy paste cut function
  */
 import QtQuick
 import QtQuick.Controls
@@ -70,29 +76,28 @@ Image
     property var newImage
     property Repeater images: _images
     property int modes: 0
+    property real oldXScale_scale: 1
+    property real oldYScale_scale: 1
+    property real newXScale_scale: 1
+    property real newYScale_scale: 1
     property alias flip: _flip
-    property alias yScale: _flip.yScale
-    property alias xScale: _flip.xScale
+    property alias yScale: _flip.yScale     //用于垂直翻转
+    property alias xScale: _flip.xScale     //用于水平翻转
+    property alias xScale_scale: _ScaleXY.xScale      //用于水平缩放
+    property alias yScale_scale: _ScaleXY.yScale       //用于垂直缩放
     property alias imageViewDragAreaTap: _imageViewDragAreaTap
     property alias imageViewDragArea: _imageViewDragArea
     property alias imageViewDragAreaRTap: _imageViewDragAreaRTap
+    property alias hoverhandler: _hoverhandler
     signal modified()
     signal requestAddBrushLayer()
     signal addUndoStack()
     signal modifiedVisible()
-    //fillMode: Image.PreserveAspectFit
+    signal scaleXYChanged()
+    fillMode: Image.PreserveAspectFit
     Editor
     {
         id: editor1
-    }
-
-    Rectangle{
-        id:r
-        visible: false
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
     }
 
     //用于储存修改前的图片
@@ -111,21 +116,24 @@ Image
         target: editor
         function onImageChanged()
         {
-            // modes++
-            // images.itemAt(modes - 1).image = oldImage
-            // oldImage = newImage
-            // newImage = editor.copyImage()
-            // if(!redoOrUndo)
-            // {
-            //     if(oldImage)
-            //     {
-            //         saveState(ActiveCtrl.ModifiedLayer, {oldImage: oldImage, newImage: newImage})
-            //     }
-            //     modified()
-            // }
-
             imageProvider.setImage(editor.image)
             imageView.source = "image://editorimage/" + Math.floor(Math.random() * 1000000000000)
+        }
+
+        function onImageStatusChanged()
+        {
+            oldImage = newImage
+            newImage = editor.copyImage()
+            modes++
+            images.itemAt(modes - 1).image = newImage
+            if(!redoOrUndo)
+            {
+                if(oldImage)
+                {
+                    saveState(ActiveCtrl.ModifiedLayer, {oldImage: oldImage, newImage: newImage})
+                }
+                modified()
+            }
         }
     }
 
@@ -161,7 +169,7 @@ Image
 
         HoverHandler
         {
-            id:hoverhandler
+            id:_hoverhandler
             onHoveredChanged: {
                 if(hovered)
                 {
@@ -192,8 +200,6 @@ Image
                 //转换为图片实际对应的x,y
                 x *= sourceSize.width / imageViewDragArea.width
                 y *= sourceSize.height / imageViewDragArea.height
-                strawcursor.x=point.position.x
-                strawcursor.y=point.position.y
                 ToolCtrl.getPointPositon(x,y)
             }
         }
@@ -331,6 +337,7 @@ Image
             }
         }
 
+
         TapHandler{
             id:eraserhandler
             target: imageView
@@ -363,9 +370,6 @@ Image
                 }
             }
         }
-
-
-
 
         //吸管移动
         TapHandler
@@ -446,7 +450,6 @@ Image
                 color=ToolCtrl.initalColor()
                 chineseFontLoaderSource=ToolCtrl.initalSource()
                 size=ToolCtrl.initalSize()
-
             }
         }
 
@@ -505,9 +508,11 @@ Image
             angle:imageView.currentAngle
         }, Scale
         {
-            id: _flipXY
+            id: _ScaleXY
             origin.x:imageView.width/2
             origin.y:imageView.height/2
+            xScale: 1
+            yScale: 1
         }]
 
 
@@ -559,6 +564,19 @@ Image
         }
     }
 
+    onScaleXYChanged:
+    {
+        oldXScale_scale = newXScale_scale
+        oldYScale_scale = newYScale_scale
+        newXScale_scale = xScale_scale
+        newYScale_scale = yScale_scale
+        if(!redoOrUndo)
+        {
+            saveState(ActiveCtrl.ScaleXYLayer, {yScale: yScale_scale, xScale: xScale_scale, oldXScale: oldXScale_scale, oldYScale: oldYScale_scale})
+            modified()
+        }
+    }
+
     //保存修改前的状态
     function saveState(action, params)
     {
@@ -597,13 +615,5 @@ Image
     function popUndoStack() //用于移去撤销栈多余的数据
     {
         undoStack.pop()
-    }
-    Image {
-        width: 15
-        height: 15
-        z:1
-        id: strawcursor
-        source: "qrc:/modules/se/qt/toolBar/Icon/straw.svg"
-        visible:ToolCtrl.selectedTool === "吸管" && hoverhandler.hovered
     }
 }

@@ -11,6 +11,10 @@
  * modified by Zengyan on 2024-7-8
  * finished maintoolBar,lefttoolBar...status changes function
  *  added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
+ * modified by ZhanXuecai on 2024-7-8
+ *  added some filter
+ * modified by ZhanXuecai on 2024-7-9
+ *  added more filter
  */
 #pragma once
 
@@ -73,6 +77,7 @@ class ActiveCtrl : public QObject
         int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
     Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
                    lcenterHeightChanged FINAL)
+    Q_PROPERTY(QImage pasteImage READ pasteImage WRITE setPasteImage NOTIFY pasteImageChanged FINAL)
 
     Q_PROPERTY(QObject* footer READ footer WRITE setFooter NOTIFY footerChanged FINAL)
     Q_PROPERTY(QObject* toolBar READ toolBar WRITE setToolBar NOTIFY toolBarChanged FINAL)
@@ -96,7 +101,7 @@ public:
         FlipXLayer,
         FlipYLayer,
         SpinLayer,
-
+        ScaleXYLayer,
     };
 
     enum Filter {
@@ -118,7 +123,16 @@ public:
         EdgeSharpeningFilter,
         PixelationFilter,
         CrystallizeFilter,
-        MosaicFilter
+        MosaicFilter,
+        FireEffectFilter,
+        MoltenEffectFilter,
+        DreamFilter,
+        FreezeColdFilter,
+        AnimeFilter,
+        VintageFilter,
+        LensFlareFilter,
+        RemoveNoiseFilter,
+        AddNoiseFilter
     };
 
     Q_ENUM(OperationType)
@@ -171,6 +185,15 @@ public:
     Q_INVOKABLE void applyStabilizationFilter();
     Q_INVOKABLE void applyPixelationFilter();
     Q_INVOKABLE void applyCrystallizeFilter();
+    Q_INVOKABLE void applyFireEffectFilter();
+    Q_INVOKABLE void applyMoltenEffectFilter();
+    Q_INVOKABLE void applyDreamFilter();
+    Q_INVOKABLE void applyFreezeColdFilter();
+    Q_INVOKABLE void applyAnimeFilter();
+    Q_INVOKABLE void applyVintageFilter();
+    Q_INVOKABLE void applyLensFlareFilter();
+    Q_INVOKABLE void applyRemoveNoiseFilter();
+    Q_INVOKABLE void applyAddNoiseFilter();
 
     Q_INVOKABLE void resetToOriginalImage();
     Q_INVOKABLE void resetToPreviousFilter();
@@ -178,6 +201,11 @@ public:
     //撤销操作
     Q_INVOKABLE void undo();
     Q_INVOKABLE void redo();
+
+    //复制粘贴剪切
+    Q_INVOKABLE void copyImagetoClipboard();
+    Q_INVOKABLE void pasteImageFromClipboard();
+    Q_INVOKABLE void cutImagetoClipboard();
 
     //图片颜色操作
     Q_INVOKABLE void oppositedColor();
@@ -263,6 +291,9 @@ public:
     int lcenterHeight() const;
     void setLcenterHeight(int newLcenterHeight);
 
+    QImage pasteImage() const;
+    void setPasteImage(const QImage& newPasteImage);
+
     QObject* footer() const;
     void setFooter(QObject* newFooter);
 
@@ -277,6 +308,10 @@ public:
 
     QObject* instructionDialog() const;
     void setInstructionDialog(QObject* newInstructionDialog);
+
+    void pasteEdge(cv::Mat& image, cv::Mat& outImg, const cv::Mat& cannyImage);
+    void changeSImage(cv::Mat& image, cv::Mat& outImg, float sRadio);
+    cv::Mat hsiToRgb(const cv::Mat& hsiMat);
 
 signals:
 
@@ -335,6 +370,8 @@ signals:
 
     void lcenterHeightChanged();
 
+    void pasteImageChanged();
+
     void footerChanged();
 
     void toolBarChanged();
@@ -366,6 +403,7 @@ private:
     int m_currentIndex;
     int m_lcenterHeight;
     int m_lcenterWidth;
+    QImage m_pasteImage;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;

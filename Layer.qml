@@ -32,6 +32,12 @@
  * modified by RenTianxiang on 2024-7-7
  *      added select fuction
  *      Be able to enlarge the display box freely
+ *
+ * Modified by RenTianxiang on 2024-7-8
+ *      Added free scaling for selection
+ *
+ * Modified by RenTianXiang on 2024-7-9
+ *      Added copy paste cut function
  */
 
 import QtQuick
@@ -95,8 +101,6 @@ Item
 
                     property var thepixUrl: pixUrl
 
-                    fillMode: thepixUrl === "/Image/tm533.6x253.6.png" ? Image.PreserveAspectFit : Image.PreserveAspectFit
-
                     width: tabContent.width / 5 * 4
                     height: tabContent.height / 5 * 4
 
@@ -128,6 +132,9 @@ Item
                         ToolCtrl.currentEditorView = editorView
                         tabContent.currentIndex = index
                         editor.openImage(thepixUrl)
+                        xScale_scale = 1
+                        yScale_scale = 1
+                        newImage = editor.image
                         console.log(thepixUrl)
                     }
                     imageViewDragAreaTap.onTapped:
@@ -298,23 +305,30 @@ Item
             {
                 if(index < layers.count)
                 {
-                    var map = { pixUrl: layers.itemAt(index).thepixUrl,
+                    var item = layers.itemAt(index)
+                    var map = { pixUrl: item.thepixUrl,
                         index: index,
-                        key: layers.itemAt(index).key,
-                        redoStack: layers.itemAt(index).redoStack,
-                        undoStack: layers.itemAt(index).undoStack,
-                        oldX: layers.itemAt(index).oldX,
-                        oldY: layers.itemAt(index).oldY,
-                        oldScale: layers.itemAt(index).oldScale,
-                        newScale: layers.itemAt(index).newScale,
-                        currentAngle: layers.itemAt(index).currentAngle,
-                        oldAngle: layers.itemAt(index).oldAngle,
-                        newAngle: layers.itemAt(index).newAngle,
-                        oldImage: layers.itemAt(index).oldImage,
-                        newImage: layers.itemAt(index).newImage,
-                        yScale: layers.itemAt(index).yScale,
-                        xScale: layers.itemAt(index).xScale,
-                        visible: layers.itemAt(index).visible}
+                        key: item.key,
+                        redoStack: item.redoStack,
+                        undoStack: item.undoStack,
+                        oldX: item.oldX,
+                        oldY: item.oldY,
+                        oldScale: item.oldScale,
+                        newScale: item.newScale,
+                        currentAngle: item.currentAngle,
+                        oldAngle: item.oldAngle,
+                        newAngle: item.newAngle,
+                        oldImage: item.oldImage,
+                        newImage: item.newImage,
+                        yScale: item.yScale,
+                        xScale: item.xScale,
+                        visible: item.visible,
+                        xScale_scale: item.xScale_scale,
+                        yScale_scale: item.yScale_scale,
+                        oldXScale_scale: item.oldXScale_scale,
+                        oldYScale_scale: item.oldYScale_scale,
+                        newXScale_scale: item.newXScale_scale,
+                        newYScale_scale: item.newYScale_scale}
                     if(isundo)
                     {
                         console.log("111:")
@@ -366,6 +380,12 @@ Item
                         item.yScale = map["yScale"]
                         item.xScale = map["xScale"]
                         item.visible = map["visible"]
+                        item.xScale_scale = map["xScale_scale"]
+                        item.yScale_scale = map["yScale_scale"]
+                        item.oldXScale_scale = map["oldXScale_scale"]
+                        item.oldYScale_scale = map["oldYScale_scale"]
+                        item.newXScale_scale = map["newXScale_scale"]
+                        item.newYScale_scale = map["newYScale_scale"]
 
                         if(item.editor.image !== map["newImage"])
                         {
@@ -374,6 +394,8 @@ Item
 
                             Qt.callLater(function()
                             {
+                                item.xScale_scale = map["xScale_scale"]
+                                item.yScale_scale = map["yScale_scale"]
                                 item.redoOrUndo = false
                             });
                         }
@@ -468,6 +490,34 @@ Item
                 {
                     layers.itemAt(index).redoOrUndo = false
                 });
+            }
+
+            function scaleXY(index, xScale, yScale)   //缩放宽和高
+            {
+                layers.itemAt(index).redoOrUndo = true
+                layers.itemAt(index).xScale_scale = xScale
+                layers.itemAt(index).yScale_scale = yScale
+                layers.itemAt(index).scaleXYChanged()
+
+                Qt.callLater(function()
+                {
+                    layers.itemAt(index).redoOrUndo = false
+                });
+            }
+
+
+            function addCopyLayer()
+            {
+                layerModel.append({pixUrl: "/icon/paste.png"})
+                tabContent.isModified = true
+                modifiedChanged()
+                Qt.callLater(function()
+                {
+                    modifiedLayer(layerModel.count - 1, ActiveCtrl.pasteImage)
+                    currentView.xScale_scale = 1
+                    currentView.yScale_scale = 1
+                    currentView.newImage = ActiveCtrl.pasteImage
+                })
             }
         }
 
@@ -793,7 +843,8 @@ Item
     }
 
     function getBrushLayerKeys(){
-        if(canvasList.length!==0 && findCanvasIndexBykey(canvasList[canvasList.length-1])===layers.count-1){
+        if(canvasList.length!==0 && findCanvasIndexBykey(canvasList[canvasList.length-1])===layers.count-1)
+        {
             return findCanvasIndexBykey(canvasList[canvasList.length-1])
         }else{
             layerModel.append({pixUrl:"/Image/tm533.6x253.6.png"});

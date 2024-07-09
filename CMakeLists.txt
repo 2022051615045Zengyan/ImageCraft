@@ -88,7 +88,9 @@ qt_add_qml_module(
   QML_FILES
   Layer.qml
   QML_FILES
-  SelectBox.qml)
+  SelectBox.qml
+  QML_FILES
+  StrawImage.qml)
 
 target_compile_features(appImageCraft PRIVATE cxx_std_20)
 
