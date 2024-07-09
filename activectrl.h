@@ -264,6 +264,7 @@ public:
     void setToolBar(QObject* newToolBar);
 
     Filter getCurrentFilter() const;
+    void setCurrentFilter(Filter newCurrentFilter);
 
 signals:
 

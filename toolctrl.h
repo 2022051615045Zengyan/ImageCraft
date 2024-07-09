@@ -89,7 +89,7 @@ class ToolCtrl : public QObject
 
     Q_PROPERTY(bool fillRectangle READ fillRectangle WRITE setFillRectangle NOTIFY
                    fillRectangleChanged FINAL)
-<<<<<<< HEAD
+
     Q_PROPERTY(QObject *straw_SampleRecords READ straw_SampleRecords WRITE setStraw_SampleRecords
                    NOTIFY straw_SampleRecordsChanged FINAL)
     Q_PROPERTY(QStringList colorList READ colorList WRITE setColorList NOTIFY colorListChanged FINAL)
