@@ -39,33 +39,7 @@ Menu{
             ischecked = !ischecked
             icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
         }
-
     }
 
-    MenuSeparator{}
 
-    MyMenuItem{
-        text:qsTr("配置语言(&L)...")
-        sequence: "Ctrl+Alt+,"
-        onTriggered: {
-            console.log("配置语言已被点击")
-        }
-    }
-
-    MyMenuItem{
-        text:qsTr("配置键盘快捷键(&H)...")
-        icon.name:"help-keybord-shortcuts-symbolic"
-
-        onTriggered: {
-            console.log("配置键盘快捷键")
-        }
-    }
-
-    MyMenuItem{
-        text:qsTr("配置工具栏(&B)...")
-        icon.name:"configure-toolbars"
-        onTriggered: {
-            console.log("配置工具栏已被点击")
-        }
-    }
 }

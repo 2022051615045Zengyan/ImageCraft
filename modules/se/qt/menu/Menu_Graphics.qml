@@ -22,39 +22,6 @@ Menu{
 
     MyMenuItem
     {
-        text: qsTr("裁剪图像到选区大小(&T)")
-        sequence: "Ctrl+T"
-        enabled: false
-        onTriggered:
-        {
-            console.log("裁剪图像到选区大小")
-        }
-    }
-
-    MyMenuItem
-    {
-        text: qsTr("自动裁剪(&O)")
-        sequence: "Ctrl+U"
-        onTriggered:
-        {
-            console.log("自动裁剪")
-        }
-    }
-
-    MenuSeparator{}
-
-    MyMenuItem
-    {
-        text: qsTr("更改大小/缩放(&E)")
-        sequence: "Ctrl+E"
-        onTriggered:
-        {
-            console.log("更改大小/缩放")
-        }
-    }
-
-    MyMenuItem
-    {
         text: qsTr("翻转(垂直)(&F)")
         sequence: "Ctrl+F"
         onTriggered:
@@ -150,30 +117,4 @@ Menu{
         }
     }
 
-    MyMenuItem
-    {
-        text: qsTr("清除(&L)")
-        sequence: "Ctrl+Shift+N"
-        onTriggered:
-        {
-            console.log("清除")
-        }
-    }
-
-    MenuSeparator{}
-
-
-    MyMenuItem
-    {
-        text: qsTr("选区背景不透明(&D)")
-        icon.source: "qrc:/modules/se/qt/menu/icon/checkBox-false"
-        property bool ischecked: false
-        enabled: false
-        onTriggered:
-        {
-            console.log("清除")
-            ischecked = !ischecked
-            icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true" : "qrc:/modules/se/qt/menu/icon/checkBox-false"
-        }
-    }
 }

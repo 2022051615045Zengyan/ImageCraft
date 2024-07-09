@@ -361,6 +361,31 @@ void ActiveCtrl::exitSlot()
     QCoreApplication::exit();
 }
 
+QObject *ActiveCtrl::instructionDialog() const
+{
+    return m_instructionDialog;
+}
+
+void ActiveCtrl::setInstructionDialog(QObject *newInstructionDialog)
+{
+    if (m_instructionDialog == newInstructionDialog)
+        return;
+    m_instructionDialog = newInstructionDialog;
+    emit instructionDialogChanged();
+}
+
+QObject *ActiveCtrl::manualDialog() const
+{
+    return m_manualDialog;
+}
+
+void ActiveCtrl::setManualDialog(QObject *newManualDialog)
+{
+    if (m_manualDialog == newManualDialog)
+        return;
+    m_manualDialog = newManualDialog;
+    emit manualDialogChanged();
+}
 QObject *ActiveCtrl::toolBar() const
 {
     return m_toolBar;
@@ -638,6 +663,16 @@ void ActiveCtrl::getAngle(double angle)
 void ActiveCtrl::openDialog()
 {
     QMetaObject::invokeMethod(m_rotationDialogBox, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::openManualDialog()
+{
+    QMetaObject::invokeMethod(m_manualDialog, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::openInstructionDialog()
+{
+    QMetaObject::invokeMethod(m_instructionDialog, "open", Qt::AutoConnection);
 }
 
 void ActiveCtrl::rotation(const QString &rotationstyle, double rotationangle)

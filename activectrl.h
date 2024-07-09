@@ -79,6 +79,10 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(Filter currentFilter READ getCurrentFilter WRITE setCurrentFilter NOTIFY
                    currentFilterChanged FINAL)
+    Q_PROPERTY(QObject* manualDialog READ manualDialog WRITE setManualDialog NOTIFY
+                   manualDialogChanged FINAL)
+    Q_PROPERTY(QObject* instructionDialog READ instructionDialog WRITE setInstructionDialog NOTIFY
+                   instructionDialogChanged FINAL)
 
 public:
     //图层修改类型
@@ -131,6 +135,8 @@ public:
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
     Q_INVOKABLE void getAngle(double angle);
     Q_INVOKABLE void openDialog();
+    Q_INVOKABLE void openManualDialog();
+    Q_INVOKABLE void openInstructionDialog();
     Q_INVOKABLE void rotation(const QString& rotationstyle, double rotationangle);
     Q_INVOKABLE void leftRotation();
     Q_INVOKABLE void rightRotation();
@@ -266,6 +272,12 @@ public:
     Filter getCurrentFilter() const;
     void setCurrentFilter(Filter newCurrentFilter);
 
+    QObject* manualDialog() const;
+    void setManualDialog(QObject* newManualDialog);
+
+    QObject* instructionDialog() const;
+    void setInstructionDialog(QObject* newInstructionDialog);
+
 signals:
 
     void dialogBoxChanged();
@@ -329,6 +341,10 @@ signals:
 
     void currentFilterChanged();
 
+    void manualDialogChanged();
+
+    void instructionDialogChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -355,7 +371,9 @@ private:
     QObject* m_currentLayer = nullptr;
     QString m_originalImageUrl;
     QObject* m_rotationDialogBox = nullptr;
+    QObject* m_instructionDialog = nullptr;
     QObject* m_openDialogBox = nullptr;
+    QObject* m_manualDialog = nullptr;
     QObject* m_newDialogBox = nullptr;
     QObject* m_savePathDialod = nullptr;
     QObject* m_failToSave = nullptr;
