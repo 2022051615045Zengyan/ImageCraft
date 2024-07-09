@@ -35,6 +35,11 @@
  * modified by Zengyan on 2024-7-8
  * finished maintoolBar,lefttoolBar...status changes
  * added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
+ * 
+ * modified by ZhanXuecai on 2024-7-8
+ *  added some filter
+ * modified by ZhanXuecai on 2024-7-9
+ *  added more filter
  */
 #include "activectrl.h"
 #include <QClipboard>
