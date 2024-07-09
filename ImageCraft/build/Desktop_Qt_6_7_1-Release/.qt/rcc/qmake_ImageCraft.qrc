@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/ImageCraft">
-    <file alias="qmldir">/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/ImageCraft/qmldir</file>
-  </qresource>
-</RCC>
-
