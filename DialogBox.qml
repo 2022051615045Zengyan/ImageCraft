@@ -78,7 +78,6 @@ Item
                         {
                             width: modelData.width/10
                             height: modelData.height/10
-                            color: "lightblue"
                             anchors.centerIn: parent
                         }
                         Text

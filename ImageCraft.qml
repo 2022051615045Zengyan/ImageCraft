@@ -15,11 +15,11 @@ import ImageCraft 1.0
 ApplicationWindow
 {
     id:window
-    width: 1000
-    height: 500
+    width: 1920
+    height: 1080
     visible: true
     title: qsTr("ImageCraft")
-   color:"#dad0d0"
+   color:"pink"
     minimumWidth: 800  // 设置最小宽度为800像素
     minimumHeight: 400
 

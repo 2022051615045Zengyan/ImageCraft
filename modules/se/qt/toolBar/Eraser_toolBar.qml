@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageCraft 1.0
 
 Item {
     id: eraser
@@ -12,6 +13,33 @@ Item {
     RowLayout{
         width: parent.width
         height: parent.height
+        Label{
+            text:"橡皮类型："
+        }
+
+        Button {
+            id: _eraser
+            icon.name: "draw-eraser"
+            text:"橡皮擦"
+            Layout.preferredWidth:parent.height
+            Layout.fillWidth: true
+            Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToEraser()
+            }
+        }
+
+        Button{
+            id:_eraser_colored
+            icon.name: "tool_color_eraser"
+            text:"彩色橡皮擦"
+            Layout.preferredWidth:parent.height
+            Layout.fillWidth: true
+            Layout.minimumWidth: parent.height
+            onClicked: {
+                ToolCtrl.setShapeToColoredEraser()
+            }
+        }
 
         Label{
             text:"橡皮大小:"
@@ -21,6 +49,13 @@ Item {
             id: eraser_size
             Layout.preferredWidth:parent.height*3
             model: ["小","中","大"]
+            Component.onCompleted: {
+                eraser_size.currentIndex = 0;
+            }
+
+            onCurrentIndexChanged: {
+                ToolCtrl.setEraserSize(currentIndex)
+            }
 
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height
@@ -29,17 +64,19 @@ Item {
         ToolSeparator {height: parent.height}
 
         Label{
-            text:"摩擦力:"
+            text:"摩擦力:"+eraser_opacities.value+"%"
         }
 
-        ComboBox{
-            id:eraser_opacity
-            width: parent.height*3
-            height: parent.height
-            model:["0","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"]
-
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.height
+        Slider{
+            id:eraser_opacities
+            from:0
+            to:100
+            value:100
+            stepSize: 1
+            onValueChanged: {
+                let alphaValue = 255* (eraser_opacities.value/100);
+                ToolCtrl.setEraserOpacity(alphaValue)
+            }
         }
 
         Item {

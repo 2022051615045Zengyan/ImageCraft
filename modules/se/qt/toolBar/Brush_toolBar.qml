@@ -22,6 +22,7 @@ Item {
         Button {
             id: _brush_Paintbrush
             icon.source: "qrc:/modules/se/qt/toolBar/Icon/huabi.png"
+            text:"画笔"
             Layout.preferredWidth:parent.height
             Layout.fillWidth: true
             Layout.minimumWidth: parent.height

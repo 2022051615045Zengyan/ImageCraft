@@ -85,9 +85,12 @@ qt_add_qml_module(
   toolctrl.cpp
   toolctrl.h
   SOURCES
-  QML_FILES Layer.qml
-  QML_FILES SelectBox.qml
-  QML_FILES StrawImage.qml)
+  QML_FILES
+  Layer.qml
+  QML_FILES
+  SelectBox.qml
+  QML_FILES
+  StrawImage.qml)
 
 target_compile_features(appImageCraft PRIVATE cxx_std_20)
 
@@ -107,7 +110,11 @@ target_link_libraries(
   appImageCraft
   PRIVATE Qt6::Quick
           # /usr/lib \                  # OpenCV的lib路径
-          opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
+          opencv_core
+          opencv_imgproc
+          opencv_highgui
+          opencv_imgcodecs
+          opencv_xphoto)
 # 其他需要的OpenCV模块库)
 
 include(GNUInstallDirs)

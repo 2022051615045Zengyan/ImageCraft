@@ -24,7 +24,7 @@ Item {
         RadioButton{
             id:_rectanle_Fill
             text:qsTr("填充")
-            checked: false
+            checked: true
             onCheckedChanged: {
                 ToolCtrl.setFillRectangle(true)
             }
@@ -33,7 +33,7 @@ Item {
         RadioButton{
             id:_rectanle_Stroke
             text:qsTr("描边")
-            checked: true
+            checked: false
             onCheckedChanged: {
                 ToolCtrl.setFillRectangle(false)
             }
