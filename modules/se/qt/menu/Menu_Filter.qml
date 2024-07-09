@@ -8,64 +8,49 @@ import ImageCraft 1.0
 
 Menu {
     width:300
-    title: qsTr("滤镜（&T)")
+    title: qsTr("Filter（&T)")
 
     //上次滤镜操作
     MyMenuItem {
-        text: "上次滤镜操作(&F)"
+        text: qsTr("Last filter operation(&F)")
         sequence: "Ctrl+F"
         onTriggered: {
             ActiveCtrl.resetToPreviousFilter()
         }
     }
+    //还原图片
     MyMenuItem {
-        text: "复原图片(&S)"
+        text: qsTr("Restore the image(&S)")
         sequence: "Ctrl+S"
         onTriggered: {
             ActiveCtrl.resetToOriginalImage()
         }
     }
     MenuSeparator{}
-    //滤镜库
-    MyMenuItem {
-        text: "滤镜库(&G)..."
-        onTriggered:Qt.quit();
-    }
-    //液化
-    MyMenuItem {
-        text: qsTr("液化（&L)...")
-        onTriggered:Qt.quit();
-        sequence: "Shift+Ctrl+X"
-    }
-
-
-    MenuSeparator{}
-
-
     //风格化
     Menu{
-        title: "风格化"
+        title: qsTr("Stylized")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("浮雕效果")
+            text: qsTr("Embossed effect")
             onTriggered: {
                 ActiveCtrl.applyEmbossFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("油画")
+            text: qsTr("Oil painting")
             onTriggered:{
                 ActiveCtrl.applyOilPaintFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("曝光过度")
+            text: qsTr("Overexposure")
             onTriggered: {
                 ActiveCtrl.applyOverexposureFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("扩散")
+            text: qsTr("Diffusion")
             onTriggered: {
                 ActiveCtrl.applyDiffusionFilter()
             }
@@ -74,28 +59,28 @@ Menu {
 
     //模糊
     Menu{
-        title: "模糊"
+        title: qsTr("Blur")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("动感模糊")
+            text: qsTr("Motion blur")
             onTriggered: {
                 ActiveCtrl.applyMotionBlurFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("高斯模糊")
+            text: qsTr("Gaussian blur")
             onTriggered:{
                 ActiveCtrl.applyGaussianBlurFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("进一步模糊")
+            text: qsTr("Further blur")
             onTriggered:{
                 ActiveCtrl.applyEnhancedBlurFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("镜头模糊")
+            text: qsTr("Lens blur")
             onTriggered: {
                 ActiveCtrl.applyLensBlurFilter()
             }
@@ -104,34 +89,34 @@ Menu {
 
     //扭曲
     Menu{
-        title: "扭曲"
+        title: qsTr("Twist")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("波浪")
+            text: qsTr("Wave")
             onTriggered: {
                 ActiveCtrl.applyWaveFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("波纹")
+            text: qsTr("Ripple")
             onTriggered: {
                 ActiveCtrl.applyRippleFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("挤压")
+            text: qsTr("Squeeze")
             onTriggered: {
                 ActiveCtrl.applySqueezeFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("水波")
+            text: qsTr("WaterRipple")
             onTriggered: {
                 ActiveCtrl.applyWaterRippleFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("切变")
+            text: qsTr("Shear")
             onTriggered: {
                 ActiveCtrl.applyShearFilter()
             }
@@ -141,22 +126,22 @@ Menu {
 
     //锐化
     Menu{
-        title: "锐化"
+        title: qsTr("Sharpen")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("USM锐化")
+            text: qsTr("USMSharpen")
             onTriggered: {
                 ActiveCtrl.applyUSMSharpeningFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("防抖")
+            text: qsTr("Stabilization")
             onTriggered: {
                 ActiveCtrl.applyStabilizationFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("锐化边缘")
+            text: qsTr("EdgeSharpen")
             onTriggered:{
                 ActiveCtrl.applyEdgeSharpeningFilter()
             }
@@ -165,98 +150,91 @@ Menu {
 
     //像素化
     Menu{
-        title: "像素化"
+        title: qsTr("Pixelation")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("彩块化")
+            text: qsTr("Pixelation")
             onTriggered: {
                 ActiveCtrl.applyPixelationFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("晶格化")
+            text: qsTr("Crystallize")
             onTriggered: {
                 ActiveCtrl.applyCrystallizeFilter()
             }
         }
         MyMenuItem{
-            text: qsTr("马赛克")
+            text: qsTr("Mosaic")
             onTriggered: {
             ActiveCtrl.applyMosaicFilter()
            }
-        }
-        MyMenuItem{
-            text: qsTr("碎片")
-            onTriggered: console.log("Delete action triggered");
-        }
-        MyMenuItem{
-            text: qsTr("铜版雕刻")
-            onTriggered: console.log("Delete action triggered");
         }
     }
 
     //渲染
     Menu{
-        title: "渲染"
+        title: qsTr("rendering")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("火焰...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Burning flames！")
+            onTriggered: {
+                ActiveCtrl.applyFireEffectFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("图片框...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Fuse everything！！")
+            onTriggered: {
+                ActiveCtrl.applyMoltenEffectFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("树...")
-            onTriggered: console.log("Delete action triggered");
-        }
-        MenuSeparator{}
-        MyMenuItem{
-            text: qsTr("分层云彩...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Like fantastic...")
+            onTriggered: {
+                ActiveCtrl.applyDreamFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("光照效果...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Cold extremely！！")
+            onTriggered: {
+                ActiveCtrl.applyFreezeColdFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("镜头光晕...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Anime")
+            onTriggered: {
+                ActiveCtrl.applyAnimeFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("纤维...")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("Vintage")
+            onTriggered:{
+                ActiveCtrl.applyVintageFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("云彩")
-            onTriggered: console.log("Delete action triggered");
+            text: qsTr("LensFlare")
+            onTriggered: {
+                ActiveCtrl.applyLensFlareFilter()
+            }
         }
     }
 
     //杂色
     Menu{
-        title: "杂色"
+        title: qsTr("variegated")
         icon.source: "qrc:/modules/se/qt/menu/icon/noneIcon.png"
         MyMenuItem{
-            text: qsTr("减少杂色...")
-            onTriggered: Qt.quit();
+            text: qsTr("RemoveNoise")
+            onTriggered: {
+                ActiveCtrl.applyRemoveNoiseFilter()
+            }
         }
         MyMenuItem{
-            text: qsTr("蒙尘与划痕...")
-            onTriggered: Qt.quit();
-        }
-        MyMenuItem{
-            text: qsTr("去斑")
-            onTriggered: Qt.quit();
-        }
-        MyMenuItem{
-            text: qsTr("添加杂色...")
-            onTriggered: Qt.quit();
-        }
-        MyMenuItem{
-            text: qsTr("中间值...")
-            onTriggered: Qt.quit();
+            text: qsTr("AddNoise")
+            onTriggered: {
+                ActiveCtrl.applyAddNoiseFilter()
+            }
         }
     }
 }

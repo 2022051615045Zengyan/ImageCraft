@@ -92,7 +92,6 @@ public:
         FlipXLayer,
         FlipYLayer,
         SpinLayer,
-
     };
 
     enum Filter {
@@ -114,7 +113,16 @@ public:
         EdgeSharpeningFilter,
         PixelationFilter,
         CrystallizeFilter,
-        MosaicFilter
+        MosaicFilter,
+        FireEffectFilter,
+        MoltenEffectFilter,
+        DreamFilter,
+        FreezeColdFilter,
+        AnimeFilter,
+        VintageFilter,
+        LensFlareFilter,
+        RemoveNoiseFilter,
+        AddNoiseFilter
     };
 
     Q_ENUM(OperationType)
@@ -165,6 +173,15 @@ public:
     Q_INVOKABLE void applyStabilizationFilter();
     Q_INVOKABLE void applyPixelationFilter();
     Q_INVOKABLE void applyCrystallizeFilter();
+    Q_INVOKABLE void applyFireEffectFilter();
+    Q_INVOKABLE void applyMoltenEffectFilter();
+    Q_INVOKABLE void applyDreamFilter();
+    Q_INVOKABLE void applyFreezeColdFilter();
+    Q_INVOKABLE void applyAnimeFilter();
+    Q_INVOKABLE void applyVintageFilter();
+    Q_INVOKABLE void applyLensFlareFilter();
+    Q_INVOKABLE void applyRemoveNoiseFilter();
+    Q_INVOKABLE void applyAddNoiseFilter();
 
     Q_INVOKABLE void resetToOriginalImage();
     Q_INVOKABLE void resetToPreviousFilter();
@@ -265,6 +282,10 @@ public:
 
     Filter getCurrentFilter() const;
     void setCurrentFilter(Filter newCurrentFilter);
+
+    void pasteEdge(cv::Mat& image, cv::Mat& outImg, const cv::Mat& cannyImage);
+    void changeSImage(cv::Mat& image, cv::Mat& outImg, float sRadio);
+    cv::Mat hsiToRgb(const cv::Mat& hsiMat);
 
 signals:
 
