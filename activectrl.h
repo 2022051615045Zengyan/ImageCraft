@@ -66,6 +66,7 @@ class ActiveCtrl : public QObject
         int lcenterWidth READ lcenterWidth WRITE setLcenterWidth NOTIFY lcenterWidthChanged FINAL)
     Q_PROPERTY(int lcenterHeight READ lcenterHeight WRITE setLcenterHeight NOTIFY
                    lcenterHeightChanged FINAL)
+    Q_PROPERTY(QImage pasteImage READ pasteImage WRITE setPasteImage NOTIFY pasteImageChanged FINAL)
 public:
     //图层修改类型
     enum OperationType {
@@ -78,6 +79,7 @@ public:
         FlipXLayer,
         FlipYLayer,
         SpinLayer,
+        ScaleXYLayer,
     };
     Q_ENUM(OperationType)
 
@@ -110,6 +112,11 @@ public:
     //撤销操作
     Q_INVOKABLE void undo();
     Q_INVOKABLE void redo();
+
+    //复制粘贴剪切
+    Q_INVOKABLE void copyImagetoClipboard();
+    Q_INVOKABLE void pasteImageFromClipboard();
+    Q_INVOKABLE void cutImagetoClipboard();
 
     Editor* currentEditor() const;
     void setCurrentEditor(Editor* newCurrentEditor);
@@ -186,6 +193,9 @@ public:
     int lcenterHeight() const;
     void setLcenterHeight(int newLcenterHeight);
 
+    QImage pasteImage() const;
+    void setPasteImage(const QImage& newPasteImage);
+
 signals:
 
     void dialogBoxChanged();
@@ -243,6 +253,8 @@ signals:
 
     void lcenterHeightChanged();
 
+    void pasteImageChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -264,6 +276,7 @@ private:
     int m_currentIndex;
     int m_lcenterHeight;
     int m_lcenterWidth;
+    QImage m_pasteImage;
 
     Editor* m_currentEditor = nullptr;
     QObject* m_currentLayer = nullptr;

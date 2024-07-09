@@ -36,7 +36,7 @@ Menu {
         text: qsTr("剪切(&T)")
         icon.name: "edit-cut"
         onTriggered: {
-            console.log("剪切已被点击")
+            ActiveCtrl.cutImagetoClipboard()
         }
     }
 
@@ -45,7 +45,7 @@ Menu {
         text: qsTr("复制(&C)")
         icon.name: "edit-copy"
         onTriggered: {
-            console.log("复制已被点击")
+            ActiveCtrl.copyImagetoClipboard()
         }
     }
 
@@ -54,7 +54,7 @@ Menu {
         text: qsTr("粘贴(&P)")
         icon.name: "edit-paste"
         onTriggered: {
-            console.log("粘贴已被点击")
+            ActiveCtrl.pasteImageFromClipboard()
         }
     }
 

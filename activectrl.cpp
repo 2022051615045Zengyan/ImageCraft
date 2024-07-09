@@ -28,13 +28,18 @@
  * Modified by RenTianxiang on 2024-7-6
  *      Finished modified the layer and remove the layer undo and redo
  *      added remove layer
+ *
+ * Modified by RenTianXiang on 2024-7-9
+ *      Added copy paste cut function
  */
 #include "activectrl.h"
+#include <QClipboard>
 #include <QDesktopServices>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QJSValue>
 #include <QMetaObject>
+#include <QMimeData>
 #include <QPixmap>
 #include <QQmlProperty>
 #include <QQuickItemGrabResult>
@@ -351,6 +356,19 @@ void ActiveCtrl::setYScale(int newYScale)
 void ActiveCtrl::exitSlot()
 {
     QCoreApplication::exit();
+}
+
+QImage ActiveCtrl::pasteImage() const
+{
+    return m_pasteImage;
+}
+
+void ActiveCtrl::setPasteImage(const QImage &newPasteImage)
+{
+    if (m_pasteImage == newPasteImage)
+        return;
+    m_pasteImage = newPasteImage;
+    emit pasteImageChanged();
 }
 
 int ActiveCtrl::lcenterHeight() const
@@ -881,6 +899,13 @@ void ActiveCtrl::undo()
                                       Q_ARG(QVariant, index),
                                       Q_ARG(QVariant, params["oldImage"]));
             break;
+        case ScaleXYLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "scaleXY",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["oldXScale"]),
+                                      Q_ARG(QVariant, params["oldYScale"]));
+            break;
         default:
             qDebug() << action;
             break;
@@ -975,11 +1000,63 @@ void ActiveCtrl::redo()
                                       Q_ARG(QVariant, flag));
             break;
         }
+        case ScaleXYLayer:
+            QMetaObject::invokeMethod(m_currentLayer,
+                                      "scaleXY",
+                                      Q_ARG(QVariant, index),
+                                      Q_ARG(QVariant, params["xScale"]),
+                                      Q_ARG(QVariant, params["yScale"]));
+            break;
         default:
             qDebug() << action;
             break;
         }
     }
+}
+
+void ActiveCtrl::copyImagetoClipboard()
+{
+    if (m_currentEditor) {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setImage(m_currentEditor->image());
+    }
+}
+
+void ActiveCtrl::pasteImageFromClipboard()
+{
+    if (m_currentLayer) {
+        m_pasteImage = QImage();
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        const QMimeData *mimeData = clipboard->mimeData();
+        if (mimeData->hasImage()) {
+            m_pasteImage = qvariant_cast<QImage>(mimeData->imageData());
+        } else {
+            return;
+        }
+
+        if (!m_pasteImage.isNull()) {
+            QMetaObject::invokeMethod(m_currentLayer, "addCopyLayer", Qt::AutoConnection);
+        }
+    }
+}
+
+void ActiveCtrl::cutImagetoClipboard()
+{
+    if (!m_currentImageView || !m_currentLayer) {
+        return;
+    }
+    copyImagetoClipboard();
+    QVariant key = QQmlProperty::read(m_currentImageView, "key");
+    QVariant index;
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "findIndexBykey",
+                              qReturnArg(index),
+                              Q_ARG(QVariant, key));
+    QVariant flag = true;
+    QMetaObject::invokeMethod(m_currentLayer,
+                              "removeLayer",
+                              Q_ARG(QVariant, index),
+                              Q_ARG(QVariant, flag));
 }
 
 cv::Mat ActiveCtrl::QImageToCvMat(const QImage &image)

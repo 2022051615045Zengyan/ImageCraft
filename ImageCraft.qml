@@ -57,6 +57,19 @@ ApplicationWindow
         tabBar_currentIndex: icContent.tags.currentIndex
     }
 
+    StrawImage  //显示吸管图标
+    {
+        id: strawImage
+        x: mousePostion.point.position.x
+        y: mousePostion.point.position.y
+        visible:ToolCtrl.selectedTool === "吸管" && ToolCtrl.currentEditorView && ToolCtrl.currentEditorView.hoverhandler.hovered
+    }
+
+    HoverHandler    //用于获取鼠标实时位置
+    {
+        id: mousePostion
+    }
+
     onClosing: function(event)
     {
         event.accepted = false

@@ -65,6 +65,7 @@
         <file>Image/tm1000x1000.png</file>
         <file>Image/tm1000x1200.png</file>
         <file>Image/tm1500x1500.png</file>
+        <file>icon/paste.png</file>
     </qresource>
     <qresource prefix="/new/prefix1">
         <file>textfont/FounderthickSongJanebody.ttf</file>
