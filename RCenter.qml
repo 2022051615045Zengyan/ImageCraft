@@ -45,6 +45,12 @@ Item
                     height: width
                     anchors.right: parent.right
                     clip: true
+                    Image
+                    {
+                        id: transparentImage
+                        anchors.fill: parent
+                        source: "qrc:/icon/transparent.jpg"
+                    }
 
                     Image
                     {

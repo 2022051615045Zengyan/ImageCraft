@@ -185,41 +185,41 @@ Rectangle {
             switch(ToolCtrl.selectedTool)
             {
             case 0:   //选择
-                text1.text=qsTr("Select: Select the layer that you want.");
+                text1.text = qsTr("Select: Select the layer that you want.");
                 break;
             case 1:     //移动
-                text1.text=qsTr("Move: Please move your picture.");
+                text1.text = qsTr("Move: Please move your picture.");
                 break;
             case 2:     //文字
-                text1.text=qsTr("Text: You are using the Add text feature.");
+                text1.text = qsTr("Text: You are using the Add text feature.");
                 break;
             case 3:     //吸管
-                text1.text=qsTr("Sucker: You choose the color point you want to absorb.");
+                text1.text = qsTr("Sucker: You choose the color point you want to absorb.");
                 break;
             case 4:     //矩阵
-                text1.text=qsTr("Matrix: Please draw the matrix you want.");
+                text1.text = qsTr("Matrix: Please draw the matrix you want.");
                 break;
             case 5:     //线条
-                text1.text=qsTr("Lines: Please draw the lines you want.");
+                text1.text = qsTr("Lines: Please draw the lines you want.");
                 break;
             case 6:     //画笔
-                text1.text=qsTr("Brush: You are painting using a paintbrush.");
+                text1.text = qsTr("Brush: You are painting using a paintbrush.");
                 break;
             case 7:     //橡皮擦
-                text1.text=qsTr("Eraser: You are using the eraser to erase the selected area.");
+                text1.text = qsTr("Eraser: You are using the eraser to erase the selected area.");
                 break;
             case 8:     //缩放
-                text1.text=qsTr("Zoom: Please select the multiple of your zoom.");
+                text1.text = qsTr("Zoom: Please select the multiple of your zoom.");
                 break;
             }
         }
     }
 
     Component.onCompleted: {
-        ActiveCtrl.footer=bottomshow
-        ToolCtrl.showcolor=showcolor
-        ToolCtrl.pointtext=text2
-        ToolCtrl.imageSize=text3
+        ActiveCtrl.footer = bottomshow
+        ToolCtrl.showcolor = showcolor
+        ToolCtrl.pointtext = text2
+        ToolCtrl.imageSize = text3
     }
 }
 

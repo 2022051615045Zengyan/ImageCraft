@@ -39,6 +39,5 @@ Menu{
             ischecked = !ischecked
             icon.source = ischecked ? "qrc:/modules/se/qt/menu/icon/checkBox-true.svg" : "qrc:/modules/se/qt/menu/icon/checkBox-false.svg"
         }
-
     }
 }

@@ -23,8 +23,8 @@ MenuBar
     }
     Menu_Edit{}
     Menu_Graphics{}
-    Menu_Setting{}
     Menu_Filter{}
     Menu_View{}
+    Menu_Setting{}
     Menu_Help{}
 }

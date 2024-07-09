@@ -35,6 +35,11 @@
  * modified by Zengyan on 2024-7-8
  * finished maintoolBar,lefttoolBar...status changes
  * added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
+ * 
+ * modified by ZhanXuecai on 2024-7-8
+ *  added some filter
+ * modified by ZhanXuecai on 2024-7-9
+ *  added more filter
  */
 #include "activectrl.h"
 #include <QClipboard>
@@ -367,6 +372,32 @@ void ActiveCtrl::exitSlot()
     QCoreApplication::exit();
 }
 
+QObject *ActiveCtrl::instructionDialog() const
+{
+    return m_instructionDialog;
+}
+
+void ActiveCtrl::setInstructionDialog(QObject *newInstructionDialog)
+{
+    if (m_instructionDialog == newInstructionDialog)
+        return;
+    m_instructionDialog = newInstructionDialog;
+    emit instructionDialogChanged();
+}
+
+QObject *ActiveCtrl::manualDialog() const
+{
+    return m_manualDialog;
+}
+
+void ActiveCtrl::setManualDialog(QObject *newManualDialog)
+{
+    if (m_manualDialog == newManualDialog)
+        return;
+    m_manualDialog = newManualDialog;
+    emit manualDialogChanged();
+}
+
 QImage ActiveCtrl::pasteImage() const
 {
     return m_pasteImage;
@@ -657,6 +688,16 @@ void ActiveCtrl::getAngle(double angle)
 void ActiveCtrl::openDialog()
 {
     QMetaObject::invokeMethod(m_rotationDialogBox, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::openManualDialog()
+{
+    QMetaObject::invokeMethod(m_manualDialog, "open", Qt::AutoConnection);
+}
+
+void ActiveCtrl::openInstructionDialog()
+{
+    QMetaObject::invokeMethod(m_instructionDialog, "open", Qt::AutoConnection);
 }
 
 void ActiveCtrl::rotation(const QString &rotationstyle, double rotationangle)
@@ -1093,6 +1134,7 @@ void ActiveCtrl::oppositedColor()
         }
 
         m_currentEditor->setImage(invertedImage);
+        m_currentEditor->imageStatusChanged();
     }
 }
 
@@ -1104,6 +1146,7 @@ void ActiveCtrl::convertToGray()
         painter.drawImage(0, 0, m_currentEditor->image());
         painter.end();
         m_currentEditor->setImage(grayImage);
+        m_currentEditor->imageStatusChanged();
     }
 }
 
@@ -1114,6 +1157,7 @@ void ActiveCtrl::convertToMonochromeDithered()
         QPainter painter(&monoImage);
         painter.drawImage(0, 0, m_currentEditor->image().convertToFormat(QImage::Format_Mono));
         m_currentEditor->setImage(monoImage);
+        m_currentEditor->imageStatusChanged();
     }
 }
 
@@ -1134,6 +1178,7 @@ void ActiveCtrl::applyGaussianBlur()
         // Convert Mat back to QImage
         QImage outputImage = matToQImage(blurredMat);
         m_currentEditor->setImage(outputImage);
+        m_currentEditor->imageStatusChanged();
     }
 }
 
@@ -1456,23 +1501,41 @@ void ActiveCtrl::applyLensBlurFilter()
         m_originalImage = m_currentEditor->image();
     }
     QImage targetImage = m_originalImage;
-    QImage resultImage;
-    cv::Mat dst;
     if (!targetImage.isNull()) {
         cv::Mat srcMat = QImageToCvMat(targetImage);
-        dst = srcMat.clone(); // Clone srcMat to dst
-        // 中心点和模糊强度
-        cv::Point center(srcMat.cols / 2, srcMat.rows / 2);
-        int strength = 15; // 模糊强度，可以根据需要调整
-        // 创建径向模糊效果
-        for (int i = 0; i < strength; ++i) {
-            double alpha = (double) i / strength;
-            cv::addWeighted(srcMat, alpha, dst, 1 - alpha, 0, dst); // Update dst in-place
+        cv::Mat dst;
+        srcMat.copyTo(dst);
+        int width = srcMat.cols;
+        int height = srcMat.rows;
+        cv::Point center(width / 2, height / 2);
+        int num = 20; // 模糊力度
+        std::vector<cv::Mat> srcChannels;
+        cv::split(srcMat, srcChannels);
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                int R = cv::norm(cv::Point(x, y) - center);
+                double angle = atan2(static_cast<double>(y - center.y),
+                                     static_cast<double>(x - center.x));
+                int tmp0 = 0, tmp1 = 0, tmp2 = 0;
+                for (int i = 0; i < num; ++i) {
+                    int tmpR = std::max(R - i, 0);
+                    int newX = static_cast<int>(tmpR * cos(angle)) + center.x;
+                    int newY = static_cast<int>(tmpR * sin(angle)) + center.y;
+                    newX = std::clamp(newX, 0, width - 1);
+                    newY = std::clamp(newY, 0, height - 1);
+                    tmp0 += srcChannels[0].at<uchar>(newY, newX);
+                    tmp1 += srcChannels[1].at<uchar>(newY, newX);
+                    tmp2 += srcChannels[2].at<uchar>(newY, newX);
+                }
+                dst.at<cv::Vec3b>(y, x)[0] = static_cast<uchar>(tmp0 / num);
+                dst.at<cv::Vec3b>(y, x)[1] = static_cast<uchar>(tmp1 / num);
+                dst.at<cv::Vec3b>(y, x)[2] = static_cast<uchar>(tmp2 / num);
+            }
         }
-        resultImage = CvMatToQImage(dst);
+        QImage resultImage = CvMatToQImage(dst);
         m_currentEditor->setImage(resultImage);
-        emit m_currentEditor->imageStatusChanged();
     }
+    emit m_currentEditor->imageStatusChanged();
 }
 
 void ActiveCtrl::applyWaveFilter()
@@ -1826,6 +1889,392 @@ void ActiveCtrl::applyMosaicFilter()
     emit m_currentEditor->imageStatusChanged();
 }
 
+void ActiveCtrl::applyFireEffectFilter()
+{
+    m_currentFilter = FireEffectFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat noise = cv::Mat(srcMat.rows, srcMat.cols, CV_8UC1);
+        cv::randu(noise, 0, 255); // Generate random noise
+
+        cv::Mat fireEffect(srcMat.rows, srcMat.cols, CV_8UC3);
+        for (int y = 0; y < srcMat.rows; ++y) {
+            for (int x = 0; x < srcMat.cols; ++x) {
+                uchar intensity = noise.at<uchar>(y, x);
+                cv::Vec3b color;
+
+                if (intensity < 64) {
+                    color[0] = 0;
+                    color[1] = 0;
+                    color[2] = intensity * 4; // 亮红色
+                } else if (intensity < 128) {
+                    color[0] = 0;
+                    color[1] = (intensity - 64) * 4; // 暗红色
+                    color[2] = 255;
+                } else if (intensity < 192) {
+                    color[0] = 0;
+                    color[1] = 255;
+                    color[2] = 255 - (intensity - 128) * 4; //橙红色
+                } else {
+                    color[0] = (intensity - 192) * 4;
+                    color[1] = 255;
+                    color[2] = 0; // 黄白
+                }
+                fireEffect.at<cv::Vec3b>(y, x) = color;
+            }
+        }
+        cv::GaussianBlur(fireEffect, fireEffect, cv::Size(0, 0), 2.0);
+        cv::Mat dst;
+        cv::addWeighted(srcMat, 0.5, fireEffect, 0.5, 0, dst);
+
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyMoltenEffectFilter()
+{
+    m_currentFilter = MoltenEffectFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst = srcMat.clone();
+
+        for (int i = 0; i < dst.rows; ++i) {
+            for (int j = 0; j < dst.cols; ++j) {
+                dst.at<cv::Vec3b>(i, j)[0] = cv::saturate_cast<uchar>(
+                    128 * dst.at<cv::Vec3b>(i, j)[0]
+                    / (dst.at<cv::Vec3b>(i, j)[1] + dst.at<cv::Vec3b>(i, j)[2] + 1)); // blue
+                dst.at<cv::Vec3b>(i, j)[1] = cv::saturate_cast<uchar>(
+                    128 * dst.at<cv::Vec3b>(i, j)[1]
+                    / (dst.at<cv::Vec3b>(i, j)[0] + dst.at<cv::Vec3b>(i, j)[2] + 1)); // green
+                dst.at<cv::Vec3b>(i, j)[2] = cv::saturate_cast<uchar>(
+                    128 * dst.at<cv::Vec3b>(i, j)[2]
+                    / (dst.at<cv::Vec3b>(i, j)[0] + dst.at<cv::Vec3b>(i, j)[1] + 1)); // red
+            }
+        }
+
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyDreamFilter()
+{
+    m_currentFilter = DreamFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat dst;
+        // 对比度
+        srcMat.convertTo(dst, -1, 1.2, 0);
+        // 饱和度
+        cv::Mat hsv;
+        cv::cvtColor(dst, hsv, cv::COLOR_BGR2HSV);
+        std::vector<cv::Mat> channels;
+        cv::split(hsv, channels);
+        channels[1] *= 1.5; // 增加饱和度
+        cv::merge(channels, hsv);
+        cv::cvtColor(hsv, dst, cv::COLOR_HSV2BGR);
+        // 锐化
+        cv::Mat sharpened;
+        cv::GaussianBlur(dst, sharpened, cv::Size(0, 0), 3);
+        cv::addWeighted(dst, 1.5, sharpened, -0.5, 0, dst);
+        QImage resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyFreezeColdFilter()
+{
+    m_currentFilter = FreezeColdFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+
+        // 增加蓝色分量，减少红色分量
+        std::vector<cv::Mat> channels(3);
+        cv::split(srcMat, channels);
+        channels[0] = channels[0] + 30; // 增加蓝色
+        channels[2] = channels[2] - 30; // 减少红色
+        cv::merge(channels, dst);
+
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+//https://github.com/hurtnotbad/cartoon
+void ActiveCtrl::applyAnimeFilter()
+{
+    m_currentFilter = AnimeFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        cv::Mat gray, edges, binateMat, hsiMat;
+        // Step 1: Edge Detection
+        cv::cvtColor(srcMat, gray, cv::COLOR_BGR2GRAY);
+        cv::Canny(gray, edges, 50, 150, 3);
+        cv::Mat edgesColor;
+        cv::cvtColor(edges, edgesColor, cv::COLOR_GRAY2BGR);
+
+        // Step 2: Paste edges
+        pasteEdge(srcMat, edgesColor, edges);
+
+        // Step 3: Bilateral Filter
+        cv::bilateralFilter(edgesColor, binateMat, 10, 50, 50, cv::BORDER_DEFAULT);
+
+        // Step 4: Adjust Saturation
+        changeSImage(binateMat, hsiMat, 1.5);
+
+        QImage resultImage = CvMatToQImage(hsiMat);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::pasteEdge(cv::Mat &image, cv::Mat &outImg, const cv::Mat &cannyImage)
+{
+    cv::Mat cannyMat;
+    cv::threshold(cannyImage, cannyMat, 100, 255, cv::THRESH_BINARY_INV);
+    image.copyTo(outImg, cannyMat);
+}
+
+cv::Mat ActiveCtrl::hsiToRgb(const cv::Mat &hsiMat)
+{
+    int rows = hsiMat.rows;
+    int cols = hsiMat.cols;
+    cv::Mat rgbMat(rows, cols, CV_32FC3);
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            float h = hsiMat.at<cv::Vec3f>(i, j)[0];
+            float s = hsiMat.at<cv::Vec3f>(i, j)[1];
+            float iVal = hsiMat.at<cv::Vec3f>(i, j)[2];
+            float r, g, b;
+            if (h < 2 * CV_PI / 3) {
+                b = iVal * (1 - s);
+                r = iVal * (1 + s * cos(h) / cos(CV_PI / 3 - h));
+                g = 3 * iVal - (r + b);
+            } else if (h < 4 * CV_PI / 3) {
+                h = h - 2 * CV_PI / 3;
+                r = iVal * (1 - s);
+                g = iVal * (1 + s * cos(h) / cos(CV_PI / 3 - h));
+                b = 3 * iVal - (r + g);
+            } else {
+                h = h - 4 * CV_PI / 3;
+                g = iVal * (1 - s);
+                b = iVal * (1 + s * cos(h) / cos(CV_PI / 3 - h));
+                r = 3 * iVal - (g + b);
+            }
+            rgbMat.at<cv::Vec3f>(i, j)[0] = b;
+            rgbMat.at<cv::Vec3f>(i, j)[1] = g;
+            rgbMat.at<cv::Vec3f>(i, j)[2] = r;
+        }
+    }
+    return rgbMat;
+}
+
+void ActiveCtrl::changeSImage(cv::Mat &image, cv::Mat &outImg, float sRadio)
+{
+    int rows = image.rows;
+    int cols = image.cols;
+    cv::Mat hsiMat(rows, cols, CV_32FC3);
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            cv::Vec3b rgb = image.at<cv::Vec3b>(i, j);
+            float r = rgb[2] / 255.0;
+            float g = rgb[1] / 255.0;
+            float b = rgb[0] / 255.0;
+
+            float intensity = (r + g + b) / 3.0;
+            float min_rgb = std::min({r, g, b});
+            float saturation = 1 - min_rgb / intensity;
+            float hue = 0.0;
+
+            if (saturation != 0) {
+                float theta = acos((r - 0.5 * g - 0.5 * b)
+                                   / sqrt(r * r + g * g + b * b - r * g - r * b - g * b));
+                if (b <= g) {
+                    hue = theta;
+                } else {
+                    hue = 2 * CV_PI - theta;
+                }
+            }
+
+            hsiMat.at<cv::Vec3f>(i, j)[0] = hue;
+            hsiMat.at<cv::Vec3f>(i, j)[1] = saturation * sRadio;
+            hsiMat.at<cv::Vec3f>(i, j)[2] = intensity;
+        }
+    }
+
+    cv::Mat rgbMat = hsiToRgb(hsiMat);
+    rgbMat.convertTo(outImg, CV_8UC3, 255.0);
+}
+
+void ActiveCtrl::applyVintageFilter()
+{
+    m_currentFilter = VintageFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+
+        // 图像怀旧特效
+        for (int i = 0; i < srcMat.rows; ++i) {
+            for (int j = 0; j < srcMat.cols; ++j) {
+                double B = 0.272 * srcMat.at<cv::Vec3b>(i, j)[2]
+                           + 0.534 * srcMat.at<cv::Vec3b>(i, j)[1]
+                           + 0.131 * srcMat.at<cv::Vec3b>(i, j)[0];
+                double G = 0.349 * srcMat.at<cv::Vec3b>(i, j)[2]
+                           + 0.686 * srcMat.at<cv::Vec3b>(i, j)[1]
+                           + 0.168 * srcMat.at<cv::Vec3b>(i, j)[0];
+                double R = 0.393 * srcMat.at<cv::Vec3b>(i, j)[2]
+                           + 0.769 * srcMat.at<cv::Vec3b>(i, j)[1]
+                           + 0.189 * srcMat.at<cv::Vec3b>(i, j)[0];
+
+                // 防止溢出
+                if (B > 255)
+                    B = 255;
+                if (G > 255)
+                    G = 255;
+                if (R > 255)
+                    R = 255;
+
+                dst.at<cv::Vec3b>(i, j) = cv::Vec3b((uchar) B, (uchar) G, (uchar) R);
+            }
+        }
+
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyLensFlareFilter()
+{
+    m_currentFilter = LensFlareFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+        // 设置中心点和光照半径
+        int centerX = srcMat.rows / 2 - 20;
+        int centerY = srcMat.cols / 2 + 20;
+        int radius = std::min(centerX, centerY);
+        // 设置光照强度
+        int strength = 100;
+        // 图像光照特效
+        for (int i = 0; i < srcMat.rows; ++i) {
+            for (int j = 0; j < srcMat.cols; ++j) {
+                // 计算当前点到光照中心距离的平方
+                double distance = std::pow((centerY - j), 2) + std::pow((centerX - i), 2);
+                // 获取原始图像的颜色值
+                int B = srcMat.at<cv::Vec3b>(i, j)[0];
+                int G = srcMat.at<cv::Vec3b>(i, j)[1];
+                int R = srcMat.at<cv::Vec3b>(i, j)[2];
+                if (distance < radius * radius) {
+                    // 根据距离大小计算增强的光照值
+                    int result = static_cast<int>(strength * (1.0 - std::sqrt(distance) / radius));
+                    B = std::min(255, std::max(0, B + result));
+                    G = std::min(255, std::max(0, G + result));
+                    R = std::min(255, std::max(0, R + result));
+                }
+                // 更新目标图像
+                dst.at<cv::Vec3b>(i, j) = cv::Vec3b(B, G, R);
+            }
+        }
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyRemoveNoiseFilter()
+{
+    m_currentFilter = RemoveNoiseFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+
+        // 去除杂色只保留红色通道
+        cv::Mat channels[3];
+        cv::split(srcMat, channels); // 分离通道
+
+        // 只保留红色通道
+        channels[0] = cv::Mat::zeros(srcMat.rows, srcMat.cols, CV_8UC1); // Blue channel
+        channels[1] = cv::Mat::zeros(srcMat.rows, srcMat.cols, CV_8UC1); // Green channel
+
+        // 合并通道
+        cv::merge(channels, 3, dst);
+
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
+void ActiveCtrl::applyAddNoiseFilter()
+{
+    m_currentFilter = AddNoiseFilter;
+    if (m_originalImage.isNull() && m_currentEditor) {
+        m_originalImage = m_currentEditor->image();
+    }
+    QImage targetImage = m_originalImage;
+    QImage resultImage;
+    cv::Mat dst;
+    if (!targetImage.isNull()) {
+        cv::Mat srcMat = QImageToCvMat(targetImage);
+        dst = srcMat.clone();
+        //在整个图像上叠加蓝色
+        cv::Mat noise(srcMat.size(), CV_8UC3, cv::Scalar(255, 0, 0)); // 添加蓝色噪声
+        cv::add(dst, noise, dst);
+        resultImage = CvMatToQImage(dst);
+        m_currentEditor->setImage(resultImage);
+    }
+    emit m_currentEditor->imageStatusChanged();
+}
+
 void ActiveCtrl::resetToOriginalImage()
 {
     if (!m_originalImage.isNull() && m_currentEditor) {
@@ -1890,6 +2339,33 @@ void ActiveCtrl::resetToPreviousFilter()
         break;
     case MosaicFilter:
         applyMosaicFilter();
+        break;
+    case FireEffectFilter:
+        applyFireEffectFilter();
+        break;
+    case MoltenEffectFilter:
+        applyMoltenEffectFilter();
+        break;
+    case DreamFilter:
+        applyDreamFilter();
+        break;
+    case FreezeColdFilter:
+        applyFreezeColdFilter();
+        break;
+    case AnimeFilter:
+        applyAnimeFilter();
+        break;
+    case VintageFilter:
+        applyVintageFilter();
+        break;
+    case LensFlareFilter:
+        applyLensFlareFilter();
+        break;
+    case RemoveNoiseFilter:
+        applyRemoveNoiseFilter();
+        break;
+    case AddNoiseFilter:
+        applyAddNoiseFilter();
         break;
     }
     emit m_currentEditor->imageStatusChanged();

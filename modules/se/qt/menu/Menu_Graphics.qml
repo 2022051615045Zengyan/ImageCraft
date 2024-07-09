@@ -116,7 +116,6 @@ Menu{
 
     MenuSeparator{}
 
-
     MyMenuItem
     {
         text: qsTr("The selection background is opaque(&D)")

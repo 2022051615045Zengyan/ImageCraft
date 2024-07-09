@@ -75,7 +75,7 @@ Item
         height: layer.height
         width: layer.height
         clip: true
-        color: "white"
+        color: "transparent"
         anchors.centerIn: parent
         property double heightRatio: height / ActiveCtrl.lcenterHeight
         property double widthRatio: width / ActiveCtrl.lcenterWidth
@@ -86,7 +86,7 @@ Item
             height: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) >= (tabContent.height / tabContent.width)) ? layers.itemAt(0).height : (layers.itemAt(0).sourceSize.height * layers.itemAt(0).width / layers.itemAt(0).sourceSize.width)
             width: !layers.count ? 100 : ((layers.itemAt(0).sourceSize.height) / (layers.itemAt(0).sourceSize.width) <= (tabContent.height / tabContent.width)) ? layers.itemAt(0).width : (layers.itemAt(0).sourceSize.width * layers.itemAt(0).height / layers.itemAt(0).sourceSize.height)
             anchors.centerIn: parent
-            color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "black"
+            color: !layers.count ?  "white" : (layers.itemAt(0).editor.path) ? "transparent" : "transparent"
             property ListModel layerListModel: ListModel {}
             property Repeater layers: layers_
             Repeater
@@ -636,6 +636,16 @@ Item
     }
     Rectangle
     {
+        id: top_hide
+        anchors.top: parent.top
+        anchors.bottom: topBorder.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: "pink"
+    }
+
+    Rectangle
+    {
         id: bottomBorder
         width: display_rect.width
         height: 5
@@ -657,6 +667,16 @@ Item
             display_rect.height = display_rect.height + (y - (display_rect.y + display_rect.height)) * 2
         }
     }
+    Rectangle
+    {
+        id: bottom_hide
+        anchors.bottom: parent.bottom
+        anchors.top: bottomBorder.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: "pink"
+    }
+
     Rectangle
     {
         id: leftBorder
@@ -682,6 +702,16 @@ Item
     }
     Rectangle
     {
+        id: left_hide
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: leftBorder.left
+        color: "pink"
+    }
+
+    Rectangle
+    {
         id: rightBorder
         width: 5
         height: display_rect.height
@@ -703,6 +733,16 @@ Item
             display_rect.width = display_rect.width + (x - display_rect.x - display_rect.width) * 2
         }
     }
+    Rectangle
+    {
+        id: right_hide
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        anchors.left: rightBorder.right
+        anchors.right: parent.right
+        color: "pink"
+    }
+
     Rectangle
     {
         id: topLeftBorder

@@ -33,6 +33,14 @@ Item
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
+                Image
+                {
+                    id: transparentImage
+                    anchors.fill: parent
+                    z: -1
+                    source: "qrc:/icon/transparent.jpg"
+                }
             }
         }
 

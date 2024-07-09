@@ -4,6 +4,7 @@
  */
 import QtQuick
 import QtQuick.Controls
+import ImageCraft 1.0
 Menu{
     width: 300
     id:setting
@@ -14,7 +15,8 @@ Menu{
         sequence: "F1"
 
         onTriggered: {
-            console.log("捐款已被点击")
+            ActiveCtrl.openManualDialog()
+            console.log("使用手册")
         }
     }
     MyMenuItem{
@@ -22,6 +24,7 @@ Menu{
         icon.name:"help-whatsthis"
         sequence: "Shift+F1"
         onTriggered: {
+            ActiveCtrl.openInstructionDialog()
             console.log("这是什么已被点击")
         }
     }

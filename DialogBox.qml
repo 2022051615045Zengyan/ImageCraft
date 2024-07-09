@@ -248,6 +248,7 @@ Item
     {
         id: _askSaveDialog
 
+
         title: "Unsaved Changes"
         text: "untitled have unsaved changes. Do you want to save before close it?"
         buttons: MessageDialog.Save | MessageDialog.Discard | MessageDialog.Cancel
@@ -325,6 +326,58 @@ Item
         }
     }
 
+    MessageDialog
+    {
+        id: _userManualDialog
+
+        title: "User Manual"
+        modality: Qt.WindowModal
+        buttons:MessageDialog.Ok
+        informativeText: qsTr("Select: Select the picture, and you can operate on the selected image.
+
+ Open and save picture files: open picture files from the local file system, and support saving the modified pictures.
+
+ Image movement: After clicking the corresponding sidebar movement tool, the image is moved, zoom and rotated, so as to better view and edit details.
+
+ Image zoom: Click the side toolbar zoom tool or menu bar options to realize the zoom function of the picture.
+
+Image rotation: you can click the side toolbar zoom tool and use the touch pad to rotate, or click the menu bar tool and click the corresponding option to rotate and flip the image.
+
+ Real-time preview: after the image is modified, the real-time update display on the interface.
+
+ Multi-tag support: can open and edit multiple pictures in multiple tabs at the same time, convenient for users to compare and process different pictures.
+
+ Copy, Cut, and Paste: Support to copy, cut, and paste images within the editor.
+
+ Cropping: It provides simple cropping tools.
+
+Adjustment: the basic image adjustment function, such as color reduction to monochrome and jitter effect, color reduction to gray scale, fuzzy processing, color inversion, etc.
+
+ Filter: Click the menu bar option to set a variety of filter effects, such as styling, blur, sharpening, pixelated, rendering, color, and etc.
+
+ Undo and redo: Support for undo and redo drawing operations, ensuring that users can easily correct errors during the drawing process.
+
+ Color selector: provides a variety of color selection methods, such as using straws for color extraction, preset color, color palette, or custom color, to meet different drawing requirements.
+
+ Text Drawing: Allows users to add text labels or comments to images to facilitate description and communication.
+
+ Free drawing: Free drawing and labeling using multiple brushes and colors.
+
+ Eraser: The eraser tool is supported to erase drawn parts or whole strokes.
+
+ Layer operation: create and delete layers, hide layers, etc")
+
+    }
+    MessageDialog
+    {
+        id: _instructionDialog
+        title: "Instructions"
+        modality: Qt.WindowModal
+        buttons:MessageDialog.Ok
+        informativeText: qsTr("ImageCraft is a picture editor similar to kolourPaint, aiming to provide an easy to use interface, allowing users to get a better experience when using, image processing and editing, processing and other functions, so that users can get the desired effect.")
+        detailedText: "authors: 3453163171@qq.com, 3048484140@qq.com, 3084573622@qq.com  GitHubaddress:https://github.com/2022051615045Zengyan/ImageCraft.git"
+    }
+
 
     Component.onCompleted:
     {
@@ -336,5 +389,8 @@ Item
         ActiveCtrl.askSaveDialog = askSaveDialog
         ActiveCtrl.rotationDialogBox=_rotationDialog
         ActiveCtrl.rightMenu = rightMenu
+        ActiveCtrl.manualDialog=_userManualDialog
+        ActiveCtrl.instructionDialog=_instructionDialog
+
     }
 }

@@ -24,8 +24,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x - width / 2
         y: dragRect.y - height / 2
-        property int initx: 2
-        property int inity: 2
 
         HoverHandler
         {
@@ -33,6 +31,7 @@ Item
         }
         DragHandler
         {
+            id: top_leftDrag
             onActiveChanged:
             {
                 if(!active)
@@ -45,10 +44,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(top_leftDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (bottom_right.x - x) / originalWidth
@@ -67,10 +63,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(top_leftDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (bottom_right.y - y) / originalHeight
@@ -95,13 +88,13 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x + dragRect.width / 2 - width / 2
         y: dragRect.y - height / 2
-        property int inity: 2
         HoverHandler
         {
             cursorShape: Qt.SizeVerCursor
         }
         DragHandler
         {
+            id: top_middleDrag
             xAxis.enabled: false
             onActiveChanged:
             {
@@ -115,10 +108,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(top_middleDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (bottom_middle.y - y) / originalHeight
@@ -143,14 +133,13 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x + dragRect.width - width / 2
         y: dragRect.y - height / 2
-        property int initx: 2
-        property int inity: 2
         HoverHandler
         {
             cursorShape: Qt.SizeBDiagCursor
         }
         DragHandler
         {
+            id: top_rightDrag
             onActiveChanged:
             {
                 if(!active)
@@ -163,10 +152,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(top_rightDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (x - bottom_left.x) / originalWidth
@@ -185,10 +171,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(top_rightDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (bottom_left.y - y) / originalHeight
@@ -213,7 +196,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x - width / 2
         y: dragRect.y + dragRect.height / 2 - height / 2
-        property int initx: 2
 
         HoverHandler
         {
@@ -221,6 +203,7 @@ Item
         }
         DragHandler
         {
+            id: middle_leftDrag
             yAxis.enabled: false
             onActiveChanged:
             {
@@ -234,10 +217,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(middle_leftDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (middle_right.x - x) / originalWidth
@@ -262,7 +242,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x + dragRect.width - width / 2
         y: dragRect.y + dragRect.height / 2 - height / 2
-        property int initx: 2
 
         HoverHandler
         {
@@ -270,6 +249,7 @@ Item
         }
         DragHandler
         {
+            id: middle_rightDrag
             yAxis.enabled: false
             onActiveChanged:
             {
@@ -283,10 +263,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(middle_rightDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (x - bottom_left.x) / originalWidth
@@ -311,8 +288,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x - width / 2
         y: dragRect.y + dragRect.height - height / 2
-        property int initx: 2
-        property int inity: 2
 
         HoverHandler
         {
@@ -320,6 +295,7 @@ Item
         }
         DragHandler
         {
+            id: bottom_leftDrag
             onActiveChanged:
             {
                 if(!active)
@@ -332,10 +308,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(bottom_leftDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (top_right.x - x) / originalWidth
@@ -354,10 +327,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(bottom_leftDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (y - top_right.y) / originalHeight
@@ -382,7 +352,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x + dragRect.width / 2 - width / 2
         y: dragRect.y + dragRect.height - height / 2
-        property int inity: 2
 
         HoverHandler
         {
@@ -390,6 +359,7 @@ Item
         }
         DragHandler
         {
+            id: bottom_middleDrag
             xAxis.enabled: false
             onActiveChanged:
             {
@@ -403,10 +373,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(bottom_middleDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (y - top_middle.y) / originalHeight
@@ -431,8 +398,6 @@ Item
         source: "qrc:/icon/board.svg"
         x: dragRect.x + dragRect.width - width / 2
         y: dragRect.y + dragRect.height - height / 2
-        property int initx: 2
-        property int inity: 2
 
         HoverHandler
         {
@@ -440,6 +405,7 @@ Item
         }
         DragHandler
         {
+            id: bottom_rightDrag
             onActiveChanged:
             {
                 if(!active)
@@ -452,10 +418,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(initx)
-                {
-                    initx--
-                }else
+                if(bottom_rightDrag.active)
                 {
                     var originalWidth = dragRect.width / ToolCtrl.currentEditorView.xScale_scale
                     var xScale = (x - top_left.x) / originalWidth
@@ -474,10 +437,7 @@ Item
         {
             if(ToolCtrl.currentEditorView)
             {
-                if(inity)
-                {
-                    inity--
-                }else
+                if(bottom_rightDrag.active)
                 {
                     var originalHeight = dragRect.height / ToolCtrl.currentEditorView.yScale_scale
                     var yScale = (y - top_left.y) / originalHeight

@@ -11,6 +11,10 @@
  * modified by Zengyan on 2024-7-8
  * finished maintoolBar,lefttoolBar...status changes function
  *  added convertToMonochromeDithered,convertToGray,applyGaussianBlur,oppositedColor function
+ * modified by ZhanXuecai on 2024-7-8
+ *  added some filter
+ * modified by ZhanXuecai on 2024-7-9
+ *  added more filter
  */
 #pragma once
 
@@ -80,6 +84,10 @@ class ActiveCtrl : public QObject
 
     Q_PROPERTY(Filter currentFilter READ getCurrentFilter WRITE setCurrentFilter NOTIFY
                    currentFilterChanged FINAL)
+    Q_PROPERTY(QObject* manualDialog READ manualDialog WRITE setManualDialog NOTIFY
+                   manualDialogChanged FINAL)
+    Q_PROPERTY(QObject* instructionDialog READ instructionDialog WRITE setInstructionDialog NOTIFY
+                   instructionDialogChanged FINAL)
 
 public:
     //图层修改类型
@@ -115,7 +123,16 @@ public:
         EdgeSharpeningFilter,
         PixelationFilter,
         CrystallizeFilter,
-        MosaicFilter
+        MosaicFilter,
+        FireEffectFilter,
+        MoltenEffectFilter,
+        DreamFilter,
+        FreezeColdFilter,
+        AnimeFilter,
+        VintageFilter,
+        LensFlareFilter,
+        RemoveNoiseFilter,
+        AddNoiseFilter
     };
 
     Q_ENUM(OperationType)
@@ -132,6 +149,8 @@ public:
     Q_INVOKABLE void addRecentFiles(const QString& filePath);
     Q_INVOKABLE void getAngle(double angle);
     Q_INVOKABLE void openDialog();
+    Q_INVOKABLE void openManualDialog();
+    Q_INVOKABLE void openInstructionDialog();
     Q_INVOKABLE void rotation(const QString& rotationstyle, double rotationangle);
     Q_INVOKABLE void leftRotation();
     Q_INVOKABLE void rightRotation();
@@ -166,6 +185,15 @@ public:
     Q_INVOKABLE void applyStabilizationFilter();
     Q_INVOKABLE void applyPixelationFilter();
     Q_INVOKABLE void applyCrystallizeFilter();
+    Q_INVOKABLE void applyFireEffectFilter();
+    Q_INVOKABLE void applyMoltenEffectFilter();
+    Q_INVOKABLE void applyDreamFilter();
+    Q_INVOKABLE void applyFreezeColdFilter();
+    Q_INVOKABLE void applyAnimeFilter();
+    Q_INVOKABLE void applyVintageFilter();
+    Q_INVOKABLE void applyLensFlareFilter();
+    Q_INVOKABLE void applyRemoveNoiseFilter();
+    Q_INVOKABLE void applyAddNoiseFilter();
 
     Q_INVOKABLE void resetToOriginalImage();
     Q_INVOKABLE void resetToPreviousFilter();
@@ -275,6 +303,16 @@ public:
     Filter getCurrentFilter() const;
     void setCurrentFilter(Filter newCurrentFilter);
 
+    QObject* manualDialog() const;
+    void setManualDialog(QObject* newManualDialog);
+
+    QObject* instructionDialog() const;
+    void setInstructionDialog(QObject* newInstructionDialog);
+
+    void pasteEdge(cv::Mat& image, cv::Mat& outImg, const cv::Mat& cannyImage);
+    void changeSImage(cv::Mat& image, cv::Mat& outImg, float sRadio);
+    cv::Mat hsiToRgb(const cv::Mat& hsiMat);
+
 signals:
 
     void dialogBoxChanged();
@@ -340,6 +378,10 @@ signals:
 
     void currentFilterChanged();
 
+    void manualDialogChanged();
+
+    void instructionDialogChanged();
+
 private slots:
     void openSlot();
     void saveAsSlot();
@@ -367,7 +409,9 @@ private:
     QObject* m_currentLayer = nullptr;
     QString m_originalImageUrl;
     QObject* m_rotationDialogBox = nullptr;
+    QObject* m_instructionDialog = nullptr;
     QObject* m_openDialogBox = nullptr;
+    QObject* m_manualDialog = nullptr;
     QObject* m_newDialogBox = nullptr;
     QObject* m_savePathDialod = nullptr;
     QObject* m_failToSave = nullptr;
