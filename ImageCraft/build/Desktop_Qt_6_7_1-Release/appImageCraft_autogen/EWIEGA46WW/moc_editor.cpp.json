@@ -1,0 +1,126 @@
+{
+    "classes": [
+        {
+            "classInfos": [
+                {
+                    "name": "QML.Element",
+                    "value": "auto"
+                }
+            ],
+            "className": "Editor",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "newImage",
+                            "type": "QImage"
+                        }
+                    ],
+                    "name": "setImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "openImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "copyImage",
+                    "returnType": "QImage"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 0,
+                    "name": "image",
+                    "notify": "imageChanged",
+                    "read": "image",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QImage",
+                    "user": false,
+                    "write": "setImage"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 1,
+                    "name": "path",
+                    "notify": "pathChanged",
+                    "read": "path",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false,
+                    "write": "setPath"
+                }
+            ],
+            "qualifiedClassName": "Editor",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "imageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "pathChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "brushColorChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "brushSizeChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentShapeChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "previewImageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "tempImageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "imageStatusChanged",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "editor.h",
+    "outputRevision": 68
+}

@@ -1,0 +1,4 @@
+/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/appImageCraft_autogen/include/../EWIEGA46WW/moc_activectrl.cpp.json
+/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/appImageCraft_autogen/include/../EWIEGA46WW/moc_editor.cpp.json
+/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/appImageCraft_autogen/include/../EWIEGA46WW/moc_imageprovider.cpp.json
+/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/appImageCraft_autogen/include/../EWIEGA46WW/moc_toolctrl.cpp.json

@@ -1,0 +1,41 @@
+{
+    "classes": [
+        {
+            "className": "ImageProvider",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "image",
+                            "type": "QImage"
+                        }
+                    ],
+                    "name": "setImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "editor",
+                            "type": "Editor*"
+                        }
+                    ],
+                    "name": "setEditor",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "qualifiedClassName": "ImageProvider",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QQuickImageProvider"
+                }
+            ]
+        }
+    ],
+    "inputFile": "imageprovider.h",
+    "outputRevision": 68
+}

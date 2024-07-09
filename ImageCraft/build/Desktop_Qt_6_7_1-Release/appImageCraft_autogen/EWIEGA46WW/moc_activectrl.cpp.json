@@ -1,0 +1,1081 @@
+{
+    "classes": [
+        {
+            "classInfos": [
+                {
+                    "name": "QML.Singleton",
+                    "value": "true"
+                },
+                {
+                    "name": "QML.Element",
+                    "value": "ActiveCtrl"
+                }
+            ],
+            "className": "ActiveCtrl",
+            "enums": [
+                {
+                    "isClass": false,
+                    "isFlag": false,
+                    "name": "OperationType",
+                    "values": [
+                        "MoveLayer",
+                        "ScaleLayer",
+                        "AddLayer",
+                        "ReMoveLayer",
+                        "ModifiedLayer",
+                        "VisibleLayer",
+                        "FlipXLayer",
+                        "FlipYLayer",
+                        "SpinLayer",
+                        "ScaleXYLayer"
+                    ]
+                },
+                {
+                    "isClass": false,
+                    "isFlag": false,
+                    "name": "Filter",
+                    "values": [
+                        "EmbossFilter",
+                        "OilPaintFilter",
+                        "OverexposureFilter",
+                        "DiffusionFilter",
+                        "GaussianBlurFilter",
+                        "MotionBlurFilter",
+                        "EnhancedBlurFilter",
+                        "LensBlurFilter",
+                        "WaveFilter",
+                        "RippleFilter",
+                        "WaterRippleFilter",
+                        "SqueezeFilter",
+                        "ShearFilter",
+                        "USMSharpeningFilter",
+                        "StabilizationFilter",
+                        "EdgeSharpeningFilter",
+                        "PixelationFilter",
+                        "CrystallizeFilter",
+                        "MosaicFilter",
+                        "FireEffectFilter",
+                        "MoltenEffectFilter",
+                        "DreamFilter",
+                        "FreezeColdFilter",
+                        "AnimeFilter",
+                        "VintageFilter",
+                        "LensFlareFilter",
+                        "RemoveNoiseFilter",
+                        "AddNoiseFilter"
+                    ]
+                }
+            ],
+            "methods": [
+                {
+                    "access": "public",
+                    "name": "open",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "newImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "save",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "saveAs",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "close",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "closeAll",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "filePath",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "addRecentFiles",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "angle",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "getAngle",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "openDialog",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "openManualDialog",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "openInstructionDialog",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "rotationstyle",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "rotationangle",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "rotation",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "leftRotation",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "rightRotation",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "verticallyFlip",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "horizontallyFlip",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "refresh",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "takeAFullScreenshot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "exportImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "exitWindow",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "x",
+                            "type": "QVariant"
+                        },
+                        {
+                            "name": "y",
+                            "type": "QVariant"
+                        }
+                    ],
+                    "name": "popRightMenu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "deleteLayer",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyEmbossFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyOilPaintFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyOverexposureFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyDiffusionFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyMosaicFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyGaussianBlurFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyMotionBlurFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyEnhancedBlurFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyLensBlurFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyWaveFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyRippleFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applySqueezeFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyShearFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyWaterRippleFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyUSMSharpeningFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyEdgeSharpeningFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyStabilizationFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyPixelationFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyCrystallizeFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyFireEffectFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyMoltenEffectFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyDreamFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyFreezeColdFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyAnimeFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyVintageFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyLensFlareFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyRemoveNoiseFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyAddNoiseFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "resetToOriginalImage",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "resetToPreviousFilter",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "undo",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "redo",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "copyImagetoClipboard",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "pasteImageFromClipboard",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "cutImagetoClipboard",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "oppositedColor",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "convertToGray",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "convertToMonochromeDithered",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "applyGaussianBlur",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "footerVisible",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "lefttoolbarDisplay",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 0,
+                    "name": "savePath",
+                    "notify": "savePathChanged",
+                    "read": "savePath",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false,
+                    "write": "setSavePath"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 1,
+                    "name": "currentEditor",
+                    "notify": "currentEditorChanged",
+                    "read": "currentEditor",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "Editor*",
+                    "user": false,
+                    "write": "setCurrentEditor"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 2,
+                    "name": "newDialogBox",
+                    "notify": "newDialogBoxChanged",
+                    "read": "newDialogBox",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setNewDialogBox"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 3,
+                    "name": "currentLayer",
+                    "notify": "currentLayerChanged",
+                    "read": "currentLayer",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setCurrentLayer"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 4,
+                    "name": "savePathDialod",
+                    "notify": "savePathDialodChanged",
+                    "read": "savePathDialod",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setSavePathDialod"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 5,
+                    "name": "recentFiles",
+                    "notify": "recentFilesChanged",
+                    "read": "recentFiles",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QStringList",
+                    "user": false,
+                    "write": "setRecentFiles"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 6,
+                    "name": "failToSave",
+                    "notify": "failToSaveChanged",
+                    "read": "failToSave",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setFailToSave"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 7,
+                    "name": "openDialogBox",
+                    "notify": "openDialogBoxChanged",
+                    "read": "openDialogBox",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setOpenDialogBox"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 8,
+                    "name": "sharePage",
+                    "notify": "sharePageChanged",
+                    "read": "sharePage",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setSharePage"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 9,
+                    "name": "modified",
+                    "notify": "modifiedChanged",
+                    "read": "modified",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false,
+                    "write": "setModified"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 10,
+                    "name": "size",
+                    "notify": "sizeChanged",
+                    "read": "size",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QSize",
+                    "user": false,
+                    "write": "setSize"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 11,
+                    "name": "currentIndex",
+                    "notify": "currentIndexChanged",
+                    "read": "currentIndex",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setCurrentIndex"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 12,
+                    "name": "exportPathDialog",
+                    "notify": "exportPathDialogChanged",
+                    "read": "exportPathDialog",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setExportPathDialog"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 13,
+                    "name": "askSaveDialog",
+                    "notify": "askSaveDialogChanged",
+                    "read": "askSaveDialog",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setAskSaveDialog"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 14,
+                    "name": "YScale",
+                    "notify": "YScaleChanged",
+                    "read": "YScale",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setYScale"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 15,
+                    "name": "XScale",
+                    "notify": "XScaleChanged",
+                    "read": "XScale",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setXScale"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 16,
+                    "name": "flip",
+                    "notify": "flipChanged",
+                    "read": "flip",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setFlip"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 17,
+                    "name": "currentImageView",
+                    "notify": "currentImageViewChanged",
+                    "read": "currentImageView",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setCurrentImageView"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 18,
+                    "name": "anglenum",
+                    "notify": "anglenumChanged",
+                    "read": "anglenum",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false,
+                    "write": "setAnglenum"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 19,
+                    "name": "rotationDialogBox",
+                    "notify": "rotationDialogBoxChanged",
+                    "read": "rotationDialogBox",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setRotationDialogBox"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 20,
+                    "name": "rightMenu",
+                    "notify": "rightMenuChanged",
+                    "read": "rightMenu",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setRightMenu"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 21,
+                    "name": "lcenterWidth",
+                    "notify": "lcenterWidthChanged",
+                    "read": "lcenterWidth",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setLcenterWidth"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 22,
+                    "name": "lcenterHeight",
+                    "notify": "lcenterHeightChanged",
+                    "read": "lcenterHeight",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setLcenterHeight"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 23,
+                    "name": "pasteImage",
+                    "notify": "pasteImageChanged",
+                    "read": "pasteImage",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QImage",
+                    "user": false,
+                    "write": "setPasteImage"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 24,
+                    "name": "footer",
+                    "notify": "footerChanged",
+                    "read": "footer",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setFooter"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 25,
+                    "name": "toolBar",
+                    "notify": "toolBarChanged",
+                    "read": "toolBar",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setToolBar"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 26,
+                    "name": "currentFilter",
+                    "notify": "currentFilterChanged",
+                    "read": "getCurrentFilter",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "Filter",
+                    "user": false,
+                    "write": "setCurrentFilter"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 27,
+                    "name": "manualDialog",
+                    "notify": "manualDialogChanged",
+                    "read": "manualDialog",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setManualDialog"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": true,
+                    "index": 28,
+                    "name": "instructionDialog",
+                    "notify": "instructionDialogChanged",
+                    "read": "instructionDialog",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QObject*",
+                    "user": false,
+                    "write": "setInstructionDialog"
+                }
+            ],
+            "qualifiedClassName": "ActiveCtrl",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "dialogBoxChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentEditorChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "newDialogBoxChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentLayerChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "savePathDialodChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "savePathChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "modifiedChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "sizeChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "recentFilesChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "failToSaveChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "openDialogBoxChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "sharePageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentIndexChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "refreshSignal",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "exportPathDialogChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "askSaveDialogChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "saved",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "closed",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "YScaleChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "XScaleChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "flipChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "closeAlled",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentImageViewChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "anglenumChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "rotationDialogBoxChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "rightMenuChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "lcenterWidthChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "lcenterHeightChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "pasteImageChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "footerChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "toolBarChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "currentFilterChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "manualDialogChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "instructionDialogChanged",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "private",
+                    "name": "openSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "saveAsSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "exportSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "askSave_saveSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "askSave_discardSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "askSave_cancelSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "closeAllSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "exitSlot",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "activectrl.h",
+    "outputRevision": 68
+}

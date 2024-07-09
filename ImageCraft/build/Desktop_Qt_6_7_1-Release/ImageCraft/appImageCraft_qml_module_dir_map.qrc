@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/qt/qml/ImageCraft">/run/media/root/study/qml/ImageCraft/build/Desktop_Qt_6_7_1-Release/ImageCraft</file>
+
+  </qresource>
+</RCC>

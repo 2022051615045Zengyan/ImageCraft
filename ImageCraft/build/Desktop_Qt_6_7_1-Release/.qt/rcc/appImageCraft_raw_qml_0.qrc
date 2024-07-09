@@ -1,0 +1,40 @@
+<RCC>
+  <qresource prefix="/qt/qml/ImageCraft/">
+    <file alias="Tags.qml">/run/media/root/study/qml/ImageCraft/Tags.qml</file>
+    <file alias="RCenter.qml">/run/media/root/study/qml/ImageCraft/RCenter.qml</file>
+    <file alias="LCenter.qml">/run/media/root/study/qml/ImageCraft/LCenter.qml</file>
+    <file alias="ImageCraft.qml">/run/media/root/study/qml/ImageCraft/ImageCraft.qml</file>
+    <file alias="ICFooter.qml">/run/media/root/study/qml/ImageCraft/ICFooter.qml</file>
+    <file alias="ICContent.qml">/run/media/root/study/qml/ImageCraft/ICContent.qml</file>
+    <file alias="modules/se/qt/toolBar/Zoom_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Zoom_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Word_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Word_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Straw_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Straw_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Rectangle_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Rectangle_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/MyToolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/MyToolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/MoveToolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/MoveToolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Move_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Move_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Line_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Line_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Eraser_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Eraser_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Choice_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Choice_toolBar.qml</file>
+    <file alias="modules/se/qt/toolBar/Brush_toolBar.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/Brush_toolBar.qml</file>
+    <file alias="modules/se/qt/menu/MyMenuItem.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/MyMenuItem.qml</file>
+    <file alias="modules/se/qt/menu/MyMenu.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/MyMenu.qml</file>
+    <file alias="modules/se/qt/menu/Menu_View.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_View.qml</file>
+    <file alias="modules/se/qt/menu/Menu_Setting.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_Setting.qml</file>
+    <file alias="modules/se/qt/menu/Menu_Help.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_Help.qml</file>
+    <file alias="modules/se/qt/menu/Menu_Graphics.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_Graphics.qml</file>
+    <file alias="modules/se/qt/menu/Menu_Filter.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_Filter.qml</file>
+    <file alias="modules/se/qt/menu/Menu_File.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_File.qml</file>
+    <file alias="modules/se/qt/menu/Menu_Edit.qml">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/Menu_Edit.qml</file>
+    <file alias="DialogBox.qml">/run/media/root/study/qml/ImageCraft/DialogBox.qml</file>
+    <file alias="EditorView.qml">/run/media/root/study/qml/ImageCraft/EditorView.qml</file>
+    <file alias="Layer.qml">/run/media/root/study/qml/ImageCraft/Layer.qml</file>
+    <file alias="SelectBox.qml">/run/media/root/study/qml/ImageCraft/SelectBox.qml</file>
+    <file alias="StrawImage.qml">/run/media/root/study/qml/ImageCraft/StrawImage.qml</file>
+    <file alias="README.md">/run/media/root/study/qml/ImageCraft/README.md</file>
+    <file alias="modules/se/qt/toolBar/qmldir">/run/media/root/study/qml/ImageCraft/modules/se/qt/toolBar/qmldir</file>
+    <file alias="modules/se/qt/menu/qmldir">/run/media/root/study/qml/ImageCraft/modules/se/qt/menu/qmldir</file>
+    <file alias="res.qrc">/run/media/root/study/qml/ImageCraft/res.qrc</file>
+  </qresource>
+</RCC>
+
