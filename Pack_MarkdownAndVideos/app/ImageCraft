@@ -1,0 +1,15 @@
+#!/bin/sh
+export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/Qt/6.7.1/gcc_64/plugins/platforms
+export QT_PLUGIN_PATH=/opt/Qt/6.7.1/gcc_64/plugins
+export QML2_IMPORT_PATH=/opt/Qt/6.7.1/gcc_64/qml
+export QT_QPA_PLATFORM=xcb
+appname=appImageCraft #要运行的程序名
+dirname=`dirname $0`
+tmp="${dirname#?}"
+if [ "${dirname%$tmp}" != "/" ]; then
+dirname=$PWD/$dirname
+fi
+LD_LIBRARY_PATH=$dirname
+export LD_LIBRARY_PATH
+$dirname/$appname "$@"
+
