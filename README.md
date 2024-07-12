@@ -23,10 +23,11 @@ oi构建文件改为cmake,qml端添加EditorView、dialog等，c++端添加单�
 2024-6-26 添加了图层模块和右侧展示模块的信号连接，用户自定义的旋转功能，画笔的大小更改，钢笔和喷漆工具，优化了绘图的实现逻辑，修复了缩放撤销bug
 
 
-# 文件说明:
+# Pack_MarkdownAndVideos文件说明:
 
-1. app.zip: 打包的可执行文件
-2. 说明文档&视频: 文档 + 视频
+1. ImageCraftInstaller.run: 程序安装包
+2. ImageCraft.mkv: 演示视频
 3. arch.png: 架构图
+4. ImageCraft_DocumentDescription.docx:文档
+5. 2024-7-12Deploy.mp4: 部署视频
 
-![](./arch.png)
